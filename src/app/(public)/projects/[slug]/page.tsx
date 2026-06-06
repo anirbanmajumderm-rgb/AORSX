@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const projects = await prisma.project.findMany({ select: { slug: true } });
+  const projects: { slug: string }[] = await prisma.project.findMany({ select: { slug: true } });
   return projects.map((project) => ({
     slug: project.slug,
   }));
