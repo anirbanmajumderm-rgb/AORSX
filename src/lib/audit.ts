@@ -1,16 +1,18 @@
 import { prisma } from "./prisma";
 import { logger } from "./app-logger";
 
-export async function createAuditLog(params: {
+type AuditLogInput = {
   adminId?: number | null;
   action: string;
   resource?: string | null;
   resourceId?: number | null;
   details?: string | null;
   ip?: string | null;
-}) {
+};
+
+export async function createAuditLog(params: AuditLogInput) {
   try {
-    await prisma.auditLog.create({ data: params as any });
+    await prisma.auditLog.create({ data: params });
   } catch (err) {
     logger.error("Audit", "Failed to create audit log", {
       error: err instanceof Error ? err.message : String(err),
@@ -18,15 +20,17 @@ export async function createAuditLog(params: {
   }
 }
 
-export async function createNotification(params: {
+type NotificationInput = {
   adminId?: number;
   type?: string;
   title: string;
   description?: string | null;
   link?: string | null;
-}) {
+};
+
+export async function createNotification(params: NotificationInput) {
   try {
-    await prisma.notification.create({ data: params as any });
+    await prisma.notification.create({ data: params });
   } catch (err) {
     logger.error("Notification", "Failed to create notification", {
       error: err instanceof Error ? err.message : String(err),
@@ -34,17 +38,20 @@ export async function createNotification(params: {
   }
 }
 
-export async function notifyAdmins(params: {
+type NotifyParams = {
   type?: string;
   title: string;
   description?: string;
   link?: string;
-}) {
+};
+
+export async function notifyAdmins(params: NotifyParams) {
   try {
-    const admins = await prisma.admin.findMany({
+    const admins: { id: number }[] = await prisma.admin.findMany({
       select: { id: true },
       take: 100,
     });
+
     if (admins.length === 0) return;
 
     const notifications = admins.map((admin) => ({

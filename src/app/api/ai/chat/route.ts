@@ -52,7 +52,7 @@ function tokenize(text: string): string[] {
   return text.toLowerCase()
     .replace(/[^\w\s\u0980-\u09FF]/g, " ")
     .split(/\s+/)
-    .filter((w) => w.length > 2 && !STOP_WORDS.has(w));
+    .filter((w: string) => w.length > 2 && !STOP_WORDS.has(w));
 }
 
 function computeTfScore(queryTokens: string[], text: string): number {
@@ -144,27 +144,27 @@ function classifyMessage(msg: string, lang: string): MessageCategory {
     return "greeting";
 
   if (isBn) {
-    if (INQUIRY_BN.some((p) => p.test(text))) return "inquiry_collection";
-    if (FAQ_BN.some((p) => p.test(text))) return "faq";
-    if (COMPANY_BN.some((p) => p.test(text))) return "company_info";
-    if (SERVICE_BN.some((p) => p.test(text))) return "services";
-    if (PACKAGE_BN.some((p) => p.test(text))) return "packages";
-    if (PRICING_BN.some((p) => p.test(text))) return "pricing";
-    if (SKILL_BN.some((p) => p.test(text))) return "skills";
-    if (PROJECT_BN.some((p) => p.test(text))) return "projects";
-    if (CONTACT_BN.some((p) => p.test(text))) return "contact";
-    if (POLICY_BN.some((p) => p.test(text))) return "policies";
+    if (INQUIRY_BN.some((p: RegExp) => p.test(text))) return "inquiry_collection";
+    if (FAQ_BN.some((p: RegExp) => p.test(text))) return "faq";
+    if (COMPANY_BN.some((p: RegExp) => p.test(text))) return "company_info";
+    if (SERVICE_BN.some((p: RegExp) => p.test(text))) return "services";
+    if (PACKAGE_BN.some((p: RegExp) => p.test(text))) return "packages";
+    if (PRICING_BN.some((p: RegExp) => p.test(text))) return "pricing";
+    if (SKILL_BN.some((p: RegExp) => p.test(text))) return "skills";
+    if (PROJECT_BN.some((p: RegExp) => p.test(text))) return "projects";
+    if (CONTACT_BN.some((p: RegExp) => p.test(text))) return "contact";
+    if (POLICY_BN.some((p: RegExp) => p.test(text))) return "policies";
   } else {
-    if (INQUIRY_EN.some((p) => p.test(text))) return "inquiry_collection";
-    if (FAQ_EN.some((p) => p.test(text))) return "faq";
-    if (COMPANY_EN.some((p) => p.test(text))) return "company_info";
-    if (SERVICE_EN.some((p) => p.test(text))) return "services";
-    if (PACKAGE_EN.some((p) => p.test(text))) return "packages";
-    if (PRICING_EN.some((p) => p.test(text))) return "pricing";
-    if (SKILL_EN.some((p) => p.test(text))) return "skills";
-    if (PROJECT_EN.some((p) => p.test(text))) return "projects";
-    if (CONTACT_EN.some((p) => p.test(text))) return "contact";
-    if (POLICY_EN.some((p) => p.test(text))) return "policies";
+    if (INQUIRY_EN.some((p: RegExp) => p.test(text))) return "inquiry_collection";
+    if (FAQ_EN.some((p: RegExp) => p.test(text))) return "faq";
+    if (COMPANY_EN.some((p: RegExp) => p.test(text))) return "company_info";
+    if (SERVICE_EN.some((p: RegExp) => p.test(text))) return "services";
+    if (PACKAGE_EN.some((p: RegExp) => p.test(text))) return "packages";
+    if (PRICING_EN.some((p: RegExp) => p.test(text))) return "pricing";
+    if (SKILL_EN.some((p: RegExp) => p.test(text))) return "skills";
+    if (PROJECT_EN.some((p: RegExp) => p.test(text))) return "projects";
+    if (CONTACT_EN.some((p: RegExp) => p.test(text))) return "contact";
+    if (POLICY_EN.some((p: RegExp) => p.test(text))) return "policies";
   }
 
   return "general";
@@ -357,7 +357,7 @@ function buildServicesResponse(db: DbContext, msg: string, isBn: boolean): strin
     return lines.join("\n");
   }
 
-  const names = db.services.map((s) => `• ${s.title}${s.description ? ` — ${s.description}` : ""}`);
+  const names = db.services.map((s: DbContext["services"][0]) => `• ${s.title}${s.description ? ` — ${s.description}` : ""}`);
   const list = names.join("\n");
 
   return isBn
@@ -379,7 +379,7 @@ function buildPackagesResponse(db: DbContext, msg: string, isBn: boolean): strin
     }
   }
 
-  const lines = db.packages.map((p) => {
+  const lines = db.packages.map((p: DbContext["packages"][0]) => {
     const price = `${p.currency} ${p.price}${p.billingCycle !== "one-time" ? `/${p.billingCycle}` : ""}`;
     const features = p.features ? `\n     Features: ${p.features.replace(/,/g, ", ")}` : "";
     return `• ${p.name} — ${price}${p.description ? `\n     ${p.description}` : ""}${features}`;
@@ -393,7 +393,7 @@ function buildPackagesResponse(db: DbContext, msg: string, isBn: boolean): strin
 
 function buildPricingResponse(db: DbContext, msg: string, isBn: boolean): string {
   const tokens = tokenize(msg);
-  const mentionService = tokens.length > 0 && db.services.some((s) => computeTfScore(tokens, s.title) > 0);
+  const mentionService = tokens.length > 0 && db.services.some((s: DbContext["services"][0]) => computeTfScore(tokens, s.title) > 0);
 
   if (mentionService) {
     const pkgs = db.packages;
@@ -448,7 +448,7 @@ function buildSkillsResponse(db: DbContext, isBn: boolean): string {
 function buildProjectsResponse(db: DbContext, isBn: boolean): string {
   if (!db.projects.length) return isBn ? "কোনো প্রকল্প তালিকাভুক্ত নেই।" : "No projects are currently listed.";
 
-  const lines = db.projects.map((p) => {
+  const lines = db.projects.map((p: DbContext["projects"][0]) => {
     let entry = `• ${p.title}`;
     if (p.category) entry += ` (${p.category})`;
     if (p.description) entry += `\n     ${p.description}`;
@@ -467,7 +467,7 @@ function buildFaqResponse(db: DbContext, msg: string, isBn: boolean): string {
   if (match && match.answer) return match.answer;
 
   if (db.faqs.length) {
-    const titles = db.faqs.map((f, i) => `${i + 1}. ${f.question}`);
+    const titles = db.faqs.map((f: DbContext["faqs"][0], i: number) => `${i + 1}. ${f.question}`);
     return isBn
       ? `এখানে কিছু সাধারণ জিজ্ঞাসা:\n${titles.join("\n")}\n\nকোনো নির্দিষ্ট প্রশ্নের উত্তর জানতে চাইলে জিজ্ঞাসা করুন।`
       : `Here are some frequently asked questions:\n${titles.join("\n")}\n\nFeel free to ask about any specific question.`;

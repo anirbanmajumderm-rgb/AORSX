@@ -26,7 +26,7 @@ export async function GET() {
           GROUP BY "createdAt"::date
           ORDER BY date ASC
         `;
-        return rows.map(r => ({ date: r.date.toISOString().slice(0, 10), count: Number(r.count) }));
+        return rows.map((r: { date: Date; count: bigint }) => ({ date: r.date.toISOString().slice(0, 10), count: Number(r.count) }));
       }, [], "analytics:dailyPageViews"),
       safeQuery(async () => {
         const rows = await prisma.$queryRaw<Array<{ date: Date; type: string; count: bigint }>>`
@@ -36,7 +36,7 @@ export async function GET() {
           GROUP BY "createdAt"::date, "type"
           ORDER BY date ASC
         `;
-        return rows.map(r => ({ date: r.date.toISOString().slice(0, 10), type: r.type, count: Number(r.count) }));
+        return rows.map((r: { date: Date; type: string; count: bigint }) => ({ date: r.date.toISOString().slice(0, 10), type: r.type, count: Number(r.count) }));
       }, [], "analytics:interactions"),
       safeQuery(async () => {
         const rows = await prisma.$queryRaw<Array<{ type: string; count: bigint }>>`
@@ -45,7 +45,7 @@ export async function GET() {
           GROUP BY "type"
           ORDER BY count DESC
         `;
-        return rows.map(r => ({ type: r.type, count: Number(r.count) }));
+        return rows.map((r: { type: string; count: bigint }) => ({ type: r.type, count: Number(r.count) }));
       }, [], "analytics:interactionTypes"),
     ]);
 

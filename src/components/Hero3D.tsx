@@ -211,11 +211,7 @@ function isWebGLAvailable() {
 }
 
 export default function Hero3DScene() {
-  const [webglOk, setWebglOk] = useState(true);
-
-  useEffect(() => {
-    setWebglOk(isWebGLAvailable());
-  }, []);
+  const [webglOk] = useState(isWebGLAvailable);
 
   if (!webglOk) {
     return (

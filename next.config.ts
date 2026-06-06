@@ -1,24 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ─── Stable Webpack config for Next.js 16 on Windows ───
-
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 
-  // Required stub — Next.js 16 errors if webpack config exists without turbopack key.
-  // The actual bundler is selected via CLI (--webpack).
-  // See: node_modules/next/dist/lib/turbopack-warning.js:157-172
-  turbopack: {},
-
   serverExternalPackages: ["bcryptjs", "@prisma/client"],
 
   typescript: {
     tsconfigPath: "tsconfig.json",
   },
+
+  turbopack: {},
 
   webpack: (config, { dev, isServer }) => {
     if (dev) {
@@ -35,6 +30,14 @@ const nextConfig: NextConfig = {
     }
 
     return config;
+  },
+
+  experimental: {
+    serverMinification: true,
+  },
+
+  outputFileTracingIncludes: {
+    "/api/**": ["./node_modules/**/*"],
   },
 
   onDemandEntries: {

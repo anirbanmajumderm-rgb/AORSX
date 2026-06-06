@@ -542,7 +542,7 @@ export default function AdminSettings() {
                 </div>
                 <div className="flex justify-end">
                   <Button onClick={handleBackupCodesCopied} size="sm" className="gap-1.5">
-                    <CheckCircle size={12} /> I've Saved These Codes
+                    <CheckCircle size={12} /> I&apos;ve Saved These Codes
                   </Button>
                 </div>
               </div>

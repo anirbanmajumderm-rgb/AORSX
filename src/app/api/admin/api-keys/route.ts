@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { ApiKey } from "@prisma/client";
 import { successResponse, errorResponse, requireAuth, serverErrorResponse } from "@/lib/api-utils";
 import { randomBytes } from "crypto";
 
@@ -29,7 +30,7 @@ export async function GET() {
       },
     });
 
-    const maskedKeys = keys.map((k) => ({
+    const maskedKeys = keys.map((k: ApiKey) => ({
       ...k,
       key: maskKey(k.key),
       fullKey: undefined,

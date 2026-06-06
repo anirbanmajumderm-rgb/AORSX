@@ -1,7 +1,4 @@
 import { checkDatabaseHealth } from "./prisma";
-import os from "os";
-import fs from "fs";
-import path from "path";
 
 export interface DiagnosticReport {
   timestamp: string;
@@ -90,10 +87,10 @@ export async function runDiagnostics(): Promise<DiagnosticReport> {
       platform: process.platform,
       nodeVersion: process.version,
       pid: process.pid,
-      hostname: os.hostname(),
-      cpuCores: os.cpus().length,
-      totalMemory: formatBytes(os.totalmem()),
-      freeMemory: formatBytes(os.freemem()),
+      hostname: "",
+      cpuCores: 0,
+      totalMemory: "0MB",
+      freeMemory: "0MB",
     },
     cache: {
       nextBuildExists: false,
@@ -103,28 +100,38 @@ export async function runDiagnostics(): Promise<DiagnosticReport> {
     },
   };
 
+  try {
+    const os = await import("os");
+    report.system = {
+      platform: process.platform,
+      nodeVersion: process.version,
+      pid: process.pid,
+      hostname: os.hostname(),
+      cpuCores: os.cpus().length,
+      totalMemory: formatBytes(os.totalmem()),
+      freeMemory: formatBytes(os.freemem()),
+    };
+  } catch {
+    // os module unavailable (edge runtime)
+  }
+
+  try {
+    const fsModule = await import("fs");
+    const pathModule = await import("path");
+    const projectRoot = process.cwd();
+    const nextPath = pathModule.join(projectRoot, ".next");
+    const tsBuildPath = pathModule.join(projectRoot, "tsconfig.tsbuildinfo");
+
+    report.cache.nextBuildExists = fsModule.existsSync(nextPath);
+    report.cache.tsBuildInfoExists = fsModule.existsSync(tsBuildPath);
+  } catch {
+    // fs unavailable (edge/serverless)
+  }
+
   for (const key of ["DATABASE_URL", "NEXTAUTH_SECRET", "NEXTAUTH_URL"] as const) {
     if (!process.env[key]) report.env.missing.push(key);
   }
   report.env.valid = report.env.missing.length === 0;
-
-  const projectRoot = process.cwd();
-
-  const nextPath = path.join(projectRoot, ".next");
-  const tsBuildPath = path.join(projectRoot, "tsconfig.tsbuildinfo");
-  const dbPath = path.join(projectRoot, "prisma", "dev.db");
-
-  try {
-    report.cache.nextBuildExists = fs.existsSync(nextPath);
-    report.cache.tsBuildInfoExists = fs.existsSync(tsBuildPath);
-    if (fs.existsSync(dbPath)) {
-      report.cache.dbFileExists = true;
-      const stats = fs.statSync(dbPath);
-      report.cache.dbFileSize = formatBytes(stats.size);
-    }
-  } catch {
-    // ignore fs errors in diagnostics
-  }
 
   const dbHealth = await checkDatabaseHealth();
   report.database = {

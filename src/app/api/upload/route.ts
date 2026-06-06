@@ -37,17 +37,24 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    const isVercel = !!process.env.VERCEL_URL;
     const storedName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    const uploadDir = isVercel
+      ? path.join("/tmp", "uploads")
+      : path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadDir, { recursive: true });
     const filePath = path.join(uploadDir, storedName);
     await writeFile(filePath, buffer);
+
+    const fileUrl = isVercel
+      ? `/api/file/${storedName}`
+      : `/uploads/${storedName}`;
 
     const record = await prisma.uploadedFile.create({
       data: {
         originalName: file.name,
         storedName,
-        filePath: `/uploads/${storedName}`,
+        filePath: fileUrl,
         fileType: file.type || ext,
         fileSize: file.size,
         uploadType: "admin",
@@ -55,7 +62,7 @@ export async function POST(req: NextRequest) {
     });
 
     return successResponse({
-      url: `/uploads/${storedName}`,
+      url: fileUrl,
       name: file.name,
       size: file.size,
       id: record.id,

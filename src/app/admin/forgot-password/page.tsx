@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
           <CheckCircle2 size={48} className="mx-auto mb-4 text-emerald-400" />
           <h1 className="text-2xl font-bold text-white/90 mb-2">Check Your Email</h1>
           <p className="text-white/40 mb-6">
-            If an account exists for {email}, we've sent a password reset link.
+            If an account exists for {email}, we&apos;ve sent a password reset link.
           </p>
           <Link href="/admin/login">
             <Button><ArrowLeft size={16} className="mr-2" /> Back to Login</Button>
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
           </div>
           <h1 className="text-xl font-semibold text-white/90 text-center mb-2">Forgot Password</h1>
           <p className="text-sm text-white/40 text-center mb-6">
-            Enter your email address and we'll send you a reset link.
+            Enter your email address and we&apos;ll send you a reset link.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

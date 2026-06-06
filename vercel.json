@@ -3,5 +3,12 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "devCommand": "npm run dev"
+  "devCommand": "npm run dev",
+  "regions": ["sin1"],
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  }
 }

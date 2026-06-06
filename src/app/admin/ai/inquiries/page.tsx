@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { useSession } from "next-auth/react";
 import { Search, Mail, Phone, Calendar, DollarSign, Briefcase, Clock, MessageSquare, ChevronDown, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
@@ -34,10 +34,6 @@ export default function InquiriesPage() {
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [saving, setSaving] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (sessionStatus === "authenticated") loadInquiries();
-  }, [sessionStatus]);
-
   async function loadInquiries() {
     try {
       const res = await fetch("/api/admin/inquiries");
@@ -51,6 +47,10 @@ export default function InquiriesPage() {
     } catch { toast.error("Failed to load inquiries"); }
     finally { setLoading(false); }
   }
+
+  useEffect(() => {
+    if (sessionStatus === "authenticated") startTransition(() => loadInquiries());
+  }, [sessionStatus]);
 
   async function handleStatusChange(id: number, status: string) {
     try {

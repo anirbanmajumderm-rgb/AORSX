@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import * as nodemailer from "nodemailer";
 import { prisma } from "./prisma";
 import { logger } from "./app-logger";
 
@@ -128,9 +128,11 @@ export async function renderTemplate(
     let subject = template.subject;
     let body = template.body;
 
+    const escKey = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     for (const [key, value] of Object.entries(variables)) {
-      subject = subject.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
-      body = body.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
+      const re = new RegExp(`\\{\\{${escKey(key)}\\}\\}`, "g");
+      subject = subject.replace(re, () => value);
+      body = body.replace(re, () => value);
     }
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${body}</body></html>`;
@@ -166,7 +168,7 @@ export async function sendContactNotification(params: {
   message: string;
 }): Promise<void> {
   const admins = await prisma.admin.findMany({ select: { email: true } });
-  const adminEmails = admins.map((a) => a.email).filter(Boolean);
+  const adminEmails = admins.map((a: { email: string }) => a.email).filter(Boolean);
 
   for (const to of adminEmails) {
     await sendTemplateEmail({

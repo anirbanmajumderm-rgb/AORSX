@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, Globe, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,10 @@ export function Navbar() {
   const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
+    if (company?.logo) startTransition(() => setLogoError(false));
+  }, [company?.logo]);
+
+  useEffect(() => {
     if (pathname.startsWith("/admin")) return;
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -43,10 +47,6 @@ export function Navbar() {
 
   if (pathname.startsWith("/admin")) return null;
   const siteInitial = siteName[0];
-
-  useEffect(() => {
-    if (company?.logo) setLogoError(false);
-  }, [company?.logo]);
 
   const toggleLang = () => {
     setLang(lang === "en" ? "bn" : "en");

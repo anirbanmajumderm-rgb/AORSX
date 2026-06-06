@@ -1,4 +1,5 @@
 import { prisma, safeQuery } from "@/lib/prisma";
+import { AdminUser } from "@prisma/client";
 import { requireAuth } from "@/lib/api-utils";
 import { NextResponse } from "next/server";
 
@@ -8,7 +9,7 @@ export async function GET() {
   try {
     const users = await safeQuery(() => prisma.adminUser.findMany({ orderBy: { createdAt: "desc" } }), [], "users:export");
     const header = "Name,Email,Role,Status,Joined Date,Last Active\n";
-    const rows = (users as any[]).map(u =>
+    const rows = users.map((u: AdminUser & { role?: { name: string } | null }) =>
       `${u.name || ""},${u.email || ""},${u.role?.name || "N/A"},${u.status || "active"},${u.createdAt?.toISOString().split("T")[0] || ""},${u.lastActive?.toISOString().split("T")[0] || "Never"}`
     ).join("\n");
 

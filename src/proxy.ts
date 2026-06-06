@@ -57,6 +57,7 @@ function validateOriginRequest(req: NextRequest): boolean {
     const allowedOrigins = [
       "http://localhost:3000",
       process.env.NEXTAUTH_URL || "",
+      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
     ].filter((s) => s.length > 0);
     const originUrl = new URL(origin);
     return allowedOrigins.some((o) => {

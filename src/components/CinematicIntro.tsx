@@ -41,18 +41,16 @@ const glowVariants = {
 };
 
 export function CinematicIntro({ children }: { children: React.ReactNode }) {
-  const [phase, setPhase] = useState<"intro" | "flash" | "done">("intro");
+  const [phase, setPhase] = useState<"intro" | "flash" | "done">(() => {
+    if (typeof window === "undefined") return "intro";
+    return sessionStorage.getItem("aorsx-intro-played") ? "done" : "intro";
+  });
   const [showTagline, setShowTagline] = useState(false);
   const sweepRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    const played = sessionStorage.getItem("aorsx-intro-played");
-    if (played) {
-      setPhase("done");
-      return;
-    }
+    if (phase === "done") return;
 
     const taglineTimer = setTimeout(() => setShowTagline(true), 2400);
 

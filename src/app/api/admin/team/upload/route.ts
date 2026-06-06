@@ -25,18 +25,25 @@ export async function POST(request: NextRequest) {
       return errorResponse("File too large. Max 5MB", 400);
     }
 
+    const isVercel = !!process.env.VERCEL_URL;
     const ext = file.name.split(".").pop() || "jpg";
     const filename = `team-${randomUUID()}.${ext}`;
-    const uploadDir = join(process.cwd(), "public", "uploads");
+    const uploadDir = isVercel
+      ? join("/tmp", "uploads")
+      : join(process.cwd(), "public", "uploads");
 
     await mkdir(uploadDir, { recursive: true });
 
     const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(join(uploadDir, filename), buffer);
 
+    const fileUrl = isVercel
+      ? `/api/file/${filename}`
+      : `/uploads/${filename}`;
+
     return NextResponse.json({
       success: true,
-      data: { url: `/uploads/${filename}` },
+      data: { url: fileUrl },
     });
   } catch (err) {
     return serverErrorResponse(err, "admin/team/upload");
