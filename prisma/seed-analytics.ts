@@ -251,7 +251,7 @@ async function main() {
   await prisma.activityLog.createMany({ data: activityLogs });
 
   await prisma.review.deleteMany();
-  const projects = await prisma.project.findMany({ select: { id: true } });
+  const projects: { id: string }[] = await prisma.project.findMany({ select: { id: true } });
   if (projects.length > 0) {
     const reviews: any[] = [];
     const numReviews = randomInt(8, 15);
