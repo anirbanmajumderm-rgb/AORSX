@@ -10,7 +10,7 @@ let prismaClientFailed = false;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: ReturnType<typeof createPrismaClient> | undefined;
-  prismaInitialized: boolean | undefined;
+  prismaInitPromise: Promise<void> | undefined;
 };
 
 async function attemptReconnect(client: ReturnType<typeof createPrismaClient>): Promise<boolean> {
@@ -49,35 +49,38 @@ function createPrismaClient() {
 }
 
 function getPrisma() {
-  if (globalForPrisma.prisma && globalForPrisma.prismaInitialized) {
+  if (globalForPrisma.prisma) {
     return globalForPrisma.prisma;
   }
 
-  if (!globalForPrisma.prisma) {
-    const client = createPrismaClient();
-    globalForPrisma.prisma = client;
-  }
+  const client = createPrismaClient();
+  globalForPrisma.prisma = client;
 
-  if (!globalForPrisma.prismaInitialized) {
-    globalForPrisma.prisma.$connect()
-      .then(() => {
-        prismaClientFailed = false;
-        globalForPrisma.prismaInitialized = true;
-        logger.info("Prisma", "Client connected successfully");
-      })
-      .catch((err: unknown) => {
-        prismaClientFailed = true;
-        logger.error("Prisma", "Initial connection failed", {
-          error: err instanceof Error ? err.message : String(err),
-        });
+  const connectPromise = client.$connect()
+    .then(() => {
+      prismaClientFailed = false;
+      logger.info("Prisma", "Client connected successfully");
+    })
+    .catch((err: unknown) => {
+      prismaClientFailed = true;
+      logger.error("Prisma", "Initial connection failed", {
+        error: err instanceof Error ? err.message : String(err),
       });
-    globalForPrisma.prismaInitialized = true;
-  }
+      throw err;
+    });
 
-  return globalForPrisma.prisma;
+  globalForPrisma.prismaInitPromise = connectPromise;
+
+  return client;
 }
 
 export const prisma = getPrisma();
+
+export async function waitForPrisma(): Promise<void> {
+  if (globalForPrisma.prismaInitPromise) {
+    await globalForPrisma.prismaInitPromise;
+  }
+}
 
 export { attemptReconnect };
 
@@ -88,6 +91,7 @@ export async function checkDatabaseHealth(): Promise<{
   prismaClientOk?: boolean;
   reconnectable?: boolean;
 }> {
+  await waitForPrisma();
   const start = Date.now();
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -129,6 +133,7 @@ export async function safeQuery<T>(
   fallback: T,
   context: string
 ): Promise<T> {
+  await waitForPrisma();
   try {
     return await retry(
       async () => {
