@@ -34,7 +34,8 @@ const eslintConfig = defineConfig([
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
       "react/jsx-no-target-blank": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@next/next/no-img-element": "off",
     },
     settings: {
       react: { version: "detect" },
