@@ -92,6 +92,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  trustHost: process.env.NODE_ENV === "development",
+  trustHost: true,
   secret: process.env.NEXTAUTH_SECRET,
 });
