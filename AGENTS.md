@@ -9,7 +9,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Use `export const config = { matcher: [...] }` for path matching
 - **Webpack is the default bundler** (Turbopack disabled — unstable on this Windows system).
   - Dev: `next dev --webpack` (set as default in package.json)
-  - Build: `next build --webpack` (set as default in package.json)
+  - Build: `next build --webpack` (via `npm run build:webpack`; default `npm run build` uses plain `next build`)
   - Turbopack available via `next dev --turbopack` but NOT recommended (crashes)
   - HMR is slower (~500-800ms) but stable
   - Webpack filesystem cache enabled (gzip, 7-day TTL)
@@ -27,7 +27,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | `.\cleanup.ps1` | **Standalone cleanup** — kill zombies, free port, clear cache |
 | `npm run dev` | **Fast** — predev hook auto-kills orphans, then starts Webpack |
 | `npm run fresh` | **Nuke & rebuild** — kill + clean + db:sync + dev |
-| `npm run build` | **Production build** — Webpack only |
+| `npm run build` | **Production build** — plain `next build`, no `--webpack` |
+| `npm run build:webpack` | **Local build** — `next build --webpack` (not for Vercel) |
 
 ## Optimization Details
 
@@ -143,7 +144,7 @@ If auth issues (redirect loops, blank admin):
   - `DATABASE_URL` — Neon connection string
   - `NEXTAUTH_SECRET` — generate a secure random string
   - `NEXTAUTH_URL` — your Vercel deployment URL
-- Build command: `npm run build` (Webpack, via `next build --webpack`)
+- Build command: `npm run build` (plain `next build` — `--webpack` flag not supported on Vercel's Next.js 15.3.0)
 
 # AI Assistant System (Redesigned Jun 2026)
 - New Prisma models: `Package`, `KnowledgeItem`, `Inquiry`
