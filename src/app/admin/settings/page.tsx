@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Save, RefreshCw, AlertTriangle, Globe, Palette,
-  SearchIcon, Code, Shield, Smartphone, User, Lock,
-  Key, CheckCircle, X, Eye, EyeOff, Type, ImageUp,
+  SearchIcon, Code, Shield, User, Lock,
+  Key, CheckCircle, Eye, EyeOff, Type, ImageUp,
   Trash2, Link
 } from "lucide-react";
 import { toast } from "sonner";
@@ -15,8 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, Textarea } from "@/components/ui/input";
 import { PageHeader } from "@/components/admin/shared/PageHeader";
-import { cn } from "@/lib/utils";
-
 const fontCombos = [
   {
     id: "elegant",
@@ -783,12 +781,3 @@ export default function AdminSettings() {
   );
 }
 
-function LoadingSkeleton() {
-  return (
-    <div className="space-y-6 p-6">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="h-32 rounded-2xl bg-white/[0.02] animate-pulse shimmer-overlay" />
-      ))}
-    </div>
-  );
-}

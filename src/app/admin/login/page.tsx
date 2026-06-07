@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, LogIn, Lock, Shield, KeyRound, ArrowLeft, Mail } from "lucide-react";
+import { Eye, EyeOff, LogIn, Shield, KeyRound, ArrowLeft, Mail } from "lucide-react";
 import Link from "next/link";
 
 function LoginForm() {

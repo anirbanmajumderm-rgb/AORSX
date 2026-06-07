@@ -4,9 +4,9 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  BrainCircuit, MessageSquare, Database, Settings,
+  MessageSquare, Database,
   Package, BookOpen, Users, Key, ArrowRight,
-  FileJson, CheckCircle, RefreshCw, Plus
+  CheckCircle, RefreshCw, Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

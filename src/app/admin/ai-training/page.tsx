@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Save, Send, Bot, X, RefreshCw, Settings, MessageSquare } from "lucide-react";
+import { Save, Send, Bot, X, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +13,7 @@ const tones = [
 ];
 
 export default function AITrainingPage() {
-  const [config, setConfig] = useState<any>(null);
+  const [, setConfig] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 

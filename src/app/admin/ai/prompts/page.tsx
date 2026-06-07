@@ -11,7 +11,6 @@ import { Input, Textarea } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/admin/shared/PageHeader";
 import { useToast } from "@/components/ui/Toast";
-import { cn } from "@/lib/utils";
 
 export default function AIPromptsPage() {
   const { data: session, status: sessionStatus } = useSession();

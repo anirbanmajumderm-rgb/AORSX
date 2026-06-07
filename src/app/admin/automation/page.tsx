@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import {
   Zap, Database, Globe, Mail, Trash2, Brain,
   FileText, Clock, Play, Pause, Activity,
-  RefreshCw, AlertCircle, CheckCircle2
+  RefreshCw, CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

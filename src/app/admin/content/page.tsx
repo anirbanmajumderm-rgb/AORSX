@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, Plus, Trash2, GripVertical, Eye, Settings, Sparkles, RefreshCw } from "lucide-react";
+import { Save, Plus, Trash2, GripVertical, Eye, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +35,7 @@ const defaultSettings: Record<string, string> = {
 };
 
 export default function ContentPage() {
-  const [content, setContent] = useState<SiteContent | null>(null);
+  const [, setContent] = useState<SiteContent | null>(null);
   const [settings, setSettings] = useState<Record<string, string>>(defaultSettings);
   const [services, setServices] = useState<any[]>([]);
   const [whyChooseMe, setWhyChooseMe] = useState<any[]>([]);

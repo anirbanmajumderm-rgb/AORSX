@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { successResponse, errorResponse, serverErrorResponse, getClientIp, withRateLimit } from "@/lib/api-utils";
+import { successResponse, errorResponse, serverErrorResponse, withRateLimit } from "@/lib/api-utils";
 
 export async function GET(request: NextRequest) {
   const rateLimitError = await withRateLimit(request, "2fa/status");

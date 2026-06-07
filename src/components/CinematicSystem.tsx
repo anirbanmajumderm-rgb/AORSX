@@ -186,7 +186,6 @@ interface CineLettersProps {
   letterDelay?: number;
   stagger?: number;
   as?: "span" | "h1" | "h2" | "h3" | "h4" | "p";
-  once?: boolean;
 }
 
 export function CineLetters({
@@ -196,7 +195,6 @@ export function CineLetters({
   letterDelay = 0.06,
   stagger = 0.04,
   as: Tag = "span",
-  once = true,
 }: CineLettersProps) {
   const [started, setStarted] = useState(false);
 

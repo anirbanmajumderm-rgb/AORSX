@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Save, RefreshCw, AlertTriangle, Globe, Building2,
-  Palette, BarChart3, Database, Eye, Sparkles,
-  Smartphone, Shield, CheckCircle, XCircle, Users,
+  Palette, BarChart3, Database, Eye,
+  CheckCircle, XCircle, Users,
   BrainCircuit, FileText, HelpCircle, MessageSquare,
-  Zap, Activity, Star, Cpu, Laptop, Code,
-  TrendingUp, Clock, Mail, Phone, MapPin,
-  BookOpen, Target, Heart, Settings as SettingsIcon,
+  Zap, Activity, Star,
+  Clock, Mail, Phone, MapPin,
+  BookOpen, Target,
   ImageUp, Trash2, Link as LinkIcon
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";

@@ -79,11 +79,6 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-const fontCombos: Record<string, { body: string; heading: string; mono: string }> = {
-  elegant: { body: "var(--font-poppins)", heading: "var(--font-poppins)", mono: "var(--font-jetbrains)" },
-  modern: { body: "var(--font-inter)", heading: "var(--font-space)", mono: "var(--font-jetbrains)" },
-};
-
 export default async function RootLayout({
   children,
 }: Readonly<{

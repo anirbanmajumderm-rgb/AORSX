@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Edit3, Trash2, Save, X, Eye, EyeOff, GripVertical, RefreshCw, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -28,8 +28,6 @@ interface TeamMember {
 
 function SortableCard({
   member,
-  index,
-  total,
   editingId,
   editingForm,
   saving,
@@ -38,14 +36,11 @@ function SortableCard({
   onCancelEdit,
   onDeleteClick,
   onToggleActive,
-  onMove,
   onFormChange,
   uploading,
   onPhotoUpload,
 }: {
   member: TeamMember;
-  index: number;
-  total: number;
   editingId: number | null;
   editingForm: any;
   saving: boolean;
@@ -55,7 +50,6 @@ function SortableCard({
   onCancelEdit: () => void;
   onDeleteClick: (id: number) => void;
   onToggleActive: (m: TeamMember) => void;
-  onMove: (index: number, dir: "up" | "down") => void;
   onFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onPhotoUpload: (file: File) => Promise<void>;
 }) {
@@ -337,14 +331,7 @@ export default function TeamPage() {
     }
   }
 
-  async function moveMember(index: number, direction: "up" | "down") {
-    const newIndex = direction === "up" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= members.length) return;
-    const updated = [...members];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
-    setMembers(updated);
-    await saveOrder(updated);
-  }
+
 
   async function saveOrder(ordered: TeamMember[]) {
     ordered.forEach((m, i) => { m.displayOrder = i; });
@@ -503,12 +490,10 @@ export default function TeamPage() {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={members.map((m) => m.id)} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {members.map((member, index) => (
+            {members.map((member) => (
               <SortableCard
                 key={member.id}
                 member={member}
-                index={index}
-                total={members.length}
                 editingId={editingId}
                 editingForm={form}
                 saving={saving}
@@ -517,7 +502,6 @@ export default function TeamPage() {
                 onCancelEdit={() => setEditingId(null)}
                 onDeleteClick={setDeleteId}
                 onToggleActive={toggleActive}
-                onMove={moveMember}
                 onFormChange={handleFormChange}
                 uploading={uploading}
                 onPhotoUpload={handlePhotoUpload}

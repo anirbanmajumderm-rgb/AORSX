@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Users, MessageSquare, HelpCircle, Eye, Activity, Bell, TrendingUp, Building2, Edit3, Check, X } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { cn } from "@/lib/utils";
 
 interface DashboardData {
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         if (companyData.success) {
           setCompanyName(companyData.data?.name || "");
         }
-      } catch (err) {
+      } catch {
         setError("Failed to load dashboard data");
       } finally {
         setLoading(false);

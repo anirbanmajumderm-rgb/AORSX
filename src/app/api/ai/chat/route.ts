@@ -396,7 +396,6 @@ function buildPricingResponse(db: DbContext, msg: string, isBn: boolean): string
   const mentionService = tokens.length > 0 && db.services.some((s: DbContext["services"][0]) => computeTfScore(tokens, s.title) > 0);
 
   if (mentionService) {
-    const pkgs = db.packages;
     const relLines: string[] = [];
     for (const svc of db.services) {
       const svcScore = computeTfScore(tokens, svc.title);
@@ -603,7 +602,6 @@ function buildInquiryResponse(
 ): { response: string; create: boolean; data: Record<string, unknown> | null } {
   const hasName = !!collected.name;
   const hasEmail = !!collected.email;
-  const hasPhone = !!collected.phone;
   const hasReqs = !!collected.requirements;
 
   const collectedData: Record<string, unknown> = {};

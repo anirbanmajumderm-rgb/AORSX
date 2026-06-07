@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma, checkDatabaseHealth } from "@/lib/prisma";
-import { logger } from "@/lib/app-logger";
-
 const APP_VERSION = "2.0.0";
-const SERVER_START_TIME = Date.now();
 
 export async function GET() {
   const start = Date.now();
@@ -61,7 +58,7 @@ export async function GET() {
         if (status.status === "healthy") status.status = "degraded";
       }
     }
-  } catch (err) {
+  } catch {
     status.database = { status: "error" };
     status.status = "unhealthy";
   }

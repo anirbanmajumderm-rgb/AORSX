@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Plus, Edit2, Trash2, Package, X, Save, DollarSign, ArrowUpDown } from "lucide-react";
+import { Plus, Edit2, Trash2, Package, X, Save } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, Textarea } from "@/components/ui/input";

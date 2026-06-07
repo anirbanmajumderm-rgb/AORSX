@@ -1,8 +1,5 @@
 import { prisma } from "./prisma";
 
-const DEFAULT_WINDOW_MS = 60 * 1000;
-const DEFAULT_MAX_REQUESTS = 60;
-
 const LIMITS: Record<string, { window: number; max: number }> = {
   default: { window: 60 * 1000, max: 60 },
   login: { window: 60 * 1000, max: 5 },
@@ -29,8 +26,6 @@ export async function checkRateLimit(
 
   try {
     const now = new Date();
-    const windowStart = new Date(now.getTime() - config.window);
-
     await prisma.rateLimit.deleteMany({
       where: { expiresAt: { lt: now } },
     });

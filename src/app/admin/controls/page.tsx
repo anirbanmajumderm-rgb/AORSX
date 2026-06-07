@@ -4,16 +4,12 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  SlidersHorizontal, Wifi, WifiOff, Globe, Lock, Unlock,
-  Timer, Cloud, CloudOff, Server, Cpu, Eye, EyeOff,
-  Monitor, UserCheck, Activity, Save, RefreshCw
+  Lock, Cpu, Eye,
+  Monitor, Activity, Save, RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/admin/shared/PageHeader";
-import { SectionHeader } from "@/components/admin/shared/SectionHeader";
-import { StatusBadge } from "@/components/admin/shared/StatusBadge";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 

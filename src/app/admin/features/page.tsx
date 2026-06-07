@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ToggleLeft, RefreshCw, Clock, User, History } from "lucide-react";
+import { ToggleLeft, RefreshCw, User, History } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 

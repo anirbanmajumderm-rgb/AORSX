@@ -2,27 +2,16 @@
 
 import { useState, useEffect, startTransition } from "react";
 import { useSession } from "next-auth/react";
-import { Search, Mail, Phone, Calendar, DollarSign, Briefcase, Clock, MessageSquare, ChevronDown, ExternalLink } from "lucide-react";
+import { Search, Mail, Phone, Calendar, DollarSign, Briefcase, Clock, MessageSquare, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/admin/shared/PageHeader";
 import { StatusBadge } from "@/components/admin/shared/StatusBadge";
 import { EmptyState } from "@/components/admin/shared/EmptyState";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "negotiation", "won", "lost"] as const;
-const STATUS_COLORS: Record<string, "info" | "warning" | "success" | "error" | "default"> = {
-  new: "info",
-  contacted: "warning",
-  qualified: "info",
-  proposal: "warning",
-  negotiation: "warning",
-  won: "success",
-  lost: "error",
-};
-
 export default function InquiriesPage() {
   const { data: session, status: sessionStatus } = useSession();
   const [inquiries, setInquiries] = useState<any[]>([]);

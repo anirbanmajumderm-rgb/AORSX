@@ -7,9 +7,7 @@ import { NextResponse } from "next/server";
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
 const BACKUP_CODE_COUNT = 10;
-const BACKUP_CODE_LENGTH = 10;
 const TEMP_TOKEN_EXPIRY = 5 * 60 * 1000;
 
 function getEncryptionKey(): Buffer {

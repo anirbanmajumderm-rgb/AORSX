@@ -3,21 +3,16 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import {
-  Bot, Cpu, Plus, Search, Edit3, Trash2,
-  Settings, Activity, Clock, Key, FileJson
+  Settings, Key, FileJson
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/admin/shared/PageHeader";
-import { SearchInput } from "@/components/admin/shared/SearchInput";
-import { EmptyState } from "@/components/admin/shared/EmptyState";
 import { useToast } from "@/components/ui/Toast";
-import { cn } from "@/lib/utils";
 
 export default function AIModelsPage() {
   const { data: session, status: sessionStatus } = useSession();
   const { showToast } = useToast();
-  const [search, setSearch] = useState("");
   const [apiKeys, setApiKeys] = useState<any[]>([]);
   const [aiResponses, setAiResponses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
