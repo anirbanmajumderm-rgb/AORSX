@@ -6,16 +6,22 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { Toaster } from "sonner";
 import "./admin.css";
 
+let cachedAdminMetadata: { title: string; robots: { index: boolean; follow: boolean } } | null = null;
+
 export async function generateMetadata() {
+  if (cachedAdminMetadata) return cachedAdminMetadata;
   try {
     const { prisma } = await import("@/lib/prisma");
-    const setting = await prisma.setting.findUnique({ where: { key: "site_name" } });
-    const company = await prisma.company.findFirst();
+    const [setting, company] = await Promise.all([
+      prisma.setting.findUnique({ where: { key: "site_name" } }),
+      prisma.company.findFirst(),
+    ]);
     const siteName = setting?.value || company?.name || "Admin";
-    return {
+    cachedAdminMetadata = {
       title: `${siteName} | Admin`,
       robots: { index: false, follow: false },
     };
+    return cachedAdminMetadata;
   } catch {
     return {
       title: "Admin Dashboard",

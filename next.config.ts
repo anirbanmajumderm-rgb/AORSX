@@ -13,8 +13,6 @@ const nextConfig: NextConfig = {
     tsconfigPath: "tsconfig.json",
   },
 
-  turbopack: {},
-
   webpack: (config, { dev, isServer }) => {
     if (dev) {
       config.parallelism = 2;
@@ -33,11 +31,7 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    serverMinification: true,
-  },
-
-  outputFileTracingIncludes: {
-    "/api/**": ["./node_modules/**/*"],
+    serverMinification: false,
   },
 
   onDemandEntries: {
@@ -46,7 +40,7 @@ const nextConfig: NextConfig = {
   },
 
   poweredByHeader: false,
-  reactStrictMode: true,
+  reactStrictMode: process.env.NODE_ENV === "development",
 };
 
 export default nextConfig;
