@@ -24,4 +24,4 @@ Write-Host "[5/5] Starting Next.js dev server (Webpack)..."
 $env:NODE_OPTIONS = "--max-old-space-size=2048"
 $env:NEXT_TELEMETRY_DISABLED = 1
 $env:NODE_ENV = "development"
-npx.cmd next dev --webpack --port 3000
+npx.cmd next dev --port 3000

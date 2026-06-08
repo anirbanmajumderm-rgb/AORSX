@@ -72,7 +72,6 @@ function Scene3D() {
   const ring3Ref = useRef<THREE.Mesh>(null);
   const particlesRef = useRef<THREE.Points>(null);
   const groupRef = useRef<THREE.Group>(null);
-  const materialRef = useRef<React.ComponentRef<typeof MeshDistortMaterial>>(null);
   const timeRef = useRef(0);
 
   const particleCount = 1000;
@@ -97,11 +96,12 @@ function Scene3D() {
       sphereRef.current.rotation.y = t * 0.25;
     }
 
-    if (materialRef.current) {
+    if (sphereRef.current) {
+      const mat = sphereRef.current.material as any;
       const c1 = new THREE.Color().setHSL(0.07 + Math.sin(t * 0.4) * 0.04, 1, 0.5);
       const c2 = new THREE.Color().setHSL(0.53 + Math.sin(t * 0.3 + 1) * 0.05, 1, 0.5);
-      materialRef.current.color.lerp(c1, 0.02);
-      materialRef.current.emissive.lerp(c2, 0.02);
+      if (typeof mat.color?.lerp === "function") mat.color.lerp(c1, 0.02);
+      if (typeof mat.emissive?.lerp === "function") mat.emissive.lerp(c2, 0.02);
     }
 
     if (ring1Ref.current) {
@@ -132,10 +132,9 @@ function Scene3D() {
       <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.25}>
         <mesh ref={sphereRef}>
           <sphereGeometry args={[0.7, 64, 64]} />
-          <MeshDistortMaterial
-            ref={materialRef}
-            color="#FF6B00"
-            emissive="#00E5FF"
+            <MeshDistortMaterial
+              color="#FF6B00"
+              emissive="#00E5FF"
             emissiveIntensity={0.5}
             roughness={0.15}
             metalness={0.85}

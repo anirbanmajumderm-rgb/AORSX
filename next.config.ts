@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     tsconfigPath: "tsconfig.json",
   },
 
+  transpilePackages: ["@react-three/fiber", "@react-three/drei", "three"],
+
   webpack: (config, { dev, isServer }) => {
     if (dev) {
       config.parallelism = 2;
@@ -27,6 +29,11 @@ const nextConfig: NextConfig = {
 
     if (isServer) {
       config.externals = [...(config.externals || []), "bcryptjs"];
+    } else {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@react-three/fiber": require.resolve("@react-three/fiber/dist/react-three-fiber.cjs.js"),
+      };
     }
 
     return config;

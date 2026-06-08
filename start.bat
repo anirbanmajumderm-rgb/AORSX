@@ -62,7 +62,7 @@ set NEXT_TELEMETRY_DISABLED=1
 set NODE_ENV=development
 
 :: Start with Webpack (stable) — NOT Turbopack
-npx.cmd next dev --webpack --port 3000
+npx.cmd next dev --port 3000
 
 :: If server exits unexpectedly
 if %errorlevel% neq 0 (
