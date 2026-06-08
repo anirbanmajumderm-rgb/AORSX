@@ -50,20 +50,31 @@ export async function generateMetadata(): Promise<Metadata> {
     const siteName = meta.site_name || company?.name || "A-ORSX";
     const description = meta.meta_description || "A-ORSX — AI SaaS Agency.";
     const title = meta.meta_title || siteName;
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXTAUTH_URL || "http://localhost:3000";
+
     cachedMetadata = {
+      metadataBase: new URL(baseUrl),
       title,
       description,
+      icons: {
+        icon: company?.favicon || "/favicon.svg",
+        shortcut: "/favicon.svg",
+      },
       openGraph: {
         title,
         description,
         siteName,
         type: "website",
         locale: "en_US",
+        images: company?.logo ? [{ url: company.logo }] : [],
       },
       twitter: {
         card: "summary_large_image",
         title,
         description,
+        images: company?.logo ? [company.logo] : [],
       },
       robots: {
         index: true,

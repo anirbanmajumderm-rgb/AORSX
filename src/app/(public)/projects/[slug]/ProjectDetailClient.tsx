@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, GitBranch } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function ProjectDetailClient({ project }: Props) {
+  const [imageError, setImageError] = useState(false);
   const techStack = project.technologies
     ? project.technologies.split(",").map((t) => t.trim()).filter(Boolean)
     : [];
@@ -53,7 +55,7 @@ export function ProjectDetailClient({ project }: Props) {
         >
           {/* Hero Image */}
           <div className="relative w-full aspect-video rounded-[var(--radius-card)] overflow-hidden mb-10">
-            {project.image ? (
+            {project.image && !imageError ? (
               <Image
                 src={project.image}
                 alt={project.title}
@@ -61,6 +63,7 @@ export function ProjectDetailClient({ project }: Props) {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                 className="object-cover"
                 priority
+                onError={() => setImageError(true)}
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-cyan/10 via-orange/10 to-cyan/10" />

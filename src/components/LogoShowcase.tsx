@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
@@ -26,8 +27,9 @@ const itemVariants = {
 export function LogoShowcase() {
   const { data } = useSiteData();
   const company = data?.company;
+  const [logoError, setLogoError] = useState(false);
 
-  if (!company?.logo) return null;
+  if (!company?.logo || logoError) return null;
 
   return (
     <section className="relative py-20 md:py-28 overflow-hidden">
@@ -81,6 +83,7 @@ export function LogoShowcase() {
                   style={{
                     filter: "drop-shadow(0 0 30px rgba(255,107,0,0.2))",
                   }}
+                  onError={() => setLogoError(true)}
                 />
               </motion.div>
 
