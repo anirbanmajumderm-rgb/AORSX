@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins, JetBrains_Mono } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
-
-const AnalyticsTracker = dynamic(() => import("@/components/AnalyticsTracker").then((m) => m.AnalyticsTracker), { ssr: false });
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 
 const poppins = Poppins({
   subsets: ["latin"],

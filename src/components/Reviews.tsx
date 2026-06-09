@@ -25,12 +25,15 @@ export const Reviews = memo(function Reviews() {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const reviewsLengthRef = useRef(reviews.length);
+
+  reviewsLengthRef.current = reviews.length;
 
   useEffect(() => {
     if (reviews.length <= 1) return;
     intervalRef.current = setInterval(() => {
       setDirection(1);
-      setCurrent((prev) => (prev + 1) % reviews.length);
+      setCurrent((prev) => (prev + 1) % reviewsLengthRef.current);
     }, 5000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [reviews.length]);
@@ -44,12 +47,12 @@ export const Reviews = memo(function Reviews() {
 
   const goNext = () => {
     setDirection(1);
-    setCurrent((prev) => (prev + 1) % reviews.length);
+    setCurrent((prev) => (prev + 1) % reviewsLengthRef.current);
   };
 
   const goPrev = () => {
     setDirection(-1);
-    setCurrent((prev) => (prev - 1 + reviews.length) % reviews.length);
+    setCurrent((prev) => (prev - 1 + reviewsLengthRef.current) % reviewsLengthRef.current);
   };
 
   if (reviews.length === 0) return null;

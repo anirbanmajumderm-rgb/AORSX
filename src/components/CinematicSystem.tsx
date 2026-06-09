@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode, memo } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 function ScrollProgressBar() {
@@ -23,13 +23,20 @@ function ScrollProgressBar() {
   );
 }
 
-function MouseGlow() {
+const MouseGlow = memo(function MouseGlow() {
   const glowRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const targetRef = useRef({ x: 0, y: 0 });
   const currentRef = useRef({ x: 0, y: 0 });
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window);
+  }, []);
+
+  useEffect(() => {
+    if (isTouchDevice) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       targetRef.current.x = e.clientX;
       targetRef.current.y = e.clientY;
@@ -52,9 +59,7 @@ function MouseGlow() {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(rafRef.current);
     };
-  }, []);
-
-  const isTouchDevice = typeof window !== "undefined" && "ontouchstart" in window;
+  }, [isTouchDevice]);
 
   if (isTouchDevice) return null;
 
@@ -68,7 +73,7 @@ function MouseGlow() {
       }}
     />
   );
-}
+});
 
 function SectionDivider() {
   return (

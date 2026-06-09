@@ -17,22 +17,19 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("admin-theme") as Theme | null;
-        if (stored === "light" || stored === "dark") return stored;
-      } catch { /* ignore */ }
-    }
-    return "dark";
-  });
+  const [theme, setThemeState] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    let stored: Theme = "dark";
+    try {
+      const s = localStorage.getItem("admin-theme") as Theme | null;
+      if (s === "light" || s === "dark") stored = s;
+    } catch { /* ignore */ }
+    setThemeState(stored);
     setMounted(true);
-    document.documentElement.classList.toggle("light", theme === "light");
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.classList.toggle("light", stored === "light");
+    document.documentElement.classList.toggle("dark", stored === "dark");
   }, []);
 
   const setTheme = (t: Theme) => {

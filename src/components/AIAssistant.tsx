@@ -229,7 +229,7 @@ export function AIAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[360px] sm:w-[400px]"
+            className="absolute bottom-20 right-0 w-[360px] sm:w-[400px] max-w-[calc(100vw-2rem)]"
           >
             <div className="relative">
               <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange/40 via-cyan/40 to-cyan/40 opacity-40 blur-sm" />

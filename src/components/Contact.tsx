@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -59,22 +59,25 @@ const Contact = memo(function Contact() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const formDataRef = useRef(formData);
+  formDataRef.current = formData;
   if (!isEnabled) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    const currentData = formDataRef.current;
     setLoading(true);
     setSubmitError(null);
-    trackInteraction("contact_submission", formData.subject.slice(0, 100));
+    trackInteraction("contact_submission", currentData.subject.slice(0, 100));
     try {
       const res = await fetch("/api/contact-submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(currentData),
       });
       const json = await res.json();
       if (json.success) {
@@ -87,7 +90,7 @@ const Contact = memo(function Contact() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [trackInteraction]);
 
   return (
     <section id="contact" className="relative py-20 md:py-30 overflow-hidden">

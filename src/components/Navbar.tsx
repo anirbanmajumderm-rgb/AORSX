@@ -24,6 +24,8 @@ export const Navbar = memo(function Navbar() {
   const [logoError, setLogoError] = useState(false);
   const scrollTimerRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
   const sectionsRef = useRef<Map<string, HTMLElement>>(new Map());
+  const activeSectionRef = useRef("home");
+  const scrolledRef = useRef(false);
 
   useEffect(() => {
     if (company?.logo) setLogoError(false);
@@ -44,13 +46,20 @@ export const Navbar = memo(function Navbar() {
       if (scrollTimerRef.current) return;
       scrollTimerRef.current = requestAnimationFrame(() => {
         scrollTimerRef.current = null;
-        setScrolled(window.scrollY > 50);
+        const isScrolled = window.scrollY > 50;
+        if (isScrolled !== scrolledRef.current) {
+          scrolledRef.current = isScrolled;
+          setScrolled(isScrolled);
+        }
         for (let i = navItems.length - 1; i >= 0; i--) {
           const el = sectionsRef.current.get(navItems[i]);
           if (el) {
             const rect = el.getBoundingClientRect();
             if (rect.top <= 150) {
-              setActiveSection(navItems[i]);
+              if (navItems[i] !== activeSectionRef.current) {
+                activeSectionRef.current = navItems[i];
+                setActiveSection(navItems[i]);
+              }
               break;
             }
           }

@@ -21,19 +21,16 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Language>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored === "en" || stored === "bn") return stored;
-      } catch { /* ignore */ }
-    }
-    return defaultLang as Language;
-  });
+  const [lang, setLangState] = useState<Language>(defaultLang as Language);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === "en" || stored === "bn") {
+        setLangState(stored);
+      }
+    } catch { /* ignore */ }
     setHydrated(true);
   }, []);
 

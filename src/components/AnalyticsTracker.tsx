@@ -14,6 +14,7 @@ export function AnalyticsTracker() {
   }, [pathname, trackPageView]);
 
   useEffect(() => {
+    const MAX_TRACKED = 500;
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const interactive = target.closest<HTMLElement>(
@@ -27,6 +28,10 @@ export function AnalyticsTracker() {
 
       const key = `${tag}:${text}:${href}`;
       if (trackedInteractions.current.has(key)) return;
+      if (trackedInteractions.current.size >= MAX_TRACKED) {
+        const first = trackedInteractions.current.values().next().value;
+        if (first) trackedInteractions.current.delete(first);
+      }
       trackedInteractions.current.add(key);
 
       const type = tag === "button" || tag === "a" ? "click" : "form_interaction";

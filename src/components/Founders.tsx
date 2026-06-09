@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Mail, Phone, Globe, AtSign, GitBranch } from "lucide-react";
@@ -13,6 +14,8 @@ function getInitials(name: string) {
 }
 
 function PersonCard({ person, index }: { person: any; index: number }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -34,7 +37,7 @@ function PersonCard({ person, index }: { person: any; index: number }) {
         {/* Avatar */}
         <div className="flex items-center gap-5 mb-6">
           <div className="relative">
-            {person.photo ? (
+            {person.photo && !imgError ? (
               <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan/30 shadow-lg shadow-cyan/20 relative">
                 <Image
                   src={person.photo}
@@ -42,21 +45,7 @@ function PersonCard({ person, index }: { person: any; index: number }) {
                   fill
                   sizes="80px"
                   className="object-cover"
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    target.style.display = "none";
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.classList.add(
-                        "bg-gradient-to-br", "from-orange", "via-cyan", "to-cyan",
-                        "flex", "items-center", "justify-center"
-                      );
-                      const span = document.createElement("span");
-                      span.className = "text-3xl font-bold font-heading text-white";
-                      span.textContent = getInitials(person.name);
-                      parent.appendChild(span);
-                    }
-                  }}
+                  onError={() => setImgError(true)}
                 />
               </div>
             ) : (

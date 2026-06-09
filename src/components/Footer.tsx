@@ -204,7 +204,7 @@ const Footer = memo(function Footer() {
           className="flex flex-col sm:flex-row items-center justify-between gap-4"
         >
           <div className="flex items-center gap-2 text-xs text-white/40">
-            <span>&copy; {new Date().getFullYear()} <span className="brand-text-solid">{company?.name || data?.settings?.site_name || "Portfolio"}</span></span>
+            <span>&copy; 2026 <span className="brand-text-solid">{company?.name || data?.settings?.site_name || "Portfolio"}</span></span>
             <span className="w-1 h-1 rounded-full bg-[#00E5FF]" />
             <span>{t("footer.rights")}</span>
           </div>

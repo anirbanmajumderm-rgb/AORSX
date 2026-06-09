@@ -220,9 +220,13 @@ function isWebGLAvailable() {
 }
 
 export default function Hero3DScene() {
-  const [webglOk] = useState(isWebGLAvailable);
+  const [webglOk, setWebglOk] = useState<boolean | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setWebglOk(isWebGLAvailable());
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -240,11 +244,22 @@ export default function Hero3DScene() {
     return () => observer.disconnect();
   }, []);
 
-  const lowEnd = useMemo(() => isLowEndDevice(), []);
+  const lowEnd = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return isLowEndDevice();
+  }, []);
+
+  if (webglOk === null) {
+    return (
+      <div ref={containerRef} className="w-full h-full min-h-[550px] relative flex items-center justify-center">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange/10 to-cyan/10 border border-soft-border" />
+      </div>
+    );
+  }
 
   if (!webglOk) {
     return (
-      <div className="w-full h-full min-h-[550px] relative flex items-center justify-center">
+      <div ref={containerRef} className="w-full h-full min-h-[550px] relative flex items-center justify-center">
         <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange/10 to-cyan/10 border border-soft-border" />
       </div>
     );
