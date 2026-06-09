@@ -7,7 +7,10 @@ export async function GET() {
   const authError = await requireAuth();
   if (authError) return authError;
   try {
-    const packages = await prisma.package.findMany({ orderBy: [{ sortOrder: "asc" }, { name: "asc" }] });
+    const packages = await prisma.package.findMany({
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      take: 100,
+    });
     return successResponse(packages);
   } catch (err) {
     return serverErrorResponse(err, "admin/packages");

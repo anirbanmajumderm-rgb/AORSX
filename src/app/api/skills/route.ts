@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     const skills = await prisma.skill.findMany({
       where: showAll ? undefined : { isActive: true },
       orderBy: [{ category: "asc" }, { order: "asc" }],
+      take: 200,
     });
     return successResponse(skills);
   } catch {

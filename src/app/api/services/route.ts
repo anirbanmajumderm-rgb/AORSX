@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     const services = await prisma.service.findMany({
       where: showAll ? undefined : { isActive: true },
       orderBy: { order: "asc" },
+      take: 100,
     });
     return successResponse(services);
   } catch {

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   if (rateLimitError) return rateLimitError;
 
   try {
-    const controls = await prisma.websiteControl.findMany({ orderBy: { category: "asc" } });
+    const controls = await prisma.websiteControl.findMany({ orderBy: { category: "asc" }, take: 100 });
     return successResponse(controls);
   } catch (err) {
     return serverErrorResponse(err, "admin/controls");

@@ -3,7 +3,7 @@ import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/app-logger";
 import { sendPasswordResetEmail } from "@/lib/email";
-import { getClientIp, withRateLimit } from "@/lib/api-utils";
+import { withRateLimit } from "@/lib/api-utils";
 
 export const dynamic = "force-dynamic";
 

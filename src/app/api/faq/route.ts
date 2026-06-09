@@ -7,6 +7,7 @@ export async function GET() {
     const faq = await prisma.fAQ.findMany({
       where: { isActive: true },
       orderBy: { order: "asc" },
+      take: 100,
     });
     return successResponse(faq);
   } catch {

@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const roles = await prisma.role.findMany({
       include: { _count: { select: { users: true } } },
       orderBy: { createdAt: "asc" },
+      take: 50,
     });
     return successResponse(roles);
   } catch (err) {

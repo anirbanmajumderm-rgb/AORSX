@@ -46,7 +46,7 @@ export const Navbar = memo(function Navbar() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [pathname]);
+  }, []);
 
   if (pathname.startsWith("/admin")) return null;
   const siteInitial = siteName[0];

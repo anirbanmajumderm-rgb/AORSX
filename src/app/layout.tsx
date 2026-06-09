@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Poppins, JetBrains_Mono, Inter, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Poppins, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 
@@ -7,7 +7,7 @@ const AnalyticsTracker = dynamic(() => import("@/components/AnalyticsTracker").t
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
   preload: false,
@@ -21,32 +21,23 @@ const jetbrainsMono = JetBrains_Mono({
   preload: false,
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-inter",
-  display: "swap",
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-space",
-  display: "swap",
-  preload: false,
-});
-
-let cachedMetadata: Metadata | null = null;
+let cachedMetadata: { data: Metadata; ts: number } | null = null;
+const METADATA_CACHE_TTL = 60_000;
 
 export async function generateMetadata(): Promise<Metadata> {
-  if (cachedMetadata) return cachedMetadata;
+  if (cachedMetadata && Date.now() - cachedMetadata.ts < METADATA_CACHE_TTL) return cachedMetadata.data;
   try {
     const { prisma } = await import("@/lib/prisma");
     const [settings, company] = await Promise.all([
       prisma.setting.findMany({
         where: { key: { in: ["meta_title", "meta_description", "meta_keywords", "site_name"] } },
       }),
-      prisma.company.findFirst(),
+      prisma.company.findFirst({ select: { name: true, favicon: true, logo: true } }),
     ]);
     const meta: Record<string, string> = {};
     for (const s of settings) meta[s.key] = s.value || "";
@@ -57,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-    cachedMetadata = {
+    const data: Metadata = {
       metadataBase: new URL(baseUrl),
       title,
       description,
@@ -84,7 +75,8 @@ export async function generateMetadata(): Promise<Metadata> {
         follow: true,
       },
     };
-    return cachedMetadata;
+    cachedMetadata = { data, ts: Date.now() };
+    return data;
   } catch {
     return {
       title: "A-ORSX",
@@ -101,13 +93,13 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${jetbrainsMono.variable} ${inter.variable} ${spaceGrotesk.variable} scroll-smooth`}
+      className={`${poppins.variable} ${jetbrainsMono.variable} scroll-smooth`}
       style={{
-        "--font-body": "var(--font-inter)",
+        "--font-body": "var(--font-poppins)",
         "--font-heading-custom": "var(--font-poppins)",
         "--font-mono-custom": "var(--font-jetbrains)",
-        "--font-brand": "var(--font-space)",
-        "--font-brand-alt": "var(--font-inter)",
+        "--font-brand": "var(--font-poppins)",
+        "--font-brand-alt": "var(--font-poppins)",
       } as React.CSSProperties}
     >
       <body className="relative min-h-screen bg-primary-bg text-main-text antialiased overflow-x-hidden">

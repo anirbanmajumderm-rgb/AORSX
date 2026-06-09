@@ -1,18 +1,25 @@
 import { Hero } from "@/components/Hero";
-import { LogoShowcase } from "@/components/LogoShowcase";
-import { About } from "@/components/About";
-import { Founders } from "@/components/Founders";
-import { Stats } from "@/components/Stats";
-import { Services } from "@/components/Services";
-import { Skills } from "@/components/Skills";
-import { Projects } from "@/components/Projects";
-import { WhyChooseMe } from "@/components/WhyChooseMe";
-import { Reviews } from "@/components/Reviews";
-import { FAQ } from "@/components/FAQ";
-import { Contact } from "@/components/Contact";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { CineSection, SectionDivider } from "@/components/CinematicSystem";
 
-export const revalidate = 3600;
+const LogoShowcase = dynamic(() => import("@/components/LogoShowcase").then((m) => ({ default: m.LogoShowcase })));
+const About = dynamic(() => import("@/components/About").then((m) => ({ default: m.About })));
+const Founders = dynamic(() => import("@/components/Founders").then((m) => ({ default: m.Founders })));
+const Stats = dynamic(() => import("@/components/Stats").then((m) => ({ default: m.Stats })));
+const Services = dynamic(() => import("@/components/Services").then((m) => ({ default: m.Services })));
+const Skills = dynamic(() => import("@/components/Skills").then((m) => ({ default: m.Skills })));
+const Projects = dynamic(() => import("@/components/Projects").then((m) => ({ default: m.Projects })));
+const WhyChooseMe = dynamic(() => import("@/components/WhyChooseMe").then((m) => ({ default: m.WhyChooseMe })));
+const Reviews = dynamic(() => import("@/components/Reviews").then((m) => ({ default: m.Reviews })));
+const FAQ = dynamic(() => import("@/components/FAQ").then((m) => ({ default: m.FAQ })));
+const Contact = dynamic(() => import("@/components/Contact").then((m) => ({ default: m.Contact })));
+
+function SectionLoader() {
+  return <div className="h-64 w-full rounded-2xl bg-white/[0.02] animate-pulse" />;
+}
+
+export const revalidate = 86400;
 
 export default function Home() {
   return (
@@ -22,45 +29,65 @@ export default function Home() {
         <LogoShowcase />
       </CineSection>
       <SectionDivider />
-      <CineSection variant="slide-up" delay={0.1}>
-        <About />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-up" delay={0.1}>
+          <About />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-up" delay={0.1}>
-        <Founders />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-up" delay={0.1}>
+          <Founders />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="zoom-in" delay={0.1}>
-        <Stats />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="zoom-in" delay={0.1}>
+          <Stats />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-up" delay={0.1}>
-        <Services />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-up" delay={0.1}>
+          <Services />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-left" delay={0.1}>
-        <Skills />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-left" delay={0.1}>
+          <Skills />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-up" delay={0.1}>
-        <Projects />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-up" delay={0.1}>
+          <Projects />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-right" delay={0.1}>
-        <WhyChooseMe />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-right" delay={0.1}>
+          <WhyChooseMe />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-up" delay={0.1}>
-        <Reviews />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-up" delay={0.1}>
+          <Reviews />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="fade" delay={0.1}>
-        <FAQ />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="fade" delay={0.1}>
+          <FAQ />
+        </CineSection>
+      </Suspense>
       <SectionDivider />
-      <CineSection variant="slide-up" delay={0.1}>
-        <Contact />
-      </CineSection>
+      <Suspense fallback={<SectionLoader />}>
+        <CineSection variant="slide-up" delay={0.1}>
+          <Contact />
+        </CineSection>
+      </Suspense>
     </>
   );
 }

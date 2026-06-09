@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     const inquiries = await prisma.inquiry.findMany({
       where,
       orderBy: { createdAt: "desc" },
+      take: 100,
     });
     const counts = await prisma.inquiry.groupBy({
       by: ["status"],

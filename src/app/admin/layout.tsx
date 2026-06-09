@@ -1,28 +1,38 @@
 import { AuthProvider } from "@/components/admin/AuthProvider";
-import Sidebar from "@/components/admin/layout/Sidebar";
+import type { Viewport } from "next";
+import dynamic from "next/dynamic";
 import { AdminErrorBoundary } from "./error-boundary";
 import { NotificationProvider } from "@/contexts/notification-context";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Toaster } from "sonner";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import "./admin.css";
 
-let cachedAdminMetadata: { title: string; robots: { index: boolean; follow: boolean } } | null = null;
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
+const Sidebar = dynamic(() => import("@/components/admin/layout/Sidebar"), { ssr: true });
+
+let cachedAdminMeta: { data: { title: string; robots: { index: boolean; follow: boolean } }; ts: number } | null = null;
+const ADMIN_META_CACHE_TTL = 60_000;
 
 export async function generateMetadata() {
-  if (cachedAdminMetadata) return cachedAdminMetadata;
+  if (cachedAdminMeta && Date.now() - cachedAdminMeta.ts < ADMIN_META_CACHE_TTL) return cachedAdminMeta.data;
   try {
-    const { prisma } = await import("@/lib/prisma");
     const [setting, company] = await Promise.all([
-      prisma.setting.findUnique({ where: { key: "site_name" } }),
-      prisma.company.findFirst(),
+      prisma.setting.findUnique({ where: { key: "site_name" }, select: { value: true } }),
+      prisma.company.findFirst({ select: { name: true } }),
     ]);
     const siteName = setting?.value || company?.name || "Admin";
-    cachedAdminMetadata = {
+    const data = {
       title: `${siteName} | Admin`,
       robots: { index: false, follow: false },
     };
-    return cachedAdminMetadata;
+    cachedAdminMeta = { data, ts: Date.now() };
+    return data;
   } catch {
     return {
       title: "Admin Dashboard",
@@ -36,12 +46,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   let siteName = "Admin";
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const [setting, company] = await Promise.all([
-      prisma.setting.findUnique({ where: { key: "site_name" }, select: { value: true } }),
-      prisma.company.findFirst({ select: { name: true } }),
-    ]);
-    siteName = setting?.value || company?.name || "Admin";
+    if (cachedAdminMeta && Date.now() - cachedAdminMeta.ts < ADMIN_META_CACHE_TTL) {
+      const title = cachedAdminMeta.data.title;
+      siteName = title.replace(" | Admin", "");
+    } else {
+      const [setting, company] = await Promise.all([
+        prisma.setting.findUnique({ where: { key: "site_name" }, select: { value: true } }),
+        prisma.company.findFirst({ select: { name: true } }),
+      ]);
+      siteName = setting?.value || company?.name || "Admin";
+    }
   } catch {}
 
   if (!session?.user) {

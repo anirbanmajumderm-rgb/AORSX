@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trash2, CheckCircle, XCircle, Mail, RefreshCw, Star } from "lucide-react";
+import { Trash2, CheckCircle, XCircle, RefreshCw, Star } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ConfirmModal } from "@/components/admin/shared/ConfirmModal";

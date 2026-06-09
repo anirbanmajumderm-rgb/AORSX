@@ -21,9 +21,7 @@ export async function POST() {
     if (count > 0) {
       return successResponse({ message: "Feature flags already exist" });
     }
-    for (const flag of defaultFlags) {
-      await prisma.featureFlag.create({ data: flag });
-    }
+    await prisma.featureFlag.createMany({ data: defaultFlags, skipDuplicates: true });
     return successResponse({ message: `Seeded ${defaultFlags.length} feature flags` });
   } catch (err) {
     return serverErrorResponse(err, "admin/features/seed");

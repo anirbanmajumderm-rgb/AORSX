@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
   try {
     const workflows = await prisma.automation.findMany({
       orderBy: { createdAt: "desc" },
+      take: 100,
     });
 
     const enriched = workflows.map((w: Automation) => {

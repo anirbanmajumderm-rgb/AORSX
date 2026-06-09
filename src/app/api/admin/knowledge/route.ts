@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get("category");
     const where: any = {};
     if (category) where.category = category;
-    const items = await prisma.knowledgeItem.findMany({ where, orderBy: [{ category: "asc" }, { title: "asc" }] });
+    const items = await prisma.knowledgeItem.findMany({ where, orderBy: [{ category: "asc" }, { title: "asc" }], take: 100 });
     return successResponse(items);
   } catch (err) {
     return serverErrorResponse(err, "admin/knowledge");

@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
       where: showAll ? undefined : { isApproved: true, isSpam: false },
       orderBy: { createdAt: "desc" },
       include: { project: { select: { title: true, slug: true } } },
+      take: 100,
     });
     return successResponse(reviews);
   } catch {

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { getSecurityHeaders, getCspPolicy } from "@/lib/security-headers";
 
 const FOUNDER_ROLES = ["superadmin", "founder"];
 
 async function getTokenSafe(req: NextRequest) {
   try {
-    const { getToken } = await import("next-auth/jwt");
     return await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   } catch {
     return null;

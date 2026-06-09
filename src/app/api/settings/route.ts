@@ -21,13 +21,15 @@ export async function PUT(req: NextRequest) {
   if (authError) return authError;
   try {
     const body = await req.json();
-    for (const [key, value] of Object.entries(body)) {
-      await prisma.setting.upsert({
-        where: { key },
-        update: { value: String(value) },
-        create: { key, value: String(value), type: "text" },
-      });
-    }
+    await prisma.$transaction(
+      Object.entries(body).map(([key, value]) =>
+        prisma.setting.upsert({
+          where: { key },
+          update: { value: String(value) },
+          create: { key, value: String(value), type: "text" },
+        })
+      )
+    );
     revalidatePath("/api/site-data");
     revalidatePath("/", "layout");
     revalidatePath("/projects", "page");

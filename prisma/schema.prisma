@@ -91,6 +91,7 @@ model Project {
 
   @@index([isActive])
   @@index([slug])
+  @@index([order, createdAt])
 }
 
 model Review {
@@ -118,6 +119,8 @@ model FAQ {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([isActive, order])
 }
 
 model Question {
@@ -147,6 +150,8 @@ model Contact {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([isActive, order])
 }
 
 model Service {
@@ -158,6 +163,8 @@ model Service {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isActive, order])
 }
 
 model WhyChooseMe {
@@ -169,6 +176,8 @@ model WhyChooseMe {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isActive, order])
 }
 
 model AIResponse {
@@ -297,6 +306,9 @@ model Automation {
   nextRunAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Role {
@@ -379,6 +391,8 @@ model TeamMember {
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([isActive, displayOrder])
 }
 
 model AIConfig {
@@ -458,6 +472,8 @@ model FeatureFlag {
   enabled     Boolean  @default(false)
   updatedAt   DateTime @updatedAt
   updatedBy   Int?
+
+  @@index([enabled])
 }
 
 model Package {

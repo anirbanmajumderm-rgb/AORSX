@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   if (rateLimitError) return rateLimitError;
   try {
     const [settingsList, services, whyChooseMe, company] = await Promise.all([
-      safeQuery(() => prisma.setting.findMany(), [], "content:settings"),
+      safeQuery(() => prisma.setting.findMany({ take: 100 }), [], "content:settings"),
       safeQuery(() => prisma.service.findMany({ orderBy: { order: "asc" } }), [], "content:services"),
       safeQuery(() => prisma.whyChooseMe.findMany({ orderBy: { order: "asc" } }), [], "content:whyChooseMe"),
       safeQuery(() => prisma.company.findFirst(), null, "content:company"),

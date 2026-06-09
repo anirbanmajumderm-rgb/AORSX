@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Trash2, Download, Copy, ImageUp, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { ConfirmModal } from "@/components/admin/shared/ConfirmModal";
 
 interface UploadedFile {

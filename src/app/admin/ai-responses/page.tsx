@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Edit3, Trash2, Save, X, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Plus, Edit3, Trash2, Save, X, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ConfirmModal } from "@/components/admin/shared/ConfirmModal";

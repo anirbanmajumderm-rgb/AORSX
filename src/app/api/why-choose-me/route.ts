@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     const items = await prisma.whyChooseMe.findMany({
       where: showAll ? undefined : { isActive: true },
       orderBy: { order: "asc" },
+      take: 100,
     });
     return successResponse(items);
   } catch {

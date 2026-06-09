@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const rateLimitError = await withRateLimit(request, "admin/team/GET");
   if (rateLimitError) return rateLimitError;
   try {
-    const members = await safeQuery(() => prisma.teamMember.findMany({ orderBy: { displayOrder: "asc" } }), [], "team:list");
+    const members = await safeQuery(() => prisma.teamMember.findMany({ orderBy: { displayOrder: "asc" }, take: 100 }), [], "team:list");
     return successResponse(members);
   } catch (err) {
     return serverErrorResponse(err, "admin/team");
