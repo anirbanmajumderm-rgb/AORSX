@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import { motion, useInView } from "framer-motion";
 import { Briefcase, Users, Timer, Star, Headphones } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -26,7 +26,7 @@ const itemVariants = {
   }),
 };
 
-export function Stats() {
+export const Stats = memo(function Stats() {
   const { t } = useLanguage();
   const { data, loading } = useSiteData();
   const settings = data?.settings;
@@ -132,4 +132,4 @@ export function Stats() {
       </div>
     </section>
   );
-}
+});

@@ -30,6 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+export const revalidate = 3600;
+
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
   const project = await prisma.project.findUnique({ where: { slug } });

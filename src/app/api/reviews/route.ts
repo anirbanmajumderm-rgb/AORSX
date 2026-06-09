@@ -2,10 +2,16 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, requireAuth } from "@/lib/api-utils";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const url = new URL(req.url);
+    const showAll = url.searchParams.get("admin") === "true";
+    if (showAll) {
+      const authError = await requireAuth();
+      if (authError) return authError;
+    }
     const reviews = await prisma.review.findMany({
-      where: { isApproved: true, isSpam: false },
+      where: showAll ? undefined : { isApproved: true, isSpam: false },
       orderBy: { createdAt: "desc" },
       include: { project: { select: { title: true, slug: true } } },
     });

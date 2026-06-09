@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -10,7 +10,7 @@ import { useSiteData } from "@/hooks/useSiteData";
 import { getIcon } from "@/lib/icon-map";
 import { cn } from "@/lib/utils";
 
-export function Services() {
+export const Services = memo(function Services() {
   const { t } = useLanguage();
   const { data } = useSiteData();
   const services = data?.services ?? [];
@@ -97,4 +97,4 @@ export function Services() {
       </div>
     </section>
   );
-}
+});

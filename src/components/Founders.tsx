@@ -1,13 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Mail, Phone, Globe, AtSign, GitBranch } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteData } from "@/hooks/useSiteData";
 import { cn } from "@/lib/utils";
-
-const imgCache = (url: string) => `${url}?t=${Date.now()}`;
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
@@ -36,14 +35,17 @@ function PersonCard({ person, index }: { person: any; index: number }) {
         <div className="flex items-center gap-5 mb-6">
           <div className="relative">
             {person.photo ? (
-              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan/30 shadow-lg shadow-cyan/20">
-                <img
-                  src={imgCache(person.photo)}
+              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan/30 shadow-lg shadow-cyan/20 relative">
+                <Image
+                  src={person.photo}
                   alt={person.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="80px"
+                  className="object-cover"
                   onError={(e) => {
-                    (e.target as HTMLElement).style.display = "none";
-                    const parent = (e.target as HTMLElement).parentElement;
+                    const target = e.currentTarget;
+                    target.style.display = "none";
+                    const parent = target.parentElement;
                     if (parent) {
                       parent.classList.add(
                         "bg-gradient-to-br", "from-orange", "via-cyan", "to-cyan",

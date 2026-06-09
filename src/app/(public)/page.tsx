@@ -12,6 +12,8 @@ import { FAQ } from "@/components/FAQ";
 import { Contact } from "@/components/Contact";
 import { CineSection, SectionDivider } from "@/components/CinematicSystem";
 
+export const revalidate = 3600;
+
 export default function Home() {
   return (
     <>

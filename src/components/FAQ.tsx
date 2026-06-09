@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, Send, MessageCircle, AlertCircle } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -11,7 +11,7 @@ import { useSiteData } from "@/hooks/useSiteData";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { cn } from "@/lib/utils";
 
-export function FAQ() {
+export const FAQ = memo(function FAQ() {
   const { t } = useLanguage();
   const { data } = useSiteData();
   const { trackInteraction } = useAnalytics();
@@ -293,4 +293,4 @@ export function FAQ() {
       </div>
     </section>
   );
-}
+});

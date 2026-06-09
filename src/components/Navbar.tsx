@@ -3,6 +3,7 @@
 import { useState, useEffect, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, Globe, Lock } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteData } from "@/hooks/useSiteData";
@@ -11,7 +12,9 @@ import { usePathname } from "next/navigation";
 
 const navItems = ["home", "about", "services", "projects", "reviews", "skills", "faq", "contact"] as const;
 
-export function Navbar() {
+import { memo } from "react";
+
+export const Navbar = memo(function Navbar() {
   const pathname = usePathname();
   const { lang, setLang, t } = useLanguage();
   const { data } = useSiteData();
@@ -71,10 +74,12 @@ export function Navbar() {
           <a href="#home" className="flex items-center gap-2.5 group relative min-w-0">
             <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF6B00] to-[#00E5FF] flex items-center justify-center shadow-[0_0_16px_rgba(255,107,0,0.25)] group-hover:shadow-[0_0_24px_rgba(0,229,255,0.35)] transition-all duration-500 overflow-hidden shrink-0">
               {company?.logo && !logoError ? (
-                <img
+                <Image
                   src={company.logo}
                   alt={siteName}
-                  className="w-full h-full object-contain p-1"
+                  fill
+                  sizes="36px"
+                  className="object-contain p-1"
                   onError={() => setLogoError(true)}
                 />
               ) : (
@@ -224,4 +229,4 @@ export function Navbar() {
       </AnimatePresence>
     </motion.header>
   );
-}
+});

@@ -2,9 +2,18 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, requireAuth } from "@/lib/api-utils";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const items = await prisma.whyChooseMe.findMany({ orderBy: { order: "asc" } });
+    const url = new URL(req.url);
+    const showAll = url.searchParams.get("admin") === "true";
+    if (showAll) {
+      const authError = await requireAuth();
+      if (authError) return authError;
+    }
+    const items = await prisma.whyChooseMe.findMany({
+      where: showAll ? undefined : { isActive: true },
+      orderBy: { order: "asc" },
+    });
     return successResponse(items);
   } catch {
     return errorResponse("Failed to fetch items");

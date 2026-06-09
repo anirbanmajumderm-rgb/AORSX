@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
@@ -24,7 +24,7 @@ const itemVariants = {
   },
 };
 
-export function LogoShowcase() {
+export const LogoShowcase = memo(function LogoShowcase() {
   const { data } = useSiteData();
   const company = data?.company;
   const [logoError, setLogoError] = useState(false);
@@ -143,4 +143,4 @@ export function LogoShowcase() {
       </motion.div>
     </section>
   );
-}
+});

@@ -12,27 +12,19 @@ async function getTokenSafe(req: NextRequest) {
   }
 }
 
-const protectedPaths = [
-  "/admin/dashboard",
-  "/admin/content",
-  "/admin/team",
-  "/admin/faq",
-  "/admin/ai-training",
-  "/admin/users",
-  "/admin/roles",
-  "/admin/notifications",
-  "/admin/features",
-  "/admin/settings",
-  "/admin/profile",
-  "/admin/analytics",
-  "/admin/automation",
-  "/admin/controls",
-  "/admin/ai",
-  "/admin/site-manager",
-  "/admin/projects",
+const publicPaths = [
+  "/admin/login",
+  "/api/health",
+  "/api/auth",
+  "/admin/forgot-password",
+  "/admin/reset-password",
+  "/api/admin/reset-password",
+  "/api/admin/analytics/record",
+  "/api/admin/2fa/login",
+  "/api/admin/2fa/status",
+  "/api/admin/2fa/verify-login",
+  "/api/admin/2fa/backup-code",
 ];
-
-const publicPaths = ["/admin/login", "/api/health", "/api/auth", "/admin/forgot-password", "/admin/reset-password"];
 
 const founderOnlyPaths = [
   "/admin/roles",
@@ -110,36 +102,27 @@ export async function proxy(req: NextRequest) {
 
     const token = await getTokenSafe(req);
     const isLoggedIn = !!token;
-    const isProtectedRoute = protectedPaths.some(
-      (p) => pathname === p || pathname.startsWith(p + "/")
-    );
 
-    if (isProtectedRoute && !isLoggedIn) {
+    if (!isLoggedIn) {
       const loginUrl = new URL("/admin/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    if (isLoggedIn && pathname === "/admin/login") {
-      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
-    }
-
-    if (isLoggedIn && isProtectedRoute) {
-      const isFounderRoute = founderOnlyPaths.some(
-        (p) => pathname === p || pathname.startsWith(p + "/")
-      );
-      if (isFounderRoute) {
-        try {
-          const { prisma } = await import("@/lib/prisma");
-          const admin = await prisma.admin.findUnique({
-            where: { email: token.email as string },
-          });
-          if (!admin || !FOUNDER_ROLES.includes(admin.role)) {
-            return NextResponse.redirect(new URL("/admin/dashboard", req.url));
-          }
-        } catch {
+    const isFounderRoute = founderOnlyPaths.some(
+      (p) => pathname === p || pathname.startsWith(p + "/")
+    );
+    if (isFounderRoute) {
+      try {
+        const { prisma } = await import("@/lib/prisma");
+        const admin = await prisma.admin.findUnique({
+          where: { email: token.email as string },
+        });
+        if (!admin || !FOUNDER_ROLES.includes(admin.role)) {
           return NextResponse.redirect(new URL("/admin/dashboard", req.url));
         }
+      } catch {
+        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
       }
     }
 

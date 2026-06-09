@@ -8,6 +8,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteData } from "@/hooks/useSiteData";
+import { memo } from "react";
 
 const gradients = [
   "from-cyan/20 via-orange/10 to-cyan/20",
@@ -18,7 +19,7 @@ const gradients = [
   "from-orange/20 via-cyan/10 to-orange/20",
 ];
 
-export function Projects() {
+export const Projects = memo(function Projects() {
   const { t } = useLanguage();
   const { data } = useSiteData();
   const projects = data?.projects ?? [];
@@ -105,4 +106,4 @@ export function Projects() {
       </div>
     </section>
   );
-}
+});

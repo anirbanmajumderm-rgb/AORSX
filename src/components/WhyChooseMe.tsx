@@ -6,8 +6,9 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { useSiteData } from "@/hooks/useSiteData";
 import { getIcon } from "@/lib/icon-map";
+import { memo } from "react";
 
-export function WhyChooseMe() {
+export const WhyChooseMe = memo(function WhyChooseMe() {
   const { data } = useSiteData();
   const items = data?.whyChooseMe ?? [];
 
@@ -66,4 +67,4 @@ export function WhyChooseMe() {
       </div>
     </section>
   );
-}
+});

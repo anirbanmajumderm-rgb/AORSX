@@ -14,7 +14,7 @@ async function main() {
       password: hashSync("Admin@123", 12),
       name: "Anirban Majumder",
       role: "superadmin",
-      email2FAEnabled: true,
+      email2FAEnabled: false,
     },
   });
 

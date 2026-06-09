@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -17,7 +17,7 @@ function initials(name: string): string {
     .slice(0, 2);
 }
 
-export function Reviews() {
+export const Reviews = memo(function Reviews() {
   const { t } = useLanguage();
   const { data } = useSiteData();
   const reviews = data?.reviews ?? [];
@@ -180,4 +180,4 @@ export function Reviews() {
       </div>
     </section>
   );
-}
+});

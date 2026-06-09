@@ -7,6 +7,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteData } from "@/hooks/useSiteData";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,7 +26,7 @@ const itemVariants = {
   },
 };
 
-export function About() {
+export const About = memo(function About() {
   const { t } = useLanguage();
   const { data } = useSiteData();
   const company = data?.company;
@@ -174,4 +175,4 @@ export function About() {
       </div>
     </section>
   );
-}
+});

@@ -7,7 +7,9 @@ import {
   LayoutDashboard, FileText, Users, HelpCircle, BrainCircuit,
   UserCog, Shield, Bell, ToggleLeft, Settings, Sparkles,
   LogOut, ChevronLeft, Menu, X, ChevronDown, Briefcase,
-  MessageSquare, BookOpen, DollarSign
+  MessageSquare, BookOpen, DollarSign, Zap, Star, Image,
+  Mail, BarChart3, Globe, Sliders,
+  Bot, Database, User, Building2, Activity, MessageCircle
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -26,6 +28,8 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Overview",
     items: [
       { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/site-manager", label: "Site Manager", icon: Globe },
+      { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
   },
   {
@@ -33,8 +37,16 @@ const navSections: { label: string; items: NavItem[] }[] = [
     items: [
       { href: "/admin/content", label: "Site Content", icon: FileText },
       { href: "/admin/projects", label: "Projects", icon: Briefcase },
+      { href: "/admin/services", label: "Services", icon: Zap },
+      { href: "/admin/skills", label: "Skills", icon: BrainCircuit },
+      { href: "/admin/reviews", label: "Reviews", icon: Star },
+      { href: "/admin/why-choose-me", label: "Why Choose Us", icon: Star },
       { href: "/admin/team", label: "Team & Founders", icon: Users },
       { href: "/admin/faq", label: "FAQ & Questions", icon: HelpCircle },
+      { href: "/admin/questions", label: "Inquiries", icon: MessageCircle },
+      { href: "/admin/contacts", label: "Contacts", icon: Mail },
+      { href: "/admin/media", label: "Media", icon: Image },
+      { href: "/admin/company", label: "Company", icon: Building2 },
     ],
   },
   {
@@ -45,6 +57,9 @@ const navSections: { label: string; items: NavItem[] }[] = [
       { href: "/admin/ai/knowledge", label: "Knowledge Base", icon: BookOpen },
       { href: "/admin/ai/packages", label: "Packages & Pricing", icon: DollarSign },
       { href: "/admin/ai/policies", label: "Policies", icon: FileText },
+      { href: "/admin/ai/prompts", label: "AI Prompts", icon: Bot },
+      { href: "/admin/ai/models", label: "AI Models", icon: Database },
+      { href: "/admin/ai-responses", label: "AI Responses", icon: BrainCircuit },
       { href: "/admin/ai-training", label: "AI Settings", icon: Settings },
     ],
   },
@@ -54,7 +69,10 @@ const navSections: { label: string; items: NavItem[] }[] = [
       { href: "/admin/users", label: "Users", icon: UserCog },
       { href: "/admin/roles", label: "Roles & Permissions", icon: Shield },
       { href: "/admin/features", label: "Feature Flags", icon: ToggleLeft },
+      { href: "/admin/controls", label: "Controls", icon: Sliders },
+      { href: "/admin/automation", label: "Automation", icon: Activity },
       { href: "/admin/notifications", label: "Notifications", icon: Bell },
+      { href: "/admin/profile", label: "Profile", icon: User },
     ],
   },
   {
@@ -178,24 +196,12 @@ function NavItemComponent({ item, collapsed, depth = 0, onNavigate }: { item: Na
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ siteName: initialSiteName = "Admin" }: { siteName?: string }) {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [siteName, setSiteName] = useState("Admin");
+  const [siteName] = useState(initialSiteName);
   const pathname = usePathname();
-
-  useEffect(() => {
-    fetch("/api/site-data")
-      .then(r => r.json())
-      .then(json => {
-        if (json.success) {
-          const name = json.data?.company?.name || json.data?.settings?.site_name || "Admin";
-          setSiteName(name);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   const initials = session?.user?.name
     ? session.user.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)

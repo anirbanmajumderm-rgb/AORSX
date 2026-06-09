@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    serverMinification: false,
+    optimizePackageImports: ["lucide-react", "framer-motion", "recharts", "@react-three/fiber", "@react-three/drei"],
   },
 
   onDemandEntries: {

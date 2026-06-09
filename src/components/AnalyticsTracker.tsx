@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 export function AnalyticsTracker() {
+  const pathname = usePathname();
   const { trackPageView, trackInteraction } = useAnalytics();
   const trackedInteractions = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     trackPageView();
-    const handleRouteChange = () => trackPageView();
-    window.addEventListener("popstate", handleRouteChange);
-    return () => window.removeEventListener("popstate", handleRouteChange);
-  }, [trackPageView]);
+  }, [pathname, trackPageView]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
