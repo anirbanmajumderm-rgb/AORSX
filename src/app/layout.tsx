@@ -3,22 +3,24 @@ import { Poppins, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 
-const AnalyticsTracker = dynamic(() => import("@/components/AnalyticsTracker").then((m) => m.AnalyticsTracker));
+const AnalyticsTracker = dynamic(() => import("@/components/AnalyticsTracker").then((m) => m.AnalyticsTracker), { ssr: false });
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
-  preload: false,
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains",
-  display: "swap",
+  display: "optional",
   preload: false,
+  fallback: ["monospace"],
 });
 
 export const viewport: Viewport = {

@@ -43,6 +43,11 @@ function createPrismaClient() {
       process.env.NODE_ENV === "development"
         ? ["warn", "error"]
         : ["error"],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   });
 
   return client;

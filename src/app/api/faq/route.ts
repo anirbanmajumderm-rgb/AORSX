@@ -9,7 +9,7 @@ export async function GET() {
       orderBy: { order: "asc" },
       take: 100,
     });
-    return successResponse(faq);
+    return successResponse(faq, 200, 60);
   } catch {
     return errorResponse("Failed to fetch FAQs");
   }

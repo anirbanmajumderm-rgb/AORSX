@@ -7,8 +7,12 @@ import { validateCsrf } from "./csrf-v2";
 
 const FOUNDER_ROLES = ["superadmin", "founder"];
 
-export function successResponse<T>(data: T, status = 200) {
-  return NextResponse.json({ success: true, data }, { status });
+export function successResponse<T>(data: T, status = 200, cacheMaxAge?: number) {
+  const headers: Record<string, string> = {};
+  if (cacheMaxAge !== undefined) {
+    headers["Cache-Control"] = `public, s-maxage=${cacheMaxAge}, stale-while-revalidate=${cacheMaxAge * 2}`;
+  }
+  return NextResponse.json({ success: true, data }, { status, headers: Object.keys(headers).length ? headers : undefined });
 }
 
 export function errorResponse(

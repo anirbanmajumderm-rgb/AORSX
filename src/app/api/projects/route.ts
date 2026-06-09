@@ -7,10 +7,9 @@ export async function GET() {
     const projects = await prisma.project.findMany({
       where: { isActive: true },
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-      include: { reviews: true },
       take: 100,
     });
-    return successResponse(projects);
+    return successResponse(projects, 200, 60);
   } catch {
     return errorResponse("Failed to fetch projects");
   }

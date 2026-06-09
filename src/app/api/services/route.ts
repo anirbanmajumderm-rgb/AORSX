@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       orderBy: { order: "asc" },
       take: 100,
     });
-    return successResponse(services);
+    return successResponse(services, 200, showAll ? undefined : 60);
   } catch {
     return errorResponse("Failed to fetch services");
   }

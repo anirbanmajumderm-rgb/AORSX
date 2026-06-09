@@ -47,14 +47,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   let siteName = "Admin";
   try {
     if (cachedAdminMeta && Date.now() - cachedAdminMeta.ts < ADMIN_META_CACHE_TTL) {
-      const title = cachedAdminMeta.data.title;
-      siteName = title.replace(" | Admin", "");
+      siteName = cachedAdminMeta.data.title.replace(" | Admin", "");
     } else {
       const [setting, company] = await Promise.all([
         prisma.setting.findUnique({ where: { key: "site_name" }, select: { value: true } }),
         prisma.company.findFirst({ select: { name: true } }),
       ]);
       siteName = setting?.value || company?.name || "Admin";
+      const data = {
+        title: `${siteName} | Admin`,
+        robots: { index: false, follow: false },
+      };
+      cachedAdminMeta = { data, ts: Date.now() };
     }
   } catch {}
 

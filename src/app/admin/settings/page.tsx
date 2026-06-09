@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Save, RefreshCw, AlertTriangle, Globe, Palette,
@@ -495,7 +496,7 @@ export default function AdminSettings() {
                   <p className="text-sm text-white/60 text-center">
                     Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
                   </p>
-                  <img src={twoFAQrCode} alt="2FA QR Code" className="w-48 h-48 rounded-xl bg-white p-2" />
+                  <Image src={twoFAQrCode} alt="2FA QR Code" width={192} height={192} className="rounded-xl bg-white p-2" />
                   <p className="text-xs text-white/30 text-center">
                     Or enter the secret key manually in your authenticator app
                   </p>
@@ -729,7 +730,7 @@ export default function AdminSettings() {
                     <div className="flex items-start gap-6">
                       <div className="w-24 h-24 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center overflow-hidden shrink-0">
                         {companyLogo && !logoError ? (
-                          <img src={companyLogo} alt="Logo" className="w-full h-full object-contain p-2" onError={() => setLogoError(true)} />
+                          <Image src={companyLogo} alt="Logo" width={96} height={96} className="w-full h-full object-contain p-2" onError={() => setLogoError(true)} />
                         ) : (
                           <ImageUp size={28} className="text-white/20" />
                         )}

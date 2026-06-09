@@ -6,7 +6,7 @@ import { successResponse, errorResponse, requireAuth } from "@/lib/api-utils";
 export async function GET() {
   try {
     const company = await prisma.company.findFirst();
-    return successResponse(company);
+    return successResponse(company, 200, 60);
   } catch {
     return errorResponse("Company info not found", 404);
   }

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       orderBy: { order: "asc" },
       take: 100,
     });
-    return successResponse(items);
+    return successResponse(items, 200, 60);
   } catch {
     return errorResponse("Failed to fetch items");
   }

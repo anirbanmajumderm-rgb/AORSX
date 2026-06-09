@@ -20,6 +20,20 @@ interface Trail {
   alpha: number;
 }
 
+function isLowEndDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  const mem = (navigator as any).deviceMemory;
+  if (mem && mem < 4) return true;
+  const cores = navigator.hardwareConcurrency;
+  if (cores && cores < 4) return true;
+  return false;
+}
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export function BackgroundEffects() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0, prevX: 0, prevY: 0 });
@@ -31,10 +45,17 @@ export function BackgroundEffects() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    if (prefersReducedMotion()) return;
+
+    const isLowEnd = isLowEndDevice();
+
     let animationId: number;
     let particles: Particle[] = [];
     const trails: Trail[] = [];
     let trailTimer = 0;
+    let lastFrameTime = performance.now();
+    const targetFPS = isLowEnd ? 30 : 60;
+    const frameInterval = 1000 / targetFPS;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.prevX = mouseRef.current.x;
@@ -44,20 +65,24 @@ export function BackgroundEffects() {
     };
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
     };
 
     const initParticles = () => {
+      const density = isLowEnd ? 12000 : 6000;
+      const maxCount = isLowEnd ? 60 : 200;
       const count = Math.min(
-        Math.floor((window.innerWidth * window.innerHeight) / 6000),
-        200
+        Math.floor((window.innerWidth * window.innerHeight) / density),
+        maxCount
       );
       particles = [];
       for (let i = 0; i < count; i++) {
         particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
           vx: (Math.random() - 0.5) * 0.3,
           vy: (Math.random() - 0.5) * 0.3,
           size: Math.random() * 2.5 + 0.3,
@@ -69,13 +94,21 @@ export function BackgroundEffects() {
       }
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const draw = (now: number) => {
+      const elapsed = now - lastFrameTime;
+
+      if (elapsed < frameInterval) {
+        animationId = requestAnimationFrame(draw);
+        return;
+      }
+
+      lastFrameTime = now - (elapsed % frameInterval);
+
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       const mouse = mouseRef.current;
       trailTimer++;
 
-      // Mouse trail - create trail points
-      if (trailTimer % 2 === 0) {
+      if (!isLowEnd && trailTimer % 2 === 0) {
         const dx = mouse.x - mouse.prevX;
         const dy = mouse.y - mouse.prevY;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -85,28 +118,28 @@ export function BackgroundEffects() {
         }
       }
 
-      // Draw mouse trails
-      for (let i = 0; i < trails.length; i++) {
-        const t = trails[i];
-        t.alpha *= 0.97;
-        if (t.alpha < 0.01) continue;
-        const rgb = i % 2 === 0 ? "255, 107, 0" : "0, 229, 255";
-        const size = t.alpha * 3;
-        ctx.beginPath();
-        ctx.arc(t.x, t.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${rgb}, ${t.alpha * 0.5})`;
-        ctx.fill();
+      if (!isLowEnd) {
+        for (let i = 0; i < trails.length; i++) {
+          const t = trails[i];
+          t.alpha *= 0.97;
+          if (t.alpha < 0.01) continue;
+          const rgb = i % 2 === 0 ? "255, 107, 0" : "0, 229, 255";
+          const size = t.alpha * 3;
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${rgb}, ${t.alpha * 0.5})`;
+          ctx.fill();
+        }
       }
 
-      // Draw particles
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
         p.life++;
         if (p.life > p.maxLife) {
           particles[i] = {
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
             vx: (Math.random() - 0.5) * 0.3,
             vy: (Math.random() - 0.5) * 0.3,
             size: Math.random() * 2.5 + 0.3,
@@ -118,14 +151,15 @@ export function BackgroundEffects() {
           continue;
         }
 
-        // Mouse interaction
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
-        const distToMouse = Math.sqrt(dx * dx + dy * dy);
-        if (distToMouse < 250 && distToMouse > 0) {
-          const force = 0.04 * (1 - distToMouse / 250);
-          p.vx += (dx / distToMouse) * force;
-          p.vy += (dy / distToMouse) * force;
+        if (!isLowEnd) {
+          const dx = mouse.x - p.x;
+          const dy = mouse.y - p.y;
+          const distToMouse = Math.sqrt(dx * dx + dy * dy);
+          if (distToMouse < 250 && distToMouse > 0) {
+            const force = 0.04 * (1 - distToMouse / 250);
+            p.vx += (dx / distToMouse) * force;
+            p.vy += (dy / distToMouse) * force;
+          }
         }
 
         p.vx *= 0.98;
@@ -134,10 +168,10 @@ export function BackgroundEffects() {
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.x < -10) p.x = canvas.width + 10;
-        if (p.x > canvas.width + 10) p.x = -10;
-        if (p.y < -10) p.y = canvas.height + 10;
-        if (p.y > canvas.height + 10) p.y = -10;
+        if (p.x < -10) p.x = window.innerWidth + 10;
+        if (p.x > window.innerWidth + 10) p.x = -10;
+        if (p.y < -10) p.y = window.innerHeight + 10;
+        if (p.y > window.innerHeight + 10) p.y = -10;
 
         const rgb = p.color === "orange" ? "255, 107, 0" : "0, 229, 255";
         ctx.beginPath();
@@ -145,36 +179,35 @@ export function BackgroundEffects() {
         ctx.fillStyle = `rgba(${rgb}, ${p.alpha})`;
         ctx.fill();
 
-        // Connection lines
-        for (let j = i + 1; j < particles.length; j++) {
-          const q = particles[j];
-          const dx2 = q.x - p.x;
-          const dy2 = q.y - p.y;
-          const dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-          if (dist < 180) {
-            const opacity = 0.06 * (1 - dist / 180);
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(q.x, q.y);
-            ctx.strokeStyle = `rgba(0, 229, 255, ${opacity})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
+        if (!isLowEnd) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const dx2 = q.x - p.x;
+            const dy2 = q.y - p.y;
+            const dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+            if (dist < 180) {
+              const opacity = 0.06 * (1 - dist / 180);
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(0, 229, 255, ${opacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
           }
-        }
 
-        // Glow effect on larger particles
-        if (p.size > 1.5) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${rgb}, ${p.alpha * 0.1})`;
-          ctx.fill();
+          if (p.size > 1.5) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${rgb}, ${p.alpha * 0.1})`;
+            ctx.fill();
+          }
         }
       }
 
-      // Draw sporadic shooting stars
-      if (Math.random() < 0.005) {
-        const sx = Math.random() * canvas.width;
-        const sy = Math.random() * canvas.height * 0.3;
+      if (!isLowEnd && Math.random() < 0.005) {
+        const sx = Math.random() * window.innerWidth;
+        const sy = Math.random() * window.innerHeight * 0.3;
         const len = 50 + Math.random() * 100;
         const angle = Math.PI / 4 + Math.random() * Math.PI / 4;
         ctx.beginPath();
@@ -195,7 +228,7 @@ export function BackgroundEffects() {
 
     resize();
     initParticles();
-    draw();
+    animationId = requestAnimationFrame(draw);
 
     const handleResize = () => {
       resize();
@@ -203,7 +236,7 @@ export function BackgroundEffects() {
     };
 
     window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
+    if (!isLowEnd) window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
       cancelAnimationFrame(animationId);

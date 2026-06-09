@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Trash2, Download, Copy, ImageUp, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/admin/shared/ConfirmModal";
@@ -111,7 +112,7 @@ export default function AdminMediaPage() {
                 className="group relative rounded-xl border border-white/[0.04] bg-white/[0.02] overflow-hidden"
               >
                 <div className="aspect-square relative">
-                  <img src={item.filePath} alt={item.originalName} className="w-full h-full object-cover" />
+                  <Image src={item.filePath} alt={item.originalName} fill sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw" className="object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     <button onClick={() => copyUrl(item)} className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all"><Copy className="w-4 h-4" /></button>
                     <button onClick={() => setDeleteTarget(item)} className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all"><Trash2 className="w-4 h-4" /></button>

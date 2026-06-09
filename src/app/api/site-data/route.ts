@@ -5,6 +5,9 @@ import { logger } from "@/lib/app-logger";
 const ONE_MINUTE = 60;
 const ONE_HOUR = 3600;
 
+let cachedData: { data: any; ts: number } | null = null;
+const CACHE_TTL = 30_000;
+
 const controlKeyMapping: Record<string, string> = {
   show_services: "services_section",
   show_projects: "projects_section",
@@ -16,6 +19,15 @@ const controlKeyMapping: Record<string, string> = {
 };
 
 export async function GET() {
+  if (cachedData && Date.now() - cachedData.ts < CACHE_TTL) {
+    const response = NextResponse.json(cachedData.data);
+    response.headers.set(
+      "Cache-Control",
+      `public, s-maxage=${ONE_MINUTE}, stale-while-revalidate=${ONE_HOUR}`
+    );
+    return response;
+  }
+
   try {
     const [
       services,
@@ -40,13 +52,13 @@ export async function GET() {
       prisma.project.findMany({
         where: { isActive: true },
         orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-        select: { id: true, title: true, slug: true, description: true, technologies: true, clientName: true, companyName: true, projectUrl: true, githubUrl: true, image: true, featured: true, order: true },
+        select: { id: true, title: true, slug: true, description: true, technologies: true, image: true, featured: true, order: true },
         take: 50,
       }),
       prisma.review.findMany({
         where: { isApproved: true, isSpam: false },
         orderBy: { createdAt: "desc" },
-        select: { id: true, projectId: true, reviewerName: true, reviewerEmail: true, rating: true, reviewText: true, createdAt: true },
+        select: { id: true, projectId: true, reviewerName: true, rating: true, reviewText: true, createdAt: true },
         take: 50,
       }),
       prisma.fAQ.findMany({
@@ -60,7 +72,7 @@ export async function GET() {
         take: 50,
       }),
       prisma.company.findFirst({
-        select: { id: true, name: true, tagline: true, description: true, aboutText: true, vision: true, mission: true, logo: true, favicon: true, founderName: true, founderRole: true, founderBio: true, founderImage: true, email: true, phone: true, address: true, linkedin: true, twitter: true, github: true },
+        select: { id: true, name: true, tagline: true, description: true, logo: true, favicon: true, founderName: true, founderRole: true, founderImage: true, email: true, phone: true, address: true, linkedin: true, twitter: true, github: true },
       }),
       prisma.skill.findMany({
         where: { isActive: true },
@@ -91,7 +103,7 @@ export async function GET() {
       prisma.teamMember.findMany({
         where: { isActive: true },
         orderBy: { displayOrder: "asc" },
-        select: { id: true, name: true, role: true, bio: true, photo: true, email: true, phone: true, linkedin: true, twitter: true, github: true, displayOrder: true, isFounder: true, createdAt: true, updatedAt: true },
+        select: { id: true, name: true, role: true, bio: true, photo: true, displayOrder: true, isFounder: true },
         take: 50,
       }),
     ]);
@@ -107,14 +119,17 @@ export async function GET() {
       featureFlagsObj[mappedKey] = c.enabled;
     }
 
-    const response = NextResponse.json({
+    const result = {
       success: true,
       data: {
         services, projects, reviews, faq, settings: settingsObj, company,
         skills, whyChooseMe, contacts, featureFlags: featureFlagsObj, teamMembers,
       },
-    });
+    };
 
+    cachedData = { data: result, ts: Date.now() };
+
+    const response = NextResponse.json(result);
     response.headers.set(
       "Cache-Control",
       `public, s-maxage=${ONE_MINUTE}, stale-while-revalidate=${ONE_HOUR}`

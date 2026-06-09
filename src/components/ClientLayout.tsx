@@ -4,22 +4,22 @@ import dynamic from "next/dynamic";
 
 const BackgroundEffects = dynamic(
   () => import("@/components/BackgroundEffects").then((m) => ({ default: m.BackgroundEffects })),
-  { ssr: false }
+  { ssr: false, loading: () => null }
 );
 
 const AIAssistant = dynamic(
   () => import("@/components/AIAssistant").then((m) => ({ default: m.AIAssistant })),
-  { ssr: false }
+  { ssr: false, loading: () => null }
 );
 
 const MaintenanceBanner = dynamic(
   () => import("@/components/MaintenanceBanner").then((m) => ({ default: m.MaintenanceBanner })),
-  { ssr: false }
+  { ssr: false, loading: () => null }
 );
 
 const AnalyticsTracker = dynamic(
   () => import("@/components/AnalyticsTracker").then((m) => ({ default: m.AnalyticsTracker })),
-  { ssr: false }
+  { ssr: false, loading: () => null }
 );
 
 const CinematicSystem = dynamic(

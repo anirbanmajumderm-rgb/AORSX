@@ -49,14 +49,18 @@ export function SiteDataProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const cancelRef = useRef(false);
+  const mountedRef = useRef(true);
 
   const fetchData = useCallback(async () => {
     cancelRef.current = false;
     setLoading(true);
     try {
-      const res = await fetch("/api/site-data");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch("/api/site-data", { signal: controller.signal });
+      clearTimeout(timeoutId);
       const json = await res.json();
-      if (!cancelRef.current) {
+      if (!cancelRef.current && mountedRef.current) {
         if (json.success) {
           setData(json.data);
           setError(null);
@@ -65,17 +69,21 @@ export function SiteDataProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (err) {
-      if (!cancelRef.current) {
+      if (!cancelRef.current && mountedRef.current) {
         setError(err instanceof Error ? err.message : "Failed to fetch site data");
       }
     } finally {
-      if (!cancelRef.current) setLoading(false);
+      if (!cancelRef.current && mountedRef.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
     fetchData();
-    return () => { cancelRef.current = true; };
+    return () => {
+      cancelRef.current = true;
+      mountedRef.current = false;
+    };
   }, [fetchData]);
 
   return (

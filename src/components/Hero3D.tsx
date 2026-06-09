@@ -1,8 +1,17 @@
 "use client";
-import { useRef, useMemo, useState, Suspense } from "react";
+import { useRef, useMemo, useState, Suspense, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial, Text } from "@react-three/drei";
 import * as THREE from "three";
+
+function isLowEndDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  const mem = (navigator as any).deviceMemory;
+  if (mem && mem < 4) return true;
+  const cores = navigator.hardwareConcurrency;
+  if (cores && cores < 4) return true;
+  return false;
+}
 
 function generateParticles(count: number) {
   const pos = new Float32Array(count * 3);
@@ -73,9 +82,10 @@ function Scene3D() {
   const particlesRef = useRef<THREE.Points>(null);
   const groupRef = useRef<THREE.Group>(null);
   const timeRef = useRef(0);
+  const lowEnd = useMemo(() => isLowEndDevice(), []);
 
-  const particleCount = 1000;
-  const [positions, colors] = useMemo(() => generateParticles(particleCount), []);
+  const particleCount = lowEnd ? 300 : 1000;
+  const [positions, colors] = useMemo(() => generateParticles(particleCount), [particleCount]);
 
   const orbiters = useMemo(
     () => [
@@ -129,9 +139,9 @@ function Scene3D() {
 
   return (
     <group ref={groupRef}>
-      <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.25}>
+      <Float speed={lowEnd ? 0.6 : 1.2} rotationIntensity={0.1} floatIntensity={0.15}>
         <mesh ref={sphereRef}>
-          <sphereGeometry args={[0.7, 64, 64]} />
+          <sphereGeometry args={[0.7, lowEnd ? 24 : 64, lowEnd ? 24 : 64]} />
             <MeshDistortMaterial
               color="#FF6B00"
               emissive="#00E5FF"
@@ -211,6 +221,26 @@ function isWebGLAvailable() {
 
 export default function Hero3DScene() {
   const [webglOk] = useState(isWebGLAvailable);
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const lowEnd = useMemo(() => isLowEndDevice(), []);
 
   if (!webglOk) {
     return (
@@ -220,13 +250,19 @@ export default function Hero3DScene() {
     );
   }
 
+  if (!isVisible) {
+    return (
+      <div ref={containerRef} className="w-full h-full min-h-[550px] relative" />
+    );
+  }
+
   return (
-    <div className="w-full h-full min-h-[550px] relative">
-      <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
+    <div ref={containerRef} className="w-full h-full min-h-[550px] relative">
+      <Canvas camera={{ position: [0, 0, 4], fov: 45 }} frameloop={lowEnd ? "demand" : "always"}>
         <Suspense fallback={null}>
-          <ambientLight intensity={0.4} />
-          <pointLight position={[10, 10, 10]} intensity={0.8} color="#FF6B00" />
-          <pointLight position={[-10, -10, -10]} intensity={0.8} color="#00E5FF" />
+          <ambientLight intensity={lowEnd ? 0.5 : 0.4} />
+          <pointLight position={[10, 10, 10]} intensity={lowEnd ? 0.5 : 0.8} color="#FF6B00" />
+          <pointLight position={[-10, -10, -10]} intensity={lowEnd ? 0.5 : 0.8} color="#00E5FF" />
           <Scene3D />
         </Suspense>
       </Canvas>

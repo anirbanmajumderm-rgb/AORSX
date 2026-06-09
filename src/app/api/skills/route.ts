@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       orderBy: [{ category: "asc" }, { order: "asc" }],
       take: 200,
     });
-    return successResponse(skills);
+    return successResponse(skills, 200, 60);
   } catch {
     return errorResponse("Failed to fetch skills");
   }

@@ -871,3 +871,79 @@ html {
 .cine-blur-reveal {
   animation: cine-blur-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+
+@layer utilities {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  .noise-overlay {
+    display: none;
+  }
+
+  .grid-pattern {
+    background-size: 40px 40px;
+  }
+
+  .hero-gradient-mesh {
+    background:
+      radial-gradient(ellipse 100% 80% at 30% 20%, rgba(255, 107, 0, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 80% at 70% 80%, rgba(0, 229, 255, 0.06) 0%, transparent 60%);
+  }
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+
+  .h-screen {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Prevent layout shift from scrollbar */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Smooth touch scrolling */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* In-app browser fixes */
+@supports (-webkit-overflow-scrolling: touch) {
+  .fixed {
+    -webkit-transform: translateZ(0);
+  }
+}

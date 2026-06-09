@@ -1,7 +1,7 @@
 import { Hero } from "@/components/Hero";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { CineSection, SectionDivider } from "@/components/CinematicSystem";
+import { SectionDivider } from "@/components/CinematicSystem";
 
 const LogoShowcase = dynamic(() => import("@/components/LogoShowcase").then((m) => ({ default: m.LogoShowcase })));
 const About = dynamic(() => import("@/components/About").then((m) => ({ default: m.About })));
@@ -25,68 +25,46 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <CineSection variant="slide-up">
-        <LogoShowcase />
-      </CineSection>
+      <LogoShowcase />
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-up" delay={0.1}>
-          <About />
-        </CineSection>
+        <About />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-up" delay={0.1}>
-          <Founders />
-        </CineSection>
+        <Founders />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="zoom-in" delay={0.1}>
-          <Stats />
-        </CineSection>
+        <Stats />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-up" delay={0.1}>
-          <Services />
-        </CineSection>
+        <Services />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-left" delay={0.1}>
-          <Skills />
-        </CineSection>
+        <Skills />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-up" delay={0.1}>
-          <Projects />
-        </CineSection>
+        <Projects />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-right" delay={0.1}>
-          <WhyChooseMe />
-        </CineSection>
+        <WhyChooseMe />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-up" delay={0.1}>
-          <Reviews />
-        </CineSection>
+        <Reviews />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="fade" delay={0.1}>
-          <FAQ />
-        </CineSection>
+        <FAQ />
       </Suspense>
       <SectionDivider />
       <Suspense fallback={<SectionLoader />}>
-        <CineSection variant="slide-up" delay={0.1}>
-          <Contact />
-        </CineSection>
+        <Contact />
       </Suspense>
     </>
   );

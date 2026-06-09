@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
       include: { project: { select: { title: true, slug: true } } },
       take: 100,
     });
-    return successResponse(reviews);
+    return successResponse(reviews, 200, 60);
   } catch {
     return errorResponse("Failed to fetch reviews");
   }

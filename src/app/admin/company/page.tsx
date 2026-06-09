@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Save, RefreshCw, Building2, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 
@@ -173,7 +174,7 @@ export default function AdminCompanyPage() {
           {Field({ label: "Logo URL", key: "logo", placeholder: "https://..." })}
           {form.logo && (
             <div className="mt-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] inline-block">
-              <img src={form.logo} alt="Logo preview" className="h-12 object-contain" />
+              <Image src={form.logo} alt="Logo preview" width={48} height={48} className="h-12 w-auto object-contain" />
             </div>
           )}
         </div>

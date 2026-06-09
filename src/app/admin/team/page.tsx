@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Plus, Edit3, Trash2, Save, X, Eye, EyeOff, GripVertical, RefreshCw, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -104,7 +105,7 @@ function SortableCard({
               <div className="flex items-center gap-2">
                 {editingForm.photo && (
                   <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/[0.06] shrink-0 bg-white/[0.03]">
-                    <img src={editingForm.photo} alt="Preview" className="w-full h-full object-cover" />
+                    <Image src={editingForm.photo} alt="Preview" width={40} height={40} className="w-full h-full object-cover" />
                   </div>
                 )}
                 <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/50 hover:text-white/70 hover:border-neon-cyan/30 cursor-pointer transition-all">
@@ -145,7 +146,7 @@ function SortableCard({
             <div className="flex items-start gap-4 mb-4">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-orange/20 to-neon-cyan/20 border border-white/[0.06] flex items-center justify-center shrink-0 overflow-hidden">
                 {member.photo ? (
-                  <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
+                  <Image src={member.photo} alt={member.name} width={56} height={56} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-lg font-bold font-heading text-white/70">{getInitials(member.name)}</span>
                 )}
@@ -451,7 +452,7 @@ export default function TeamPage() {
               <div className="flex items-center gap-3">
                 {form.photo && (
                   <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/[0.06] shrink-0 bg-white/[0.03]">
-                    <img src={form.photo} alt="Preview" className="w-full h-full object-cover" />
+                    <Image src={form.photo} alt="Preview" width={48} height={48} className="w-full h-full object-cover" />
                   </div>
                 )}
                 <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/50 hover:text-white/70 hover:border-neon-cyan/30 cursor-pointer transition-all">

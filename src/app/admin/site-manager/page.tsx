@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Save, RefreshCw, AlertTriangle, Globe, Building2,
@@ -386,7 +387,7 @@ export default function SiteManager() {
               <div className="flex items-start gap-6">
                 <div className="w-24 h-24 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center overflow-hidden shrink-0">
                   {companyLogo && !logoError ? (
-                    <img src={companyLogo} alt="Logo" className="w-full h-full object-contain p-2" onError={() => setLogoError(true)} />
+                    <Image src={companyLogo} alt="Logo" width={96} height={96} className="w-full h-full object-contain p-2" onError={() => setLogoError(true)} />
                   ) : (
                     <ImageUp size={28} className="text-white/20" />
                   )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, Globe, Lock } from "lucide-react";
 import Image from "next/image";
@@ -12,8 +12,6 @@ import { usePathname } from "next/navigation";
 
 const navItems = ["home", "about", "services", "projects", "reviews", "skills", "faq", "contact"] as const;
 
-import { memo } from "react";
-
 export const Navbar = memo(function Navbar() {
   const pathname = usePathname();
   const { lang, setLang, t } = useLanguage();
@@ -24,28 +22,49 @@ export const Navbar = memo(function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [logoError, setLogoError] = useState(false);
+  const scrollTimerRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
+  const sectionsRef = useRef<Map<string, HTMLElement>>(new Map());
 
   useEffect(() => {
-    if (company?.logo) startTransition(() => setLogoError(false));
+    if (company?.logo) setLogoError(false);
   }, [company?.logo]);
 
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      for (let i = navItems.length - 1; i >= 0; i--) {
-        const el = document.getElementById(navItems[i]);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 150) {
-            setActiveSection(navItems[i]);
-            break;
-          }
-        }
+    const cacheSections = () => {
+      sectionsRef.current.clear();
+      for (const item of navItems) {
+        const el = document.getElementById(item);
+        if (el) sectionsRef.current.set(item, el);
       }
     };
+    cacheSections();
+
+    const handleScroll = () => {
+      if (scrollTimerRef.current) return;
+      scrollTimerRef.current = requestAnimationFrame(() => {
+        scrollTimerRef.current = null;
+        setScrolled(window.scrollY > 50);
+        for (let i = navItems.length - 1; i >= 0; i--) {
+          const el = sectionsRef.current.get(navItems[i]);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= 150) {
+              setActiveSection(navItems[i]);
+              break;
+            }
+          }
+        }
+      });
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const resizeObserver = new ResizeObserver(() => cacheSections());
+    resizeObserver.observe(document.body);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimerRef.current) cancelAnimationFrame(scrollTimerRef.current);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   if (pathname.startsWith("/admin")) return null;
@@ -81,6 +100,7 @@ export const Navbar = memo(function Navbar() {
                   sizes="36px"
                   className="object-contain p-1"
                   onError={() => setLogoError(true)}
+                  loading="lazy"
                 />
               ) : (
                 <span className="text-white font-bold text-sm drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">{siteInitial}</span>

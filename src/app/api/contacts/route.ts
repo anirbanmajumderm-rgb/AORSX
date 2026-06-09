@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       orderBy: { order: "asc" },
       take: 50,
     });
-    return successResponse(contacts);
+    return successResponse(contacts, 200, 60);
   } catch {
     return errorResponse("Failed to fetch contacts");
   }

@@ -10,7 +10,7 @@ export async function GET() {
     for (const s of settings) {
       result[s.key] = s.value;
     }
-    return successResponse(result);
+    return successResponse(result, 200, 60);
   } catch {
     return errorResponse("Failed to fetch settings");
   }
