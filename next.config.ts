@@ -52,7 +52,9 @@ const nextConfig: NextConfig = {
         usedExports: true,
         concatenateModules: true,
         minimize: true,
-        splitChunks: {
+      };
+      if (!isServer) {
+        config.optimization.splitChunks = {
           chunks: "all",
           maxInitialRequests: 25,
           minSize: 20000,
@@ -82,13 +84,8 @@ const nextConfig: NextConfig = {
               reuseExistingChunk: true,
             },
           },
-        },
-      };
-      config.output = {
-        ...config.output,
-        filename: dev ? undefined : "static/chunks/[name].[contenthash:8].js",
-        chunkFilename: dev ? undefined : "static/chunks/[name].[contenthash:8].js",
-      };
+        };
+      }
     }
 
     return config;
