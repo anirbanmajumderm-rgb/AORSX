@@ -119,9 +119,9 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
             )}
 
             {/* Ambient glow orbs */}
-            <div className="absolute top-[20%] left-[15%] w-72 h-72 rounded-full bg-gradient-to-r from-orange/15 to-transparent blur-[120px]" />
-            <div className="absolute bottom-[20%] right-[15%] w-72 h-72 rounded-full bg-gradient-to-l from-cyan/15 to-transparent blur-[120px]" />
-            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-gradient-to-r from-orange/5 via-cyan/5 to-orange/5 blur-[150px]" />
+            <div className="absolute top-[20%] left-[15%] w-72 h-72 max-w-[50vw] max-h-[50vw] rounded-full bg-gradient-to-r from-orange/15 to-transparent blur-[120px]" />
+            <div className="absolute bottom-[20%] right-[15%] w-72 h-72 max-w-[50vw] max-h-[50vw] rounded-full bg-gradient-to-l from-cyan/15 to-transparent blur-[120px]" />
+            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-96 h-96 max-w-[60vw] max-h-[60vw] rounded-full bg-gradient-to-r from-orange/5 via-cyan/5 to-orange/5 blur-[150px]" />
 
             {/* Light sweep beam */}
             <motion.div
@@ -142,13 +142,13 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
             />
 
             {/* Brand container */}
-            <div className="relative z-[5] flex flex-col items-center">
+            <div className="relative z-[5] flex flex-col items-center w-full max-w-full px-4">
               {/* Letter glow bursts */}
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                 {BRAND.split("").map((_, i) => (
                   <motion.div
                     key={`glow-${i}`}
-                    className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-orange/40 to-cyan/40"
+                    className="absolute w-16 h-16 max-w-[20vw] max-h-[20vw] rounded-full bg-gradient-to-r from-orange/40 to-cyan/40"
                     style={{
                       left: `calc(${(i / (totalLetters - 1)) * 100}% + ${-32 + (i / (totalLetters - 1)) * 64}px)`,
                       transform: "translateX(-50%)",
@@ -166,7 +166,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
                 {BRAND.split("").map((char, i) => (
                   <div key={i} className="relative">
                     <motion.span
-                      className="inline-block text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-[-0.02em]"
+                      className="inline-block text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-[-0.02em]"
                       style={{
                         fontFamily: "var(--font-space, 'Space Grotesk'), sans-serif",
                         background:

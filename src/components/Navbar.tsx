@@ -204,9 +204,9 @@ export const Navbar = memo(function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden border-t border-white/10 bg-black/95 backdrop-blur-xl"
+            className="md:hidden overflow-x-hidden overflow-y-auto border-t border-white/10 bg-black/95 backdrop-blur-xl max-h-[80vh]"
           >
-            <div className="px-4 py-6 space-y-2">
+            <div className="px-4 py-6 space-y-2 w-full max-w-full">
               {navItems.map((item) => (
                 <a
                   key={item}

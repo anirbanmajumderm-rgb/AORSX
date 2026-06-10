@@ -79,7 +79,7 @@ export const Services = memo(function Services() {
   if (!isEnabled) return null;
 
   return (
-    <section id="services" className="relative py-20 md:py-30">
+    <section id="services" className="relative py-20 md:py-30 overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           label={data?.settings?.sec_services_label || t("services.title")}

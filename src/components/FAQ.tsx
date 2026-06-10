@@ -78,8 +78,8 @@ export const FAQ = memo(function FAQ() {
 
   return (
     <section id="faq" className="relative py-20 md:py-30 overflow-hidden">
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-bl from-orange/5 to-transparent blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyan/5 to-transparent blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] max-w-[50vw] max-h-[50vw] bg-gradient-to-bl from-orange/5 to-transparent blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] max-w-[50vw] max-h-[50vw] bg-gradient-to-tr from-cyan/5 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading

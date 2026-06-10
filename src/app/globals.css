@@ -150,6 +150,16 @@
   }
 }
 
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background-color: var(--color-primary-bg);
   color: var(--color-main-text);
@@ -157,6 +167,33 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+button, a, input, textarea, select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  font-size: 16px;
+}
+
+::-webkit-search-decoration,
+::-webkit-cancel-button,
+::-webkit-results-button,
+::-webkit-results-decoration {
+  -webkit-appearance: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -187,6 +224,22 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-on-scroll,
+  .animate-on-scroll-stagger,
+  .cine-reveal,
+  .reveal-up,
+  [class*="animate-"],
+  [class*="cine-"] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }
 
@@ -898,15 +951,6 @@ html {
 .animate-on-scroll .animate-on-scroll-stagger:nth-child(2) { animation-delay: 0.2s; }
 .animate-on-scroll .animate-on-scroll-stagger:nth-child(3) { animation-delay: 0.3s; }
 
-/* Reduce motion for prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  .animate-on-scroll,
-  .animate-on-scroll-stagger {
-    opacity: 1;
-    animation: none;
-  }
-}
-
 /* ===== MOBILE RESPONSIVENESS ===== */
 
 @layer utilities {
@@ -924,14 +968,23 @@ html {
   }
 }
 
-@media (max-width: 640px) {
-  body {
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 3px;
   }
 
-  input, textarea, select {
-    font-size: 16px !important;
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    -webkit-overflow-scrolling: touch;
   }
 
   .noise-overlay {
@@ -940,12 +993,6 @@ html {
 
   .grid-pattern {
     background-size: 40px 40px;
-  }
-
-  .hero-gradient-mesh {
-    background:
-      radial-gradient(ellipse 100% 80% at 30% 20%, rgba(255, 107, 0, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 100% 80% at 70% 80%, rgba(0, 229, 255, 0.06) 0%, transparent 60%);
   }
 
   .glow-orb,
@@ -965,10 +1012,10 @@ html {
     font-size: 0.85rem !important;
   }
 
-  .hero-gradient-mesh {
-    background:
-      radial-gradient(ellipse 100% 80% at 30% 20%, rgba(255, 107, 0, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 100% 80% at 70% 80%, rgba(0, 229, 255, 0.06) 0%, transparent 60%);
+  [style*="position: fixed"],
+  [class*="fixed"],
+  [class*="absolute"] {
+    max-width: 100vw;
   }
 }
 
@@ -984,20 +1031,6 @@ html {
 
   .cinematic-intro-letter {
     font-size: clamp(2.5rem, 12vw, 4rem) !important;
-  }
-}
-
-@media (max-width: 768px) {
-  ::-webkit-scrollbar {
-    width: 3px;
-  }
-
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
   }
 }
 
@@ -1022,9 +1055,19 @@ html {
   scroll-behavior: smooth;
 }
 
-/* In-app browser fixes */
+/* In-app browser and Facebook/Messenger browser fixes */
 @supports (-webkit-overflow-scrolling: touch) {
   .fixed {
     -webkit-transform: translateZ(0);
   }
+}
+
+/* Fix for Facebook/Messenger in-app browser viewport issues */
+@viewport {
+  width: device-width;
+  zoom: 1;
+}
+
+@-ms-viewport {
+  width: device-width;
 }

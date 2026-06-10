@@ -29,6 +29,11 @@ function isLowEndDevice(): boolean {
   return false;
 }
 
+function isMobileDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768 || "ontouchstart" in window;
+}
+
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -47,7 +52,7 @@ export function BackgroundEffects() {
 
     if (prefersReducedMotion()) return;
 
-    const isLowEnd = isLowEndDevice();
+    const isLowEnd = isLowEndDevice() || isMobileDevice();
 
     let animationId: number;
     let particles: Particle[] = [];
@@ -256,10 +261,10 @@ export function BackgroundEffects() {
       <div className="fixed inset-0 noise-overlay pointer-events-none z-[1]" />
 
       {/* Ambient glow orbs */}
-      <div className="fixed top-[-15%] left-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-br from-orange/8 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" />
-      <div className="fixed top-[20%] right-[-15%] w-[45%] h-[45%] rounded-full bg-gradient-to-bl from-cyan/8 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-5s" }} />
-      <div className="fixed bottom-[-20%] left-[10%] w-[55%] h-[55%] rounded-full bg-gradient-to-tr from-cyan/5 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-10s" }} />
-      <div className="fixed top-[50%] left-[30%] w-[40%] h-[40%] rounded-full bg-gradient-to-r from-orange/4 to-cyan/4 blur-[120px] pointer-events-none z-0 animate-breathe" />
+      <div className="fixed top-[-15%] left-[-10%] w-[50%] h-[50%] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-br from-orange/8 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" />
+      <div className="fixed top-[20%] right-[-15%] w-[45%] h-[45%] max-w-[70vw] max-h-[70vw] rounded-full bg-gradient-to-bl from-cyan/8 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-5s" }} />
+      <div className="fixed bottom-[-20%] left-[10%] w-[55%] h-[55%] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-tr from-cyan/5 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-10s" }} />
+      <div className="fixed top-[50%] left-[30%] w-[40%] h-[40%] max-w-[60vw] max-h-[60vw] rounded-full bg-gradient-to-r from-orange/4 to-cyan/4 blur-[120px] pointer-events-none z-0 animate-breathe" />
 
       {/* Decorative gradient lines */}
       <div className="fixed top-1/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange/10 to-transparent pointer-events-none z-0" />

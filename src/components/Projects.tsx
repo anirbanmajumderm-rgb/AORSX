@@ -28,7 +28,7 @@ export const Projects = memo(function Projects() {
   const techStack = (p: typeof projects[number]) =>
     p.technologies ? p.technologies.split(",").map((s: string) => s.trim()) : [];
   return (
-    <section id="projects" className="relative py-20 md:py-30">
+    <section id="projects" className="relative py-20 md:py-30 overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           label={data?.settings?.sec_projects_label || t("projects.title")}

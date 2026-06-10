@@ -24,6 +24,8 @@ const jetbrainsMono = JetBrains_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 let cachedMetadata: { data: Metadata; ts: number } | null = null;
@@ -95,14 +97,18 @@ export default async function RootLayout({
       lang="en"
       className={`${poppins.variable} ${jetbrainsMono.variable} scroll-smooth`}
       style={{
+        overflowX: "hidden",
+        width: "100%",
+        maxWidth: "100%",
         "--font-body": "var(--font-poppins)",
         "--font-heading-custom": "var(--font-poppins)",
         "--font-mono-custom": "var(--font-jetbrains)",
         "--font-brand": "var(--font-poppins)",
         "--font-brand-alt": "var(--font-poppins)",
       } as React.CSSProperties}
+      suppressHydrationWarning
     >
-      <body className="relative min-h-screen bg-primary-bg text-main-text antialiased overflow-x-hidden">
+      <body className="relative min-h-screen w-full max-w-full bg-primary-bg text-main-text antialiased overflow-x-hidden">
         <AnalyticsTracker />
         {children}
       </body>

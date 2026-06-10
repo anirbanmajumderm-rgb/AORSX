@@ -67,7 +67,7 @@ export const Reviews = memo(function Reviews() {
   return (
     <section id="reviews" className="relative py-20 md:py-30 overflow-hidden">
       {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-br from-orange/5 via-cyan/5 to-orange/5 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] max-w-[80vw] max-h-[60vw] bg-gradient-to-br from-orange/5 via-cyan/5 to-orange/5 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading

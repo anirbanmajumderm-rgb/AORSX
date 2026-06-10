@@ -95,8 +95,8 @@ const Contact = memo(function Contact() {
   return (
     <section id="contact" className="relative py-20 md:py-30 overflow-hidden">
       {/* Decorative elements */}
-      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-gradient-to-bl from-cyan/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-orange/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] max-w-[60vw] max-h-[60vw] bg-gradient-to-bl from-cyan/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] max-w-[60vw] max-h-[60vw] bg-gradient-to-tr from-orange/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading

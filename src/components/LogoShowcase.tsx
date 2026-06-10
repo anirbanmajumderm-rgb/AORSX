@@ -35,7 +35,7 @@ export const LogoShowcase = memo(function LogoShowcase() {
     <section className="relative py-20 md:py-28 overflow-hidden">
       {/* Ambient glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[600px] h-[600px] rounded-full bg-gradient-to-br from-orange/5 via-cyan/5 to-orange/5 blur-[120px] animate-breathe" />
+        <div className="w-[600px] h-[600px] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-br from-orange/5 via-cyan/5 to-orange/5 blur-[120px] animate-breathe" />
       </div>
 
       <motion.div
@@ -79,7 +79,7 @@ export const LogoShowcase = memo(function LogoShowcase() {
                   alt={`${company.name} logo`}
                   width={400}
                   height={160}
-                  className="max-w-[280px] md:max-w-[400px] max-h-[120px] md:max-h-[160px] object-contain"
+                  className="w-auto h-auto max-w-[280px] md:max-w-[400px] max-h-[120px] md:max-h-[160px] object-contain"
                   style={{
                     filter: "drop-shadow(0 0 30px rgba(255,107,0,0.2))",
                   }}
@@ -94,9 +94,9 @@ export const LogoShowcase = memo(function LogoShowcase() {
               <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-orange/30 rounded-br-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             </div>
 
-            {/* Orbiting glow dots */}
+            {/* Orbiting glow dots - hidden on mobile to prevent overflow */}
             <motion.div
-              className="absolute -inset-12 rounded-full"
+              className="absolute -inset-12 rounded-full hidden sm:block"
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             >
@@ -122,9 +122,9 @@ export const LogoShowcase = memo(function LogoShowcase() {
               ))}
             </motion.div>
 
-            {/* Second orbit ring */}
+            {/* Second orbit ring - hidden on mobile */}
             <motion.div
-              className="absolute -inset-16 rounded-full border border-dashed border-white/5"
+              className="absolute -inset-16 rounded-full border border-dashed border-white/5 hidden sm:block"
               animate={{ rotate: -360 }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             />

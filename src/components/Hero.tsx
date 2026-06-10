@@ -21,12 +21,22 @@ const Hero3DScene = dynamic(() => import("@/components/Hero3D"), { ssr: false })
 
 const easeOut = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
+function isMobileDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768;
+}
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function GlowingButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`relative group ${className}`}>
       <div className="absolute -inset-1 bg-gradient-to-r from-orange via-cyan to-cyan rounded-[var(--radius-button)] opacity-40 blur-xl group-hover:opacity-70 group-hover:blur-2xl transition-all duration-700" />
       <div className="absolute -inset-0.5 bg-gradient-to-r from-orange via-cyan to-cyan rounded-[var(--radius-button)] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="relative px-8 py-4 bg-primary-bg rounded-[calc(var(--radius-button)-1px)] flex items-center gap-2.5 text-base font-medium text-main-text group-hover:bg-transparent transition-all duration-500">
+      <div className="relative px-5 sm:px-8 py-4 bg-primary-bg rounded-[calc(var(--radius-button)-1px)] flex items-center gap-2.5 text-sm sm:text-base font-medium text-main-text group-hover:bg-transparent transition-all duration-500">
         {children}
       </div>
     </div>
@@ -77,13 +87,13 @@ const Hero = memo(function Hero() {
       <div className="absolute inset-0 hero-gradient-mesh" />
       <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[40%] rounded-full bg-gradient-to-r from-orange/8 to-transparent blur-[120px] animate-aurora" />
       <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[35%] rounded-full bg-gradient-to-l from-cyan/8 to-transparent blur-[120px] animate-aurora" style={{ animationDelay: "-4s" }} />
-      <div className="absolute top-[15%] left-[10%] w-[600px] h-[600px] rounded-full bg-orange/6 blur-[150px] animate-cinematic-glow" />
-      <div className="absolute top-[40%] right-[5%] w-[500px] h-[500px] rounded-full bg-cyan/6 blur-[140px] animate-cinematic-glow" style={{ animationDelay: "-2s" }} />
-      <div className="absolute bottom-[10%] left-[35%] w-[450px] h-[450px] rounded-full bg-cyan/5 blur-[120px] animate-cinematic-glow" style={{ animationDelay: "-4s" }} />
+      <div className="absolute top-[15%] left-[10%] w-[600px] h-[600px] max-w-[80vw] max-h-[80vw] rounded-full bg-orange/6 blur-[150px] animate-cinematic-glow" />
+      <div className="absolute top-[40%] right-[5%] w-[500px] h-[500px] max-w-[70vw] max-h-[70vw] rounded-full bg-cyan/6 blur-[140px] animate-cinematic-glow" style={{ animationDelay: "-2s" }} />
+      <div className="absolute bottom-[10%] left-[35%] w-[450px] h-[450px] max-w-[60vw] max-h-[60vw] rounded-full bg-cyan/5 blur-[120px] animate-cinematic-glow" style={{ animationDelay: "-4s" }} />
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ willChange: "transform" }}>
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full"
@@ -112,7 +122,7 @@ const Hero = memo(function Hero() {
           className="font-bold leading-none tracking-[-0.04em]"
           style={{
             fontFamily: "var(--font-space, 'Space Grotesk'), sans-serif",
-            fontSize: "clamp(16rem, 35vw, 45rem)",
+            fontSize: "clamp(6rem, 30vw, 45rem)",
             background: "linear-gradient(180deg, rgba(255,107,0,0.06) 0%, rgba(0,229,255,0.04) 50%, rgba(255,107,0,0.02) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -128,7 +138,7 @@ const Hero = memo(function Hero() {
       </div>
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-24 items-center">
           {/* LEFT SIDE */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -202,18 +212,18 @@ const Hero = memo(function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
-              className="flex flex-wrap gap-5 mb-14"
+              className="flex flex-wrap gap-3 sm:gap-5 mb-14"
             >
-              <GlowingButton>
-                <a href="#projects" className="flex items-center gap-2.5">
+              <GlowingButton className="flex-1 sm:flex-none min-w-0">
+                <a href="#projects" className="flex items-center gap-2.5 whitespace-nowrap">
                   {t("hero.viewProjects")}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 shrink-0" />
                 </a>
               </GlowingButton>
 
               <a
                 href="#contact"
-                className="relative inline-flex items-center gap-2.5 px-8 py-4 rounded-[var(--radius-button)] glass text-main-text text-base font-medium group hover:bg-white/[0.08] transition-all duration-300"
+                className="relative inline-flex items-center gap-2.5 px-6 sm:px-8 py-4 rounded-[var(--radius-button)] glass text-main-text text-sm sm:text-base font-medium group hover:bg-white/[0.08] transition-all duration-300 flex-1 sm:flex-none justify-center"
               >
                 <span className="relative z-10 flex items-center gap-2.5">
                   {t("hero.talkWithUs")}
@@ -234,7 +244,7 @@ const Hero = memo(function Hero() {
               transition={{ duration: 0.6, delay: 1.0, ease: "easeOut" }}
               className="mb-10"
             >
-              <div               className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-12">
+              <div               className="flex flex-wrap items-center gap-3 sm:gap-6 md:gap-12">
                 {stats.map((stat, si) => (
                   <motion.div
                     key={stat.label}

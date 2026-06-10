@@ -7,8 +7,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.amazonaws.com" },
     ],
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    deviceSizes: [320, 420, 640, 768, 1024, 1280, 1536, 1920],
+    imageSizes: [16, 24, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000,
   },
 
   serverExternalPackages: ["bcryptjs", "@prisma/client"],
@@ -51,6 +52,37 @@ const nextConfig: NextConfig = {
         usedExports: true,
         concatenateModules: true,
         minimize: true,
+        splitChunks: {
+          chunks: "all",
+          maxInitialRequests: 25,
+          minSize: 20000,
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            framework: {
+              name: "framework",
+              chunks: "all",
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
+              priority: 40,
+              enforce: true,
+            },
+            lib: {
+              test: /[\\/]node_modules[\\/]/,
+              name(module: { context: string }) {
+                const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
+                if (!match) return "lib-other";
+                const packageName = match[1];
+                if (["framer-motion", "lucide-react", "next-auth", "recharts"].includes(packageName)) {
+                  return `lib-${packageName.replace("@", "").replace("/", "-")}`;
+                }
+                return "lib-other";
+              },
+              priority: 20,
+              minSize: 30000,
+              reuseExistingChunk: true,
+            },
+          },
+        },
       };
       config.output = {
         ...config.output,
@@ -63,16 +95,16 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion", "recharts"],
+    optimizePackageImports: ["lucide-react", "framer-motion", "recharts", "three"],
   },
 
   onDemandEntries: {
-    maxInactiveAge: 300 * 1000,
-    pagesBufferLength: 5,
+    maxInactiveAge: 600 * 1000,
+    pagesBufferLength: 3,
   },
 
   poweredByHeader: false,
-  reactStrictMode: process.env.NODE_ENV === "development",
+  reactStrictMode: false,
   productionBrowserSourceMaps: false,
 };
 

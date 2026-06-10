@@ -38,7 +38,7 @@ function PersonCard({ person, index }: { person: any; index: number }) {
         <div className="flex items-center gap-5 mb-6">
           <div className="relative">
             {person.photo && !imgError ? (
-              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan/30 shadow-lg shadow-cyan/20 relative">
+              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-cyan/30 shadow-lg shadow-cyan/20 relative shrink-0">
                 <Image
                   src={person.photo}
                   alt={person.name}
@@ -46,10 +46,11 @@ function PersonCard({ person, index }: { person: any; index: number }) {
                   sizes="80px"
                   className="object-cover"
                   onError={() => setImgError(true)}
+                  loading="lazy"
                 />
               </div>
             ) : (
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange via-cyan to-cyan flex items-center justify-center shadow-lg shadow-cyan/20">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange via-cyan to-cyan flex items-center justify-center shadow-lg shadow-cyan/20 shrink-0">
                 <span className="text-3xl font-bold font-heading text-white">
                   {getInitials(person.name)}
                 </span>
