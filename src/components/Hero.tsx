@@ -21,16 +21,6 @@ const Hero3DScene = dynamic(() => import("@/components/Hero3D"), { ssr: false })
 
 const easeOut = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-function isMobileDevice(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.innerWidth < 768;
-}
-
-function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 function GlowingButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`relative group ${className}`}>
