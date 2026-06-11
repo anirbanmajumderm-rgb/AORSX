@@ -149,6 +149,7 @@ export function AIAssistant() {
     { id: 2, text: t("ai.initialMessage"), sender: "ai" },
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [kbHeight, setKbHeight] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -162,6 +163,20 @@ export function AIAssistant() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const onResize = () => {
+      if (!window.visualViewport) return;
+      const diff = Math.max(0, window.innerHeight - window.visualViewport.height);
+      setKbHeight(diff > 60 ? diff + 12 : 0);
+    };
+
+    vv.addEventListener("resize", onResize);
+    return () => vv.removeEventListener("resize", onResize);
+  }, []);
 
   const handleToggleOpen = useCallback(() => {
     const next = !isOpen;
@@ -211,6 +226,19 @@ export function AIAssistant() {
     }
   }, [inputValue, messages, lang]);
 
+  const handleInputFocus = useCallback(() => {
+    if (!window.visualViewport) return;
+    setTimeout(() => {
+      if (!window.visualViewport) return;
+      const diff = Math.max(0, window.innerHeight - window.visualViewport.height);
+      if (diff > 50) setKbHeight(diff + 12);
+    }, 400);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setTimeout(() => setKbHeight(0), 200);
+  }, []);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -221,7 +249,7 @@ export function AIAssistant() {
   if (!aiEnabled) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed right-6 z-50" style={{ bottom: kbHeight > 0 ? `calc(24px + ${kbHeight}px)` : "24px" }}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -229,8 +257,11 @@ export function AIAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[82vw] max-w-[320px] sm:w-[320px] lg:w-[340px]"
-            style={{ height: "min(50vh, 420px)", maxHeight: "min(55vh, 460px)" }}
+            className="absolute bottom-20 right-0 w-[82vw] max-w-[340px] sm:w-[340px] lg:w-[360px]"
+            style={{
+              height: kbHeight > 0 ? "min(35vh, 300px)" : "min(55vh, 500px)",
+              maxHeight: kbHeight > 0 ? "min(40vh, 350px)" : "min(60vh, 550px)",
+            }}
           >
               <div className="relative h-full flex flex-col min-h-0">
               <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange/40 via-cyan/40 to-cyan/40 opacity-40 blur-sm" />
@@ -323,6 +354,8 @@ export function AIAssistant() {
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
+                      onFocus={handleInputFocus}
+                      onBlur={handleInputBlur}
                       onKeyDown={handleKeyDown}
                       placeholder={lang === "bn" ? "একটি বার্তা লিখুন..." : "Type a message..."}
                       className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-main-text placeholder:text-muted-text/60 focus:outline-none focus:border-cyan/30 focus:ring-1 focus:ring-cyan/20 transition-all duration-300"
