@@ -168,14 +168,32 @@ export function AIAssistant() {
     const vv = window.visualViewport;
     if (!vv) return;
 
-    const onResize = () => {
+    let refHeight = Math.max(
+      document.documentElement.clientHeight,
+      window.innerHeight,
+      vv.height
+    );
+
+    const detect = () => {
       if (!window.visualViewport) return;
-      const diff = Math.max(0, window.innerHeight - window.visualViewport.height);
-      setKbHeight(diff > 60 ? diff + 12 : 0);
+      const c = window.visualViewport.height;
+
+      if (c >= refHeight - 20) {
+        refHeight = Math.max(refHeight, c);
+      }
+
+      const kb = Math.max(0, refHeight - c);
+      setKbHeight(kb > 50 ? kb + 12 : 0);
     };
 
-    vv.addEventListener("resize", onResize);
-    return () => vv.removeEventListener("resize", onResize);
+    vv.addEventListener("resize", detect);
+    const interval = setInterval(detect, 300);
+    detect();
+
+    return () => {
+      vv.removeEventListener("resize", detect);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleToggleOpen = useCallback(() => {
@@ -249,7 +267,7 @@ export function AIAssistant() {
   if (!aiEnabled) return null;
 
   return (
-    <div className="fixed right-6 z-50" style={{ bottom: kbHeight > 0 ? `calc(24px + ${kbHeight}px)` : "24px" }}>
+    <div className="fixed right-6 z-50" style={{ bottom: kbHeight > 0 ? `calc(24px + env(safe-area-inset-bottom, 0px) + ${kbHeight}px)` : "calc(24px + env(safe-area-inset-bottom, 0px))" }}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -257,10 +275,10 @@ export function AIAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[82vw] max-w-[340px] sm:w-[340px] lg:w-[360px]"
+            className="absolute bottom-20 right-0 w-[85vw] max-w-[320px] sm:w-[340px] lg:w-[360px]"
             style={{
-              height: kbHeight > 0 ? "min(35vh, 300px)" : "min(55vh, 500px)",
-              maxHeight: kbHeight > 0 ? "min(40vh, 350px)" : "min(60vh, 550px)",
+              height: kbHeight > 0 ? "min(300px, 35dvh)" : "min(420px, 55dvh)",
+              maxHeight: kbHeight > 0 ? "min(350px, 40dvh)" : "55dvh",
             }}
           >
               <div className="relative h-full flex flex-col min-h-0">
