@@ -229,9 +229,10 @@ export function AIAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[360px] sm:w-[400px] max-w-[calc(100vw-2rem)]"
+            className="absolute bottom-20 right-0 w-[90vw] max-w-[380px] sm:w-[360px] lg:w-[400px] lg:max-w-[40vw]"
+            style={{ height: "min(65vh, 550px)", maxHeight: "min(75vh, 650px)" }}
           >
-            <div className="relative">
+              <div className="relative h-full flex flex-col min-h-0">
               <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange/40 via-cyan/40 to-cyan/40 opacity-40 blur-sm" />
               <div className="relative rounded-2xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 overflow-hidden shadow-[0_0_60px_rgba(0,229,255,0.08)]">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/[0.02]">
@@ -266,7 +267,7 @@ export function AIAssistant() {
                   </button>
                 </div>
 
-                <div className="h-[380px] overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin">
+                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin min-h-0">
                   {messages.map((msg, i) => (
                     <motion.div
                       key={msg.id}
