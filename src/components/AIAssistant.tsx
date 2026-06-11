@@ -165,35 +165,16 @@ export function AIAssistant() {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    let refHeight = Math.max(
-      document.documentElement.clientHeight,
-      window.innerHeight,
-      vv.height
-    );
-
-    const detect = () => {
-      if (!window.visualViewport) return;
-      const c = window.visualViewport.height;
-
-      if (c >= refHeight - 20) {
-        refHeight = Math.max(refHeight, c);
-      }
-
-      const kb = Math.max(0, refHeight - c);
-      setKbHeight(kb > 50 ? kb + 12 : 0);
-    };
-
-    vv.addEventListener("resize", detect);
-    const interval = setInterval(detect, 300);
-    detect();
-
-    return () => {
-      vv.removeEventListener("resize", detect);
-      clearInterval(interval);
-    };
+    const timer = setInterval(() => {
+      const v = window.visualViewport;
+      if (!v) return;
+      const d = (window.innerHeight || document.documentElement.clientHeight) - v.height;
+      setKbHeight(h => {
+        const n = d > 50 ? d + 12 : 0;
+        return n !== h ? n : h;
+      });
+    }, 300);
+    return () => clearInterval(timer);
   }, []);
 
   const handleToggleOpen = useCallback(() => {
@@ -245,11 +226,11 @@ export function AIAssistant() {
   }, [inputValue, messages, lang]);
 
   const handleInputFocus = useCallback(() => {
-    if (!window.visualViewport) return;
     setTimeout(() => {
-      if (!window.visualViewport) return;
-      const diff = Math.max(0, window.innerHeight - window.visualViewport.height);
-      if (diff > 50) setKbHeight(diff + 12);
+      const v = window.visualViewport;
+      if (!v) return;
+      const d = (window.innerHeight || document.documentElement.clientHeight) - v.height;
+      if (d > 50) setKbHeight(d + 12);
     }, 400);
   }, []);
 
@@ -267,7 +248,7 @@ export function AIAssistant() {
   if (!aiEnabled) return null;
 
   return (
-    <div className="fixed right-6 z-50" style={{ bottom: kbHeight > 0 ? `calc(24px + env(safe-area-inset-bottom, 0px) + ${kbHeight}px)` : "calc(24px + env(safe-area-inset-bottom, 0px))" }}>
+    <div className="fixed z-50" style={{ right: "clamp(12px, 4vw, 24px)", bottom: kbHeight > 0 ? `calc(clamp(12px, 4vw, 24px) + ${kbHeight}px)` : "clamp(12px, 4vw, 24px)" }}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -275,10 +256,10 @@ export function AIAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[85vw] max-w-[320px] sm:w-[340px] lg:w-[360px]"
+            className="absolute bottom-20 right-0"
             style={{
-              height: kbHeight > 0 ? "min(300px, 35dvh)" : "min(420px, 55dvh)",
-              maxHeight: kbHeight > 0 ? "min(350px, 40dvh)" : "55dvh",
+              width: "clamp(240px, 70vw, 340px)",
+              height: kbHeight > 0 ? "clamp(200px, 35dvh, 300px)" : "clamp(300px, 50dvh, 420px)",
             }}
           >
               <div className="relative h-full flex flex-col min-h-0">
