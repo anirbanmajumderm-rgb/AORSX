@@ -229,8 +229,8 @@ export function AIAssistant() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-20 right-0 w-[90vw] max-w-[380px] sm:w-[360px] lg:w-[400px] lg:max-w-[40vw]"
-            style={{ height: "min(65vh, 550px)", maxHeight: "min(75vh, 650px)" }}
+            className="absolute bottom-20 right-0 w-[82vw] max-w-[320px] sm:w-[320px] lg:w-[340px]"
+            style={{ height: "min(50vh, 420px)", maxHeight: "min(55vh, 460px)" }}
           >
               <div className="relative h-full flex flex-col min-h-0">
               <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange/40 via-cyan/40 to-cyan/40 opacity-40 blur-sm" />
