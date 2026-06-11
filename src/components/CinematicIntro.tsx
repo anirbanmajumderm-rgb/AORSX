@@ -8,10 +8,10 @@ const BRAND = "A-ORSX";
 const letterVariants = {
   hidden: {
     opacity: 0,
-    y: 120,
-    rotateX: -100,
-    scale: 3,
-    filter: "blur(20px)",
+    y: 80,
+    rotateX: -60,
+    scale: 2,
+    filter: "blur(15px)",
   },
   visible: (i: number) => ({
     opacity: 1,
@@ -20,8 +20,8 @@ const letterVariants = {
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      duration: 1,
-      delay: 0.5 + i * 0.22,
+      duration: 0.8,
+      delay: 0.4 + i * 0.18,
       ease: [0.16, 1, 0.3, 1] as const,
     },
   }),
@@ -30,11 +30,11 @@ const letterVariants = {
 const glowVariants = {
   hidden: { opacity: 0, scale: 0.5 },
   visible: (i: number) => ({
-    opacity: [0, 0.4, 0.15],
-    scale: [0.5, 1.5, 1],
+    opacity: [0, 0.3, 0.1],
+    scale: [0.5, 1.2, 0.9],
     transition: {
-      duration: 1.2,
-      delay: 0.5 + i * 0.22,
+      duration: 1,
+      delay: 0.4 + i * 0.18,
       ease: "easeOut" as const,
     },
   }),
@@ -78,6 +78,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
           <motion.div
             key="cine-intro"
             className="fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden"
+            style={{ willChange: "opacity", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" } as React.CSSProperties}
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -113,17 +114,17 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
                 }}
                 style={{
                   background:
-                    "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(180,220,255,0.9) 25%, rgba(255,107,0,0.2) 50%, transparent 70%)",
+                    "radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, rgba(180,220,255,0.6) 25%, rgba(255,107,0,0.15) 50%, transparent 70%)",
                 }}
               />
             )}
 
-            {/* Ambient glow orbs */}
-            <div className="absolute top-[20%] left-[15%] w-72 h-72 max-w-[50vw] max-h-[50vw] rounded-full bg-gradient-to-r from-orange/15 to-transparent blur-[120px]" />
-            <div className="absolute bottom-[20%] right-[15%] w-72 h-72 max-w-[50vw] max-h-[50vw] rounded-full bg-gradient-to-l from-cyan/15 to-transparent blur-[120px]" />
-            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-96 h-96 max-w-[60vw] max-h-[60vw] rounded-full bg-gradient-to-r from-orange/5 via-cyan/5 to-orange/5 blur-[150px]" />
+            {/* Ambient glow orbs - reduced size by 33% */}
+            <div className="absolute top-[20%] left-[15%] w-48 h-48 max-w-[35vw] max-h-[35vh] rounded-full bg-gradient-to-r from-orange/15 to-transparent blur-[80px]" />
+            <div className="absolute bottom-[20%] right-[15%] w-48 h-48 max-w-[35vw] max-h-[35vh] rounded-full bg-gradient-to-l from-cyan/15 to-transparent blur-[80px]" />
+            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-64 h-64 max-w-[40vw] max-h-[40vh] rounded-full bg-gradient-to-r from-orange/5 via-cyan/5 to-orange/5 blur-[100px]" />
 
-            {/* Light sweep beam */}
+            {/* Light sweep beam - reduced intensity */}
             <motion.div
               ref={sweepRef}
               className="absolute inset-0 z-[3] pointer-events-none"
@@ -136,19 +137,19 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
               }}
               style={{
                 background:
-                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.02) 20%, rgba(255,255,255,0.06) 40%, rgba(255,107,0,0.03) 55%, rgba(0,229,255,0.03) 70%, rgba(255,255,255,0.02) 85%, transparent 100%)",
-                width: "90%",
+                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.015) 20%, rgba(255,255,255,0.04) 40%, rgba(255,107,0,0.02) 55%, rgba(0,229,255,0.02) 70%, rgba(255,255,255,0.015) 85%, transparent 100%)",
+                width: "70%",
               }}
             />
 
-            {/* Brand container */}
-            <div className="relative z-[5] flex flex-col items-center w-full max-w-full px-4">
-              {/* Letter glow bursts */}
+            {/* Brand container - constrained to 70vw / 40vh on mobile */}
+            <div className="relative z-[5] flex flex-col items-center w-full max-w-[90vw] md:max-w-full px-4" style={{ maxHeight: "50vh" }}>
+              {/* Letter glow bursts - reduced size */}
               <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                 {BRAND.split("").map((_, i) => (
                   <motion.div
                     key={`glow-${i}`}
-                    className="absolute w-16 h-16 max-w-[20vw] max-h-[20vw] rounded-full bg-gradient-to-r from-orange/40 to-cyan/40"
+                    className="absolute w-10 h-10 max-w-[15vw] max-h-[15vw] rounded-full bg-gradient-to-r from-orange/30 to-cyan/30"
                     style={{
                       left: `calc(${(i / (totalLetters - 1)) * 100}% + ${-32 + (i / (totalLetters - 1)) * 64}px)`,
                       transform: "translateX(-50%)",
@@ -166,7 +167,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
                 {BRAND.split("").map((char, i) => (
                   <div key={i} className="relative">
                     <motion.span
-                      className="inline-block text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-[-0.02em]"
+                      className="inline-block text-[clamp(2rem,10vw,5rem)] sm:text-[clamp(2.5rem,8vw,5rem)] md:text-[clamp(3rem,6vw,6rem)] lg:text-[clamp(3.5rem,5vw,7rem)] font-bold leading-none tracking-[-0.02em]"
                       style={{
                         fontFamily: "var(--font-space, 'Space Grotesk'), sans-serif",
                         background:
@@ -195,7 +196,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
               <AnimatePresence>
                 {showTagline && (
                   <motion.p
-                    className="text-xs md:text-sm text-white/25 tracking-[0.35em] uppercase mt-6 font-light"
+                    className="text-[10px] md:text-sm text-white/25 tracking-[0.35em] uppercase mt-4 md:mt-6 font-light"
                     initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -207,9 +208,9 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
 
               {/* Subtle bottom line */}
               <motion.div
-                className="mt-10 h-px w-0"
+                className="mt-6 md:mt-10 h-px w-0"
                 initial={{ width: 0 }}
-                animate={{ width: "6rem" }}
+                animate={{ width: "4rem" }}
                 transition={{ duration: 1.2, delay: 2.6, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   background:

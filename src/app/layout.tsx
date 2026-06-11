@@ -26,6 +26,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#050505",
 };
 
 let cachedMetadata: { data: Metadata; ts: number } | null = null;
@@ -108,7 +110,7 @@ export default async function RootLayout({
       } as React.CSSProperties}
       suppressHydrationWarning
     >
-      <body className="relative min-h-screen w-full max-w-full bg-primary-bg text-main-text antialiased overflow-x-hidden">
+      <body className="relative min-h-screen min-h-[100dvh] w-full max-w-full bg-primary-bg text-main-text antialiased overflow-x-hidden" style={{ minWidth: "320px", WebkitFontSmoothing: "antialiased" } as React.CSSProperties}>
         <AnalyticsTracker />
         {children}
       </body>

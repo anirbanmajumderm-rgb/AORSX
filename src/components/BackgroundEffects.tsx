@@ -53,13 +53,14 @@ export function BackgroundEffects() {
     if (prefersReducedMotion()) return;
 
     const isLowEnd = isLowEndDevice() || isMobileDevice();
+    const isMobile = isMobileDevice();
 
     let animationId: number;
     let particles: Particle[] = [];
     const trails: Trail[] = [];
     let trailTimer = 0;
     let lastFrameTime = performance.now();
-    const targetFPS = isLowEnd ? 30 : 60;
+    const targetFPS = isLowEnd ? 24 : isMobile ? 30 : 60;
     const frameInterval = 1000 / targetFPS;
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -70,15 +71,15 @@ export function BackgroundEffects() {
     };
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 2);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       ctx.scale(dpr, dpr);
     };
 
     const initParticles = () => {
-      const density = isLowEnd ? 12000 : 6000;
-      const maxCount = isLowEnd ? 60 : 200;
+      const density = isLowEnd ? 18000 : isMobile ? 15000 : 6000;
+      const maxCount = isLowEnd ? 35 : isMobile ? 50 : 200;
       const count = Math.min(
         Math.floor((window.innerWidth * window.innerHeight) / density),
         maxCount
@@ -99,6 +100,11 @@ export function BackgroundEffects() {
       }
     };
 
+    const hasTrails = !isLowEnd && !isMobile;
+    const hasConnections = !isLowEnd && !isMobile;
+    const hasMouseInteraction = !isLowEnd && !isMobile;
+    const hasShootingStars = !isLowEnd && !isMobile;
+
     const draw = (now: number) => {
       const elapsed = now - lastFrameTime;
 
@@ -113,7 +119,7 @@ export function BackgroundEffects() {
       const mouse = mouseRef.current;
       trailTimer++;
 
-      if (!isLowEnd && trailTimer % 2 === 0) {
+      if (hasTrails && trailTimer % 2 === 0) {
         const dx = mouse.x - mouse.prevX;
         const dy = mouse.y - mouse.prevY;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -123,7 +129,7 @@ export function BackgroundEffects() {
         }
       }
 
-      if (!isLowEnd) {
+      if (hasTrails) {
         for (let i = 0; i < trails.length; i++) {
           const t = trails[i];
           t.alpha *= 0.97;
@@ -156,7 +162,7 @@ export function BackgroundEffects() {
           continue;
         }
 
-        if (!isLowEnd) {
+        if (hasMouseInteraction) {
           const dx = mouse.x - p.x;
           const dy = mouse.y - p.y;
           const distToMouse = Math.sqrt(dx * dx + dy * dy);
@@ -184,7 +190,7 @@ export function BackgroundEffects() {
         ctx.fillStyle = `rgba(${rgb}, ${p.alpha})`;
         ctx.fill();
 
-        if (!isLowEnd) {
+        if (hasConnections) {
           for (let j = i + 1; j < particles.length; j++) {
             const q = particles[j];
             const dx2 = q.x - p.x;
@@ -210,7 +216,7 @@ export function BackgroundEffects() {
         }
       }
 
-      if (!isLowEnd && Math.random() < 0.005) {
+      if (hasShootingStars && Math.random() < 0.005) {
         const sx = Math.random() * window.innerWidth;
         const sy = Math.random() * window.innerHeight * 0.3;
         const len = 50 + Math.random() * 100;
@@ -241,7 +247,7 @@ export function BackgroundEffects() {
     };
 
     window.addEventListener("resize", handleResize);
-    if (!isLowEnd) window.addEventListener("mousemove", handleMouseMove);
+    if (hasMouseInteraction) window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
       cancelAnimationFrame(animationId);
@@ -261,10 +267,10 @@ export function BackgroundEffects() {
       <div className="fixed inset-0 noise-overlay pointer-events-none z-[1]" />
 
       {/* Ambient glow orbs */}
-      <div className="fixed top-[-15%] left-[-10%] w-[50%] h-[50%] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-br from-orange/8 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" />
-      <div className="fixed top-[20%] right-[-15%] w-[45%] h-[45%] max-w-[70vw] max-h-[70vw] rounded-full bg-gradient-to-bl from-cyan/8 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-5s" }} />
-      <div className="fixed bottom-[-20%] left-[10%] w-[55%] h-[55%] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-tr from-cyan/5 to-transparent blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-10s" }} />
-      <div className="fixed top-[50%] left-[30%] w-[40%] h-[40%] max-w-[60vw] max-h-[60vw] rounded-full bg-gradient-to-r from-orange/4 to-cyan/4 blur-[120px] pointer-events-none z-0 animate-breathe" />
+      <div className="fixed top-[-15%] left-[-10%] w-[50%] h-[50%] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-br from-orange/8 to-transparent blur-[80px] md:blur-[150px] pointer-events-none z-0 animate-aurora" />
+      <div className="fixed top-[20%] right-[-15%] w-[45%] h-[45%] max-w-[70vw] max-h-[70vw] rounded-full bg-gradient-to-bl from-cyan/8 to-transparent blur-[80px] md:blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-5s" }} />
+      <div className="fixed bottom-[-20%] left-[10%] w-[55%] h-[55%] max-w-[80vw] max-h-[80vw] rounded-full bg-gradient-to-tr from-cyan/5 to-transparent blur-[80px] md:blur-[150px] pointer-events-none z-0 animate-aurora" style={{ animationDelay: "-10s" }} />
+      <div className="fixed top-[50%] left-[30%] w-[40%] h-[40%] max-w-[60vw] max-h-[60vw] rounded-full bg-gradient-to-r from-orange/4 to-cyan/4 blur-[80px] md:blur-[120px] pointer-events-none z-0 animate-breathe" />
 
       {/* Decorative gradient lines */}
       <div className="fixed top-1/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange/10 to-transparent pointer-events-none z-0" />

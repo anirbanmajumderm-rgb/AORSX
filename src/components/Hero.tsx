@@ -26,7 +26,7 @@ function GlowingButton({ children, className = "" }: { children: React.ReactNode
     <div className={`relative group ${className}`}>
       <div className="absolute -inset-1 bg-gradient-to-r from-orange via-cyan to-cyan rounded-[var(--radius-button)] opacity-40 blur-xl group-hover:opacity-70 group-hover:blur-2xl transition-all duration-700" />
       <div className="absolute -inset-0.5 bg-gradient-to-r from-orange via-cyan to-cyan rounded-[var(--radius-button)] opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="relative px-5 sm:px-8 py-4 bg-primary-bg rounded-[calc(var(--radius-button)-1px)] flex items-center gap-2.5 text-sm sm:text-base font-medium text-main-text group-hover:bg-transparent transition-all duration-500">
+      <div className="relative px-4 sm:px-8 py-3 sm:py-4 bg-primary-bg rounded-[calc(var(--radius-button)-1px)] flex items-center gap-2 text-sm sm:text-base font-medium text-main-text group-hover:bg-transparent transition-all duration-500">
         {children}
       </div>
     </div>
@@ -69,17 +69,17 @@ const Hero = memo(function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center pt-28 pb-20 md:pt-40 md:pb-28 overflow-hidden"
+      className="relative min-h-[100dvh] flex items-center pt-20 pb-16 md:pt-40 md:pb-28 overflow-hidden"
     >
       {/* Cinematic vignette */}
       <div className="absolute inset-0 vignette z-[2] pointer-events-none" />
 
       <div className="absolute inset-0 hero-gradient-mesh" />
-      <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[40%] rounded-full bg-gradient-to-r from-orange/8 to-transparent blur-[120px] animate-aurora" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[35%] rounded-full bg-gradient-to-l from-cyan/8 to-transparent blur-[120px] animate-aurora" style={{ animationDelay: "-4s" }} />
-      <div className="absolute top-[15%] left-[10%] w-[600px] h-[600px] max-w-[80vw] max-h-[80vw] rounded-full bg-orange/6 blur-[150px] animate-cinematic-glow" />
-      <div className="absolute top-[40%] right-[5%] w-[500px] h-[500px] max-w-[70vw] max-h-[70vw] rounded-full bg-cyan/6 blur-[140px] animate-cinematic-glow" style={{ animationDelay: "-2s" }} />
-      <div className="absolute bottom-[10%] left-[35%] w-[450px] h-[450px] max-w-[60vw] max-h-[60vw] rounded-full bg-cyan/5 blur-[120px] animate-cinematic-glow" style={{ animationDelay: "-4s" }} />
+      <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[40%] rounded-full bg-gradient-to-r from-orange/8 to-transparent blur-[80px] md:blur-[120px] animate-aurora" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[35%] rounded-full bg-gradient-to-l from-cyan/8 to-transparent blur-[80px] md:blur-[120px] animate-aurora" style={{ animationDelay: "-4s" }} />
+      <div className="absolute top-[15%] left-[10%] w-[400px] h-[400px] max-w-[60vw] max-h-[50vw] rounded-full bg-orange/6 blur-[100px] md:blur-[150px] animate-cinematic-glow" />
+      <div className="absolute top-[40%] right-[5%] w-[350px] h-[350px] max-w-[50vw] max-h-[45vw] rounded-full bg-cyan/6 blur-[90px] md:blur-[140px] animate-cinematic-glow" style={{ animationDelay: "-2s" }} />
+      <div className="absolute bottom-[10%] left-[35%] w-[300px] h-[300px] max-w-[45vw] max-h-[40vw] rounded-full bg-cyan/5 blur-[80px] md:blur-[120px] animate-cinematic-glow" style={{ animationDelay: "-4s" }} />
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ willChange: "transform" }}>
@@ -112,7 +112,7 @@ const Hero = memo(function Hero() {
           className="font-bold leading-none tracking-[-0.04em]"
           style={{
             fontFamily: "var(--font-space, 'Space Grotesk'), sans-serif",
-            fontSize: "clamp(6rem, 30vw, 45rem)",
+            fontSize: "clamp(4rem, 25vw, 45rem)",
             background: "linear-gradient(180deg, rgba(255,107,0,0.06) 0%, rgba(0,229,255,0.04) 50%, rgba(255,107,0,0.02) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -154,7 +154,7 @@ const Hero = memo(function Hero() {
             </motion.div>
 
             {/* Headline */}
-            <h1 className="text-[clamp(2rem,6vw,6rem)] sm:text-[clamp(2.5rem,6vw,6rem)] font-bold font-heading tracking-tight leading-[0.92] mb-6">
+            <h1 className="text-[clamp(1.8rem,5vw,6rem)] sm:text-[clamp(2rem,5vw,6rem)] font-bold font-heading tracking-tight leading-[0.92] mb-4 sm:mb-6">
               <span className="block overflow-hidden">
                 <motion.span
                   className="inline-block"
@@ -192,7 +192,7 @@ const Hero = memo(function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-              className="text-lg md:text-xl text-secondary-text/90 leading-[1.7] max-w-lg mb-10 font-light tracking-wide"
+              className="text-base sm:text-lg md:text-xl text-secondary-text/90 leading-[1.6] md:leading-[1.7] max-w-lg mb-6 sm:mb-10 font-light tracking-wide"
             >
               {subtitle}
             </motion.p>
@@ -202,26 +202,26 @@ const Hero = memo(function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
-              className="flex flex-wrap gap-3 sm:gap-5 mb-14"
+              className="flex flex-wrap gap-3 sm:gap-5 mb-8 sm:mb-14"
             >
-              <GlowingButton className="flex-1 sm:flex-none min-w-0">
-                <a href="#projects" className="flex items-center gap-2.5 whitespace-nowrap">
+              <GlowingButton className="flex-[1_1_0%] sm:flex-none min-w-0">
+                <a href="#projects" className="flex items-center gap-2 whitespace-nowrap">
                   {t("hero.viewProjects")}
-                  <ArrowRight className="w-4 h-4 shrink-0" />
+                  <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                 </a>
               </GlowingButton>
 
               <a
                 href="#contact"
-                className="relative inline-flex items-center gap-2.5 px-6 sm:px-8 py-4 rounded-[var(--radius-button)] glass text-main-text text-sm sm:text-base font-medium group hover:bg-white/[0.08] transition-all duration-300 flex-1 sm:flex-none justify-center"
+                className="relative inline-flex items-center gap-2 px-4 sm:px-8 py-3 sm:py-4 rounded-[var(--radius-button)] glass text-main-text text-sm sm:text-base font-medium group hover:bg-white/[0.08] transition-all duration-300 flex-[1_1_0%] sm:flex-none justify-center"
               >
-                <span className="relative z-10 flex items-center gap-2.5">
+                <span className="relative z-10 flex items-center gap-2">
                   {t("hero.talkWithUs")}
                   <motion.span
                     animate={{ x: [0, 4, 0] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </motion.span>
                 </span>
               </a>

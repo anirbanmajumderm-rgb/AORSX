@@ -92,7 +92,9 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion", "recharts", "three"],
+    optimizePackageImports: ["lucide-react", "framer-motion", "recharts", "three", "@react-three/drei", "@react-three/fiber"],
+    optimizeServerReact: true,
+    cssChunking: true,
   },
 
   onDemandEntries: {
