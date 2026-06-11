@@ -99,9 +99,6 @@ export default async function RootLayout({
       lang="en"
       className={`${poppins.variable} ${jetbrainsMono.variable} scroll-smooth`}
       style={{
-        overflowX: "hidden",
-        width: "100%",
-        maxWidth: "100%",
         "--font-body": "var(--font-poppins)",
         "--font-heading-custom": "var(--font-poppins)",
         "--font-mono-custom": "var(--font-jetbrains)",
