@@ -143,16 +143,18 @@ export function AIAssistant() {
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<
-    { id: number; text: string; sender: "ai" | "user" }[]
+    { id: number; text: string; sender: "ai" | "user" | "admin" }[]
   >([
     { id: 1, text: t("ai.greeting"), sender: "ai" },
     { id: 2, text: t("ai.initialMessage"), sender: "ai" },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [kbHeight, setKbHeight] = useState(0);
+  const conversationIdRef = useRef<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     return () => {
@@ -193,6 +195,32 @@ export function AIAssistant() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen || !conversationIdRef.current) return;
+
+    const lastMsgId = messages.filter(m => m.sender !== "admin").length;
+    pollRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/ai/chat?conversationId=${conversationIdRef.current}&after=${lastMsgId}`);
+        const json = await res.json();
+        if (json.success && json.data?.messages) {
+          setMessages(prev => {
+            const existingIds = new Set(prev.map(m => m.id));
+            const newMsgs = json.data.messages
+              .filter((m: any) => !existingIds.has(m.id))
+              .map((m: any) => ({ id: m.id, text: m.content, sender: m.role as "ai" | "user" | "admin" }));
+            if (!newMsgs.length) return prev;
+            return [...prev, ...newMsgs];
+          });
+        }
+      } catch { /* polling failed silently */ }
+    }, 5000);
+
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [isOpen, messages.length]);
+
   const handleToggleOpen = useCallback(() => {
     const next = !isOpen;
     setIsOpen(next);
@@ -207,14 +235,15 @@ export function AIAssistant() {
   const handleSend = useCallback(async () => {
     if (!inputValue.trim()) return;
 
+    const currentInput = inputValue.trim();
+    const tempId = Date.now();
     const userMessage = {
-      id: messages.length + 1,
-      text: inputValue.trim(),
+      id: tempId,
+      text: currentInput,
       sender: "user" as const,
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = inputValue.trim();
     setInputValue("");
     trackInteraction("chat", currentInput.slice(0, 100));
     setIsListening(false);
@@ -224,14 +253,21 @@ export function AIAssistant() {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: currentInput, lang }),
+        body: JSON.stringify({ message: currentInput, lang, conversationId: conversationIdRef.current }),
       });
       const data = await res.json();
       const reply = data?.data?.response || (lang === "bn" ? "দুঃখিত, আমি এটি প্রক্রিয়া করতে পারিনি।" : "Sorry, I couldn't process that. Please try asking about services, skills, or projects.");
-      setMessages((prev) => [...prev, { id: prev.length + 1, text: reply, sender: "ai" }]);
+      if (data?.data?.conversationId) {
+        conversationIdRef.current = data.data.conversationId;
+      }
+      setMessages((prev) => {
+        const exists = prev.some(m => m.id === tempId + 1);
+        if (exists) return prev;
+        return [...prev, { id: tempId + 1, text: reply, sender: "ai" }];
+      });
     } catch {
       setMessages((prev) => [...prev, {
-        id: prev.length + 1,
+        id: tempId + 2,
         text: lang === "bn" ? "সংযোগ করতে সমস্যা হচ্ছে। দয়া করে পরে আবার চেষ্টা করুন।" : "I'm having trouble connecting. Please try again later.",
         sender: "ai",
       }]);
@@ -239,7 +275,7 @@ export function AIAssistant() {
       setIsTyping(false);
       timeoutRef.current = setTimeout(() => setIsListening(true), 500);
     }
-  }, [inputValue, messages, lang]);
+  }, [inputValue, lang]);
 
   const handleInputFocus = useCallback(() => {
     setTimeout(() => {

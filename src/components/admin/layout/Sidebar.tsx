@@ -54,6 +54,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     items: [
       { href: "/admin/ai", label: "AI Control Center", icon: BrainCircuit },
       { href: "/admin/ai/inquiries", label: "Client Inquiries", icon: MessageSquare },
+      { href: "/admin/ai/conversations", label: "Live Chats", icon: MessageCircle },
       { href: "/admin/ai/knowledge", label: "Knowledge Base", icon: BookOpen },
       { href: "/admin/ai/packages", label: "Packages & Pricing", icon: DollarSign },
       { href: "/admin/ai/policies", label: "Policies", icon: FileText },

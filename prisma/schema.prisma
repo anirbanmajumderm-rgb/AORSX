@@ -526,3 +526,27 @@ model Inquiry {
   @@index([status])
   @@index([createdAt])
 }
+
+model Conversation {
+  id          String        @id @default(cuid())
+  clientName  String?
+  clientEmail String?
+  status      String        @default("active")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  messages    ChatMessage[]
+
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model ChatMessage {
+  id             Int          @id @default(autoincrement())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  role           String
+  content        String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
