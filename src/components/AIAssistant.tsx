@@ -165,12 +165,28 @@ export function AIAssistant() {
   }, [messages, isTyping]);
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       const v = window.visualViewport;
       if (!v) return;
-      const d = (window.innerHeight || document.documentElement.clientHeight) - v.height;
+
+      const full = Math.max(
+        document.documentElement.clientHeight,
+        window.innerHeight,
+        v.height
+      );
+      const kb = Math.max(0, full - v.height);
+
       setKbHeight(h => {
-        const n = d > 50 ? d + 12 : 0;
+        const n = kb > 50 ? kb + 12 : 0;
         return n !== h ? n : h;
       });
     }, 300);
@@ -229,8 +245,9 @@ export function AIAssistant() {
     setTimeout(() => {
       const v = window.visualViewport;
       if (!v) return;
-      const d = (window.innerHeight || document.documentElement.clientHeight) - v.height;
-      if (d > 50) setKbHeight(d + 12);
+      const full = Math.max(document.documentElement.clientHeight, window.innerHeight, v.height);
+      const kb = Math.max(0, full - v.height);
+      if (kb > 50) setKbHeight(kb + 12);
     }, 400);
   }, []);
 
@@ -248,7 +265,7 @@ export function AIAssistant() {
   if (!aiEnabled) return null;
 
   return (
-    <div className="fixed z-50" style={{ right: "clamp(12px, 4vw, 24px)", bottom: kbHeight > 0 ? `calc(clamp(12px, 4vw, 24px) + ${kbHeight}px)` : "clamp(12px, 4vw, 24px)" }}>
+    <div className="fixed z-[9999]" style={{ right: "16px", bottom: kbHeight > 0 ? `calc(16px + env(safe-area-inset-bottom, 0px) + ${kbHeight}px)` : "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -258,8 +275,9 @@ export function AIAssistant() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="absolute bottom-20 right-0"
             style={{
-              width: "clamp(240px, 70vw, 340px)",
-              height: kbHeight > 0 ? "clamp(200px, 35dvh, 300px)" : "clamp(300px, 50dvh, 420px)",
+              width: "min(92vw, 420px)",
+              height: "clamp(280px, 65dvh, 520px)",
+              maxHeight: "65dvh",
             }}
           >
               <div className="relative h-full flex flex-col min-h-0">
@@ -297,7 +315,7 @@ export function AIAssistant() {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin min-h-0">
+                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin min-h-0" style={{ WebkitOverflowScrolling: "touch" }}>
                   {messages.map((msg, i) => (
                     <motion.div
                       key={msg.id}
@@ -346,7 +364,7 @@ export function AIAssistant() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-4 border-t border-white/10 bg-white/[0.02] relative">
+                <div className="p-4 border-t border-white/10 bg-white/[0.02] relative" style={{ paddingBottom: "env(safe-area-inset-bottom, 16px)" }}>
                   <div className="flex items-center gap-2">
                     <input
                       ref={inputRef}
