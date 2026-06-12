@@ -7,11 +7,6 @@ const BackgroundEffects = dynamic(
   { ssr: false, loading: () => null }
 );
 
-const AIAssistant = dynamic(
-  () => import("@/components/AIAssistant").then((m) => ({ default: m.AIAssistant })),
-  { ssr: false, loading: () => null }
-);
-
 const MaintenanceBanner = dynamic(
   () => import("@/components/MaintenanceBanner").then((m) => ({ default: m.MaintenanceBanner })),
   { ssr: false, loading: () => null }
@@ -41,7 +36,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <CinematicSystem>
         {children}
       </CinematicSystem>
-      <AIAssistant />
     </CinematicIntro>
   );
 }

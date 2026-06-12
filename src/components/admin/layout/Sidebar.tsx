@@ -7,9 +7,9 @@ import {
   LayoutDashboard, FileText, Users, HelpCircle, BrainCircuit,
   UserCog, Shield, Bell, ToggleLeft, Settings, Sparkles,
   LogOut, ChevronLeft, Menu, X, ChevronDown, Briefcase,
-  MessageSquare, BookOpen, DollarSign, Zap, Star, Image,
+  DollarSign, Zap, Star, Image,
   Mail, BarChart3, Globe, Sliders,
-  Bot, Database, User, Building2, Activity, MessageCircle
+  User, Building2, Activity, MessageCircle
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,6 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Overview",
     items: [
       { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/admin/messages", label: "Messages", icon: MessageSquare },
       { href: "/admin/site-manager", label: "Site Manager", icon: Globe },
       { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
@@ -48,22 +47,6 @@ const navSections: { label: string; items: NavItem[] }[] = [
       { href: "/admin/contacts", label: "Contacts", icon: Mail },
       { href: "/admin/media", label: "Media", icon: Image },
       { href: "/admin/company", label: "Company", icon: Building2 },
-    ],
-  },
-  {
-    label: "AI Assistant",
-    items: [
-      { href: "/admin/ai", label: "Control Center", icon: BrainCircuit },
-      { href: "/admin/ai/inquiries", label: "Client Inquiries", icon: MessageCircle },
-      { href: "/admin/ai/conversations", label: "Live Chats", icon: MessageCircle },
-      { href: "/admin/ai/knowledge", label: "Knowledge Base", icon: BookOpen },
-      { href: "/admin/ai/packages", label: "Packages & Pricing", icon: DollarSign },
-      { href: "/admin/ai/policies", label: "Policies", icon: FileText },
-      { href: "/admin/ai/prompts", label: "AI Prompts", icon: Bot },
-      { href: "/admin/ai/models", label: "AI Models", icon: Database },
-      { href: "/admin/ai-responses", label: "AI Responses", icon: BrainCircuit },
-      { href: "/admin/ai-settings", label: "AI Settings", icon: Settings },
-      { href: "/admin/ai-training", label: "Training", icon: Settings },
     ],
   },
   {

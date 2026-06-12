@@ -51,21 +51,6 @@ async function main() {
     });
   }
 
-  const aiResponses = [
-    { keyword: "about", response: "Anirban is a professional web developer and AI specialist with expertise in building modern scalable web applications.", category: "general" },
-    { keyword: "skills", response: "Anirban specializes in Frontend (HTML, CSS, JavaScript, React), Backend (PHP, Node.js), Database (MySQL, MongoDB), AI Integration, and Security.", category: "general" },
-    { keyword: "services", response: "Services include Web Development, AI Integration, SaaS Development, API Development, and Security Consulting.", category: "general" },
-    { keyword: "contact", response: "You can reach Anirban via email at anirbanmajumderm@gmail.com or through the contact form on this website.", category: "contact" },
-    { keyword: "projects", response: "Anirban has worked on enterprise SaaS platforms, e-commerce solutions, and AI-powered applications.", category: "general" },
-    { keyword: "pricing", response: "For project pricing and quotes, please contact directly through the contact form or email.", category: "general" },
-    { keyword: "location", response: "Based in India, available for remote work worldwide.", category: "contact" },
-    { keyword: "technologies", response: "Technologies used: HTML5, CSS3, JavaScript, PHP, MySQL, React, Node.js, Python, TensorFlow, and more.", category: "general" },
-  ];
-
-  for (const r of aiResponses) {
-    await prisma.aIResponse.create({ data: r });
-  }
-
   const whyChooseMeItems = [
     { title: "Fast Performance", description: "Optimized code and caching strategies for lightning-fast load times.", icon: "⚡", order: 1 },
     { title: "Secure Website", description: "Enterprise-grade security with encryption and best practices.", icon: "🔒", order: 2 },
@@ -81,7 +66,7 @@ async function main() {
   }
 
   const features = [
-    { key: "ai_assistant", name: "AI Assistant", description: "Enable the AI chat assistant on the website", enabled: true, category: "ai" },
+
     { key: "dark_mode", name: "Dark Mode", description: "Allow users to toggle dark/light mode", enabled: true, category: "ui" },
     { key: "animations", name: "Animations", description: "Enable premium page animations", enabled: true, category: "ui" },
     { key: "contact_form", name: "Contact Form", description: "Show contact form on the website", enabled: true, category: "core" },
@@ -108,10 +93,9 @@ async function main() {
   }
 
   const adminRoles = [
-    { name: "Super Admin", description: "Full system access", permissions: JSON.stringify(["Dashboard", "Analytics", "Users", "Content", "Settings", "AI Control", "API Keys", "Roles", "Automation", "Media", "Reviews", "Notifications", "Controls", "Features"]) },
+    { name: "Super Admin", description: "Full system access", permissions: JSON.stringify(["Dashboard", "Analytics", "Users", "Content", "Settings", "Roles", "Automation", "Media", "Reviews", "Notifications", "Controls", "Features"]) },
     { name: "Editor", description: "Content management access", permissions: JSON.stringify(["Dashboard", "Analytics", "Content", "Media", "Reviews", "Notifications"]) },
     { name: "Viewer", description: "Read-only access", permissions: JSON.stringify(["Dashboard", "Analytics"]) },
-    { name: "AI Manager", description: "AI system administration", permissions: JSON.stringify(["Dashboard", "AI Control", "API Keys", "Analytics"]) },
   ];
 
   for (const r of adminRoles) {
@@ -184,7 +168,7 @@ async function main() {
   }
 
   // Enable all section feature flags
-  const featureFlagKeys = ["contact_form", "faq_section", "team_section", "services_section", "projects_section", "reviews_section", "ai_chatbot"];
+  const featureFlagKeys = ["contact_form", "faq_section", "team_section", "services_section", "projects_section", "reviews_section"];
   for (const key of featureFlagKeys) {
     await prisma.featureFlag.upsert({
       where: { key },

@@ -3,7 +3,6 @@ import { prisma } from "./prisma";
 const LIMITS: Record<string, { window: number; max: number }> = {
   default: { window: 60 * 1000, max: 60 },
   login: { window: 60 * 1000, max: 5 },
-  "ai/chat": { window: 60 * 1000, max: 20 },
   "contact/submit": { window: 60 * 1000, max: 3 },
   "analytics/record": { window: 60 * 1000, max: 120 },
   admin: { window: 60 * 1000, max: 120 },

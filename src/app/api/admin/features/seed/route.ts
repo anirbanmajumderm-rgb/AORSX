@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { successResponse, requireAuth, serverErrorResponse } from "@/lib/api-utils";
 
 const defaultFlags = [
-  { key: "ai_chatbot", label: "AI Chatbot", description: "Show/hide the AI chatbot on the main site" },
+
   { key: "contact_form", label: "Contact Form", description: "Enable/disable the contact form on the main site" },
   { key: "faq_section", label: "FAQ Section", description: "Show/hide the FAQ section on the main site" },
   { key: "team_section", label: "Team Section", description: "Show/hide the team/founders section on the main site" },
