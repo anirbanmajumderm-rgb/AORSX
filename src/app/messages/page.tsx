@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Send, ArrowLeft, Loader2 } from "lucide-react";
+import { useVisualViewport, useKeyboardAwareScroll } from "@/lib/use-visual-viewport";
 
 function getVisitorId(): string {
   if (typeof window === "undefined") return "";
@@ -43,6 +44,7 @@ export default function MessagesPage() {
   const [showForm, setShowForm] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   const visitorId = getVisitorId();
@@ -52,6 +54,9 @@ export default function MessagesPage() {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
   }, []);
+
+  const vv = useVisualViewport();
+  useKeyboardAwareScroll(vv.isKeyboardOpen, scrollToBottom);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -104,13 +109,32 @@ export default function MessagesPage() {
   }, [messages, scrollToBottom]);
 
   useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateContainer = () => {
+      if (!containerRef.current || !window.visualViewport) return;
+      const vvw = window.visualViewport;
+      containerRef.current.style.height = `${vvw.height}px`;
+      containerRef.current.style.width = `${vvw.width}px`;
+      containerRef.current.style.top = `${vvw.offsetTop}px`;
+      containerRef.current.style.left = `${vvw.offsetLeft}px`;
+    };
+
     const handleViewport = () => {
       if (inputRef.current && window.visualViewport) {
         inputRef.current.style.transform = `translateY(0px)`;
       }
+      updateContainer();
     };
+
+    updateContainer();
+
     window.visualViewport?.addEventListener("resize", handleViewport);
-    return () => window.visualViewport?.removeEventListener("resize", handleViewport);
+    window.visualViewport?.addEventListener("scroll", handleViewport);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleViewport);
+      window.visualViewport?.removeEventListener("scroll", handleViewport);
+    };
   }, []);
 
   async function handleStart() {
@@ -238,7 +262,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#050505]" style={{ height: "100dvh" }}>
+    <div ref={containerRef} className="fixed z-[100] flex flex-col bg-[#050505]" style={{ height: "100dvh", top: 0, left: 0 }}>
       <header className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-3 shrink-0">
         <button onClick={() => router.back()} className="flex h-9 w-9 items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all">
           <ArrowLeft className="h-5 w-5" />

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/admin/shared/StatusBadge";
+import { useVisualViewport, useKeyboardAwareScroll } from "@/lib/use-visual-viewport";
 
 interface Message {
   id: number;
@@ -38,12 +39,16 @@ export default function ConversationDetailPage() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
   };
+
+  const vv = useVisualViewport();
+  useKeyboardAwareScroll(vv.isKeyboardOpen, scrollToBottom);
 
   async function loadConversation() {
     try {
@@ -88,6 +93,28 @@ export default function ConversationDetailPage() {
     }, 3000);
     return () => clearInterval(timer);
   }, [params.id]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateContainer = () => {
+      if (!containerRef.current || !window.visualViewport) return;
+      const vvw = window.visualViewport;
+      containerRef.current.style.height = `${vvw.height}px`;
+      containerRef.current.style.width = `${vvw.width}px`;
+      containerRef.current.style.top = `${vvw.offsetTop}px`;
+      containerRef.current.style.left = `${vvw.offsetLeft}px`;
+    };
+
+    updateContainer();
+
+    window.visualViewport?.addEventListener("resize", updateContainer);
+    window.visualViewport?.addEventListener("scroll", updateContainer);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateContainer);
+      window.visualViewport?.removeEventListener("scroll", updateContainer);
+    };
+  }, []);
 
   async function handleSendReply() {
     if (!reply.trim() || sending) return;
@@ -171,7 +198,7 @@ export default function ConversationDetailPage() {
   if (!conversation) return null;
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
+    <div ref={containerRef} className="fixed flex flex-col bg-[#050505]" style={{ height: "calc(100vh - 4rem)", top: 0, left: 0, zIndex: 10 }}>
       <div className="flex items-center gap-3 border-b border-white/[0.06] px-4 md:px-6 py-3 shrink-0">
         <button
           onClick={() => router.push("/admin/messages")}
