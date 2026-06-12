@@ -9,19 +9,21 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
+    const search = searchParams.get("search");
 
     const where: Record<string, unknown> = {};
-    if (status) where.status = status;
+    if (status && status !== "all") where.status = status;
+    if (search) {
+      where.OR = [
+        { clientName: { contains: search, mode: "insensitive" } },
+        { clientEmail: { contains: search, mode: "insensitive" } },
+      ];
+    }
 
     const conversations = await prisma.conversation.findMany({
       where,
       orderBy: { updatedAt: "desc" },
       take: 100,
-    });
-
-    const counts = await prisma.conversation.groupBy({
-      by: ["status"],
-      _count: { id: true },
     });
 
     const result = await Promise.all(
@@ -31,11 +33,25 @@ export async function GET(req: NextRequest) {
           orderBy: { createdAt: "desc" },
           select: { content: true, role: true, createdAt: true },
         });
-        return { ...conv, lastMessage };
+        const messageCount = await prisma.chatMessage.count({
+          where: { conversationId: conv.id },
+        });
+        return { ...conv, lastMessage, messageCount };
       })
     );
 
-    return successResponse({ conversations: result, counts });
+    const counts = await prisma.conversation.groupBy({
+      by: ["status"],
+      _count: { id: true },
+    });
+
+    const totalCount = await prisma.conversation.count();
+    const unreadCount = await prisma.conversation.count({ where: { unread: true } });
+
+    return successResponse({
+      conversations: result,
+      counts: { all: totalCount, unread: unreadCount, ...Object.fromEntries(counts.map(c => [c.status, c._count.id])) },
+    });
   } catch (err) {
     return serverErrorResponse(err, "admin/conversations");
   }

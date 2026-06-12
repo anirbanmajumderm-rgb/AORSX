@@ -28,6 +28,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Overview",
     items: [
       { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/messages", label: "Messages", icon: MessageSquare },
       { href: "/admin/site-manager", label: "Site Manager", icon: Globe },
       { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
@@ -52,8 +53,8 @@ const navSections: { label: string; items: NavItem[] }[] = [
   {
     label: "AI Assistant",
     items: [
-      { href: "/admin/ai", label: "AI Control Center", icon: BrainCircuit },
-      { href: "/admin/ai/inquiries", label: "Client Inquiries", icon: MessageSquare },
+      { href: "/admin/ai", label: "Control Center", icon: BrainCircuit },
+      { href: "/admin/ai/inquiries", label: "Client Inquiries", icon: MessageCircle },
       { href: "/admin/ai/conversations", label: "Live Chats", icon: MessageCircle },
       { href: "/admin/ai/knowledge", label: "Knowledge Base", icon: BookOpen },
       { href: "/admin/ai/packages", label: "Packages & Pricing", icon: DollarSign },
@@ -61,7 +62,8 @@ const navSections: { label: string; items: NavItem[] }[] = [
       { href: "/admin/ai/prompts", label: "AI Prompts", icon: Bot },
       { href: "/admin/ai/models", label: "AI Models", icon: Database },
       { href: "/admin/ai-responses", label: "AI Responses", icon: BrainCircuit },
-      { href: "/admin/ai-training", label: "AI Settings", icon: Settings },
+      { href: "/admin/ai-settings", label: "AI Settings", icon: Settings },
+      { href: "/admin/ai-training", label: "Training", icon: Settings },
     ],
   },
   {

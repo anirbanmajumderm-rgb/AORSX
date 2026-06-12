@@ -2,159 +2,38 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Sparkles, Loader2 } from "lucide-react";
+import { X, Send, MessageCircle, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteData } from "@/hooks/useSiteData";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { cn } from "@/lib/utils";
 
-function AIFace({ isListening }: { isListening: boolean }) {
-  const [blink, setBlink] = useState(false);
-  const [lookDir, setLookDir] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const blinkInterval = setInterval(() => {
-      setBlink(true);
-      setTimeout(() => setBlink(false), 150);
-    }, 3000 + Math.random() * 2000);
-    return () => clearInterval(blinkInterval);
-  }, []);
-
-  useEffect(() => {
-    if (isListening) {
-      const move = setInterval(() => {
-        setLookDir({
-          x: (Math.random() - 0.5) * 6,
-          y: (Math.random() - 0.5) * 4,
-        });
-      }, 800);
-      return () => clearInterval(move);
-    } else {
-      const idle = setTimeout(() => {
-        setLookDir({ x: 0, y: 0 });
-      }, 300);
-      const wander = setInterval(() => {
-        setLookDir({
-          x: (Math.random() - 0.5) * 3,
-          y: (Math.random() - 0.5) * 2,
-        });
-      }, 4000);
-      return () => {
-        clearTimeout(idle);
-        clearInterval(wander);
-      };
-    }
-  }, [isListening]);
-
+function BotAvatar() {
   return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="22" fill="url(#faceGrad)" opacity="0.3" />
-      <defs>
-        <radialGradient id="faceGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#00E5FF" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#00E5FF" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx="24" cy="24" r="20" stroke="url(#eyeRingGrad)" strokeWidth="1.5" opacity="0.6" />
-      <defs>
-        <linearGradient id="eyeRingGrad" x1="0" y1="0" x2="48" y2="48">
-          <stop offset="0%" stopColor="#FF6B00" />
-          <stop offset="100%" stopColor="#00E5FF" />
-        </linearGradient>
-      </defs>
-      <g transform={`translate(${lookDir.x * 0.5}, ${lookDir.y * 0.5})`}>
-        <ellipse cx="17" cy="22" rx="5" ry={blink ? 0.5 : 5.5} fill="white" opacity="0.9">
-          <animate attributeName="ry" values="5.5;5.5;0.5;5.5;5.5" dur="4s" repeatCount="indefinite" keyTimes="0;0.45;0.5;0.55;1" />
-        </ellipse>
-        <circle cx="17" cy="22" r="2.5" fill="#00E5FF">
-          <animate attributeName="r" values="2.5;2.5;2.5;0.5;2.5;2.5" dur="4s" repeatCount="indefinite" keyTimes="0;0.45;0.5;0.52;0.55;1" />
-        </circle>
-        <circle cx="18" cy="21" r="1" fill="white" opacity="0.8">
-          <animate attributeName="r" values="1;1;1;0;1;1" dur="4s" repeatCount="indefinite" keyTimes="0;0.45;0.5;0.52;0.55;1" />
-        </circle>
-      </g>
-      <g transform={`translate(${lookDir.x * 0.5}, ${lookDir.y * 0.5})`}>
-        <ellipse cx="31" cy="22" rx="5" ry={blink ? 0.5 : 5.5} fill="white" opacity="0.9">
-          <animate attributeName="ry" values="5.5;5.5;0.5;5.5;5.5" dur="4s" repeatCount="indefinite" keyTimes="0;0.45;0.5;0.55;1" />
-        </ellipse>
-        <circle cx="31" cy="22" r="2.5" fill="#00E5FF">
-          <animate attributeName="r" values="2.5;2.5;2.5;0.5;2.5;2.5" dur="4s" repeatCount="indefinite" keyTimes="0;0.45;0.5;0.52;0.55;1" />
-        </circle>
-        <circle cx="32" cy="21" r="1" fill="white" opacity="0.8">
-          <animate attributeName="r" values="1;1;1;0;1;1" dur="4s" repeatCount="indefinite" keyTimes="0;0.45;0.5;0.52;0.55;1" />
-        </circle>
-      </g>
-      <path
-        d="M20 30 C22 33, 26 33, 28 30"
-        stroke="#00E5FF"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity={isListening ? 0.9 : 0.5}
-      >
-        <animate attributeName="d" values="M20 30 C22 33, 26 33, 28 30;M20 31 C22 34, 26 34, 28 31;M20 30 C22 33, 26 33, 28 30" dur="2s" repeatCount="indefinite" />
-      </path>
-      {[0, 60, 120, 180, 240, 300].map((angle, i) => {
-        const rad = (angle * Math.PI) / 180;
-        return (
-          <circle key={angle} cx={Number((24 + Math.cos(rad) * 24).toFixed(4))} cy={Number((24 + Math.sin(rad) * 24).toFixed(4))} r="1.5" fill={i % 2 === 0 ? "#FF6B00" : "#00E5FF"} opacity={0.6}>
-            <animate attributeName="opacity" values="0.2;0.8;0.2" dur={`${2 + (i % 3)}s`} repeatCount="indefinite" />
-          </circle>
-        );
-      })}
-    </svg>
-  );
-}
-
-function FloatingHand({ side, isOpen }: { side: "left" | "right"; isOpen: boolean }) {
-  return (
-    <motion.div
-      className={cn("absolute bottom-0 w-8 h-12 pointer-events-none", side === "left" ? "-left-6" : "-right-6")}
-      animate={isOpen ? { y: [0, -8, 0], rotate: side === "left" ? [-5, 5, -5] : [5, -5, 5] } : { y: [0, -4, 0], rotate: side === "left" ? [-10, 10, -10] : [10, -10, 10] }}
-      transition={{ duration: isOpen ? 3 : 5, repeat: Infinity, ease: "easeInOut" }}
-    >
-      <svg width="32" height="48" viewBox="0 0 32 48" fill="none" className={cn("transition-all duration-500", side === "left" ? "rotate-12" : "-rotate-12")}>
-        <ellipse cx="16" cy="30" rx="10" ry="14" fill="url(#handGrad)" opacity="0.7" />
-        <rect x="8" y="2" width="4" height="18" rx="2" fill="url(#handGrad)" opacity="0.6" />
-        <rect x="14" y="0" width="4" height="20" rx="2" fill="url(#handGrad)" opacity="0.7" />
-        <rect x="20" y="2" width="4" height="18" rx="2" fill="url(#handGrad)" opacity="0.6" />
-        <rect x="2" y="14" width="6" height="4" rx="2" fill="url(#handGrad)" opacity="0.5" transform="rotate(-20 5 16)" />
-        <defs>
-          <linearGradient id="handGrad" x1="0" y1="0" x2="32" y2="48">
-            <stop offset="0%" stopColor="#FF6B00" stopOpacity="0.6" />
-            <stop offset="50%" stopColor="#00E5FF" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#FF6B00" stopOpacity="0.2" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="16" cy="30" rx="12" ry="16" fill="#00E5FF" opacity="0.1">
-          <animate attributeName="opacity" values="0.05;0.15;0.05" dur="3s" repeatCount="indefinite" />
-        </ellipse>
-      </svg>
-    </motion.div>
+    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange to-cyan flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(0,229,255,0.2)]">
+      <MessageCircle className="w-4 h-4 text-white" />
+    </div>
   );
 }
 
 export function AIAssistant() {
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
   const { data } = useSiteData();
   const { trackInteraction } = useAnalytics();
   const [isOpen, setIsOpen] = useState(false);
   const aiEnabled = data?.featureFlags?.ai_chatbot !== false;
-  const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<
-    { id: number; text: string; sender: "ai" | "user" | "admin" }[]
-  >([
-    { id: 1, text: t("ai.greeting"), sender: "ai" },
-    { id: 2, text: t("ai.initialMessage"), sender: "ai" },
-  ]);
+    { id: number; text: string; sender: "ai" | "user" }[]
+  >([]);
   const [inputValue, setInputValue] = useState("");
-  const [kbHeight, setKbHeight] = useState(0);
+  const [kbOffset, setKbOffset] = useState(0);
   const conversationIdRef = useRef<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -167,86 +46,52 @@ export function AIAssistant() {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (!initialized.current) {
+      initialized.current = true;
+      setMessages([
+        { id: 1, text: lang === "bn" ? "হ্যালো! আমি সহায়ক। কীভাবে সাহায্য করতে পারি?" : "Hello! I'm the assistant. How can I help you?", sender: "ai" },
+        { id: 2, text: lang === "bn" ? "আমাদের পরিষেবা, প্রকল্প বা অন্য কিছু সম্পর্কে জিজ্ঞাসা করুন।" : "Ask about our services, projects, or anything else!", sender: "ai" },
+      ]);
     }
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen]);
+  }, [lang]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const v = window.visualViewport;
-      if (!v) return;
-
-      const full = Math.max(
-        document.documentElement.clientHeight,
-        window.innerHeight,
-        v.height
-      );
-      const kb = Math.max(0, full - v.height);
-
-      setKbHeight(h => {
-        const n = kb > 50 ? kb + 12 : 0;
-        return n !== h ? n : h;
-      });
-    }, 300);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen || !conversationIdRef.current) return;
-
-    const lastMsgId = messages.filter(m => m.sender !== "admin").length;
-    pollRef.current = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/ai/chat?conversationId=${conversationIdRef.current}&after=${lastMsgId}`);
-        const json = await res.json();
-        if (json.success && json.data?.messages) {
-          setMessages(prev => {
-            const existingIds = new Set(prev.map(m => m.id));
-            const newMsgs = json.data.messages
-              .filter((m: any) => !existingIds.has(m.id))
-              .map((m: any) => ({ id: m.id, text: m.content, sender: m.role as "ai" | "user" | "admin" }));
-            if (!newMsgs.length) return prev;
-            return [...prev, ...newMsgs];
-          });
-        }
-      } catch { /* polling failed silently */ }
-    }, 5000);
-
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
+    if (!window.visualViewport) return;
+    const handler = () => {
+      const vv = window.visualViewport!;
+      const windowHeight = window.innerHeight;
+      const diff = windowHeight - vv.height;
+      if (diff > 80) {
+        setKbOffset(diff + 16);
+      } else {
+        setKbOffset(0);
+      }
     };
-  }, [isOpen, messages.length]);
+    window.visualViewport.addEventListener("resize", handler);
+    window.visualViewport.addEventListener("scroll", handler);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handler);
+      window.visualViewport?.removeEventListener("scroll", handler);
+    };
+  }, []);
 
   const handleToggleOpen = useCallback(() => {
     const next = !isOpen;
     setIsOpen(next);
     if (next) {
-      setIsListening(true);
-      timeoutRef.current = setTimeout(() => inputRef.current?.focus(), 400);
-    } else {
-      setIsListening(false);
+      timeoutRef.current = setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [isOpen]);
 
   const handleSend = useCallback(async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isTyping) return;
 
     const currentInput = inputValue.trim();
     const tempId = Date.now();
-    const userMessage = {
-      id: tempId,
-      text: currentInput,
-      sender: "user" as const,
-    };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, { id: tempId, text: currentInput, sender: "user" }]);
     setInputValue("");
     trackInteraction("chat", currentInput.slice(0, 100));
-    setIsListening(false);
     setIsTyping(true);
 
     try {
@@ -255,10 +100,10 @@ export function AIAssistant() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: currentInput, lang, conversationId: conversationIdRef.current }),
       });
-      const data = await res.json();
-      const reply = data?.data?.response || (lang === "bn" ? "দুঃখিত, আমি এটি প্রক্রিয়া করতে পারিনি।" : "Sorry, I couldn't process that. Please try asking about services, skills, or projects.");
-      if (data?.data?.conversationId) {
-        conversationIdRef.current = data.data.conversationId;
+      const json = await res.json();
+      const reply = json?.data?.response || (lang === "bn" ? "আপনার বার্তার জন্য ধন্যবাদ। আমাদের টিম শীঘ্রই যোগাযোগ করবে।" : "Thank you for your message. Our team will contact you shortly.");
+      if (json?.data?.conversationId) {
+        conversationIdRef.current = json.data.conversationId;
       }
       setMessages((prev) => {
         const exists = prev.some(m => m.id === tempId + 1);
@@ -268,28 +113,13 @@ export function AIAssistant() {
     } catch {
       setMessages((prev) => [...prev, {
         id: tempId + 2,
-        text: lang === "bn" ? "সংযোগ করতে সমস্যা হচ্ছে। দয়া করে পরে আবার চেষ্টা করুন।" : "I'm having trouble connecting. Please try again later.",
+        text: lang === "bn" ? "সংযোগ করতে সমস্যা হচ্ছে। দয়া করে পরে আবার চেষ্টা করুন।" : "Connection issue. Please try again later.",
         sender: "ai",
       }]);
     } finally {
       setIsTyping(false);
-      timeoutRef.current = setTimeout(() => setIsListening(true), 500);
     }
-  }, [inputValue, lang]);
-
-  const handleInputFocus = useCallback(() => {
-    setTimeout(() => {
-      const v = window.visualViewport;
-      if (!v) return;
-      const full = Math.max(document.documentElement.clientHeight, window.innerHeight, v.height);
-      const kb = Math.max(0, full - v.height);
-      if (kb > 50) setKbHeight(kb + 12);
-    }, 400);
-  }, []);
-
-  const handleInputBlur = useCallback(() => {
-    setTimeout(() => setKbHeight(0), 200);
-  }, []);
+  }, [inputValue, lang, isTyping, trackInteraction]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -298,39 +128,47 @@ export function AIAssistant() {
     }
   };
 
+  const chatWidth = "min(88vw, 420px)";
+  const chatHeight = "clamp(300px, 58dvh, 650px)";
+
   if (!aiEnabled) return null;
 
   return (
-    <div className="fixed z-[9999]" style={{ right: "16px", bottom: kbHeight > 0 ? `calc(16px + env(safe-area-inset-bottom, 0px) + ${kbHeight}px)` : "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
+    <div
+      className="fixed z-[9999]"
+      style={{
+        right: "16px",
+        bottom: kbOffset > 0
+          ? `calc(16px + ${kbOffset}px)`
+          : "calc(16px + env(safe-area-inset-bottom, 0px))",
+        transition: "bottom 0.15s ease-out",
+      }}
+    >
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={chatRef}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="absolute bottom-20 right-0"
             style={{
-              width: "min(92vw, 420px)",
-              height: "clamp(280px, 65dvh, 520px)",
+              width: chatWidth,
+              height: chatHeight,
               maxHeight: "65dvh",
             }}
           >
-              <div className="relative h-full flex flex-col min-h-0">
-              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange/40 via-cyan/40 to-cyan/40 opacity-40 blur-sm" />
-              <div className="relative rounded-2xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 overflow-hidden shadow-[0_0_60px_rgba(0,229,255,0.08)]">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/[0.02]">
+            <div className="relative h-full flex flex-col min-h-0">
+              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange/40 via-cyan/40 to-cyan/40 opacity-40 blur-sm pointer-events-none" />
+              <div className="relative rounded-2xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 overflow-hidden shadow-[0_0_60px_rgba(0,229,255,0.08)] flex flex-col min-h-0">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/[0.02] shrink-0">
                   <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <AIFace isListening={isListening} />
-                      <motion.div
-                        className="absolute -inset-2 rounded-full bg-gradient-to-br from-orange/20 to-cyan/20 blur-md"
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      />
-                    </div>
+                    <BotAvatar />
                     <div>
-                      <p className="text-sm font-semibold text-main-text">AI Assistant</p>
+                      <p className="text-sm font-semibold text-main-text">
+                        {lang === "bn" ? "সহায়ক" : "Assistant"}
+                      </p>
                       <div className="flex items-center gap-1.5">
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75" />
@@ -344,30 +182,29 @@ export function AIAssistant() {
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer shrink-0"
                     aria-label="Close"
                   >
                     <X className="w-4 h-4 text-secondary-text" />
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin min-h-0" style={{ WebkitOverflowScrolling: "touch" }}>
+                <div
+                  className="flex-1 overflow-y-auto px-5 py-4 space-y-3 min-h-0 overscroll-contain"
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                >
                   {messages.map((msg, i) => (
                     <motion.div
                       key={msg.id}
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.3, delay: i * 0.05, ease: "easeOut" }}
-                      className={cn("flex", msg.sender === "user" ? "justify-end" : "justify-start")}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: Math.min(i * 0.03, 0.3) }}
+                      className={cn("flex gap-2", msg.sender === "user" ? "justify-end" : "justify-start")}
                     >
-                      {msg.sender === "ai" && (
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange to-cyan flex items-center justify-center mr-2 mt-1 shrink-0">
-                          <Sparkles className="w-3 h-3 text-white" />
-                        </div>
-                      )}
+                      {msg.sender === "ai" && <BotAvatar />}
                       <div
                         className={cn(
-                          "max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed",
+                          "max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words",
                           msg.sender === "user"
                             ? "bg-gradient-to-r from-orange to-orange/80 text-white rounded-br-md"
                             : "bg-white/5 border border-white/10 text-secondary-text rounded-bl-md"
@@ -380,13 +217,11 @@ export function AIAssistant() {
 
                   {isTyping && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="flex justify-start"
+                      className="flex gap-2 justify-start"
                     >
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange to-cyan flex items-center justify-center mr-2 mt-1 shrink-0">
-                        <Sparkles className="w-3 h-3 text-white" />
-                      </div>
+                      <BotAvatar />
                       <div className="bg-white/5 border border-white/10 text-secondary-text rounded-2xl rounded-bl-md px-4 py-3">
                         <div className="flex items-center gap-1">
                           <span className="w-1.5 h-1.5 bg-cyan/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -400,15 +235,13 @@ export function AIAssistant() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-4 border-t border-white/10 bg-white/[0.02] relative" style={{ paddingBottom: "env(safe-area-inset-bottom, 16px)" }}>
+                <div className="p-4 border-t border-white/10 bg-white/[0.02] shrink-0">
                   <div className="flex items-center gap-2">
                     <input
                       ref={inputRef}
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      onFocus={handleInputFocus}
-                      onBlur={handleInputBlur}
                       onKeyDown={handleKeyDown}
                       placeholder={lang === "bn" ? "একটি বার্তা লিখুন..." : "Type a message..."}
                       className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-main-text placeholder:text-muted-text/60 focus:outline-none focus:border-cyan/30 focus:ring-1 focus:ring-cyan/20 transition-all duration-300"
@@ -417,7 +250,7 @@ export function AIAssistant() {
                       onClick={handleSend}
                       disabled={!inputValue.trim() || isTyping}
                       className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer",
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 cursor-pointer",
                         inputValue.trim() && !isTyping
                           ? "bg-gradient-to-r from-orange to-cyan text-white shadow-[0_0_20px_rgba(255,107,0,0.3)]"
                           : "bg-white/5 border border-white/10 text-muted-text"
@@ -439,9 +272,6 @@ export function AIAssistant() {
       </AnimatePresence>
 
       <div className="relative">
-        <FloatingHand side="left" isOpen={isOpen} />
-        <FloatingHand side="right" isOpen={isOpen} />
-
         <motion.button
           onClick={handleToggleOpen}
           className="relative w-16 h-16 rounded-full flex items-center justify-center cursor-pointer"
@@ -466,7 +296,7 @@ export function AIAssistant() {
             {isOpen ? (
               <X className="w-6 h-6 text-white" />
             ) : (
-              <AIFace isListening={false} />
+              <MessageCircle className="w-6 h-6 text-white" />
             )}
           </motion.div>
 

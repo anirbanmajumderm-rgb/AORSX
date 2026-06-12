@@ -403,8 +403,27 @@ model AIConfig {
   maxResponseLength Int    @default(500)
   restrictedTopics String?
   greetingMessage String?
+  fallbackMessage String?
+  personality     String   @default("professional")
+  aiEnabled       Boolean  @default(true)
+  customReplies   String?
   updatedAt       DateTime @updatedAt
   updatedBy       Int?
+}
+
+model VisitorSession {
+  id        String   @id @default(cuid())
+  visitorId String
+  page      String?
+  referrer  String?
+  userAgent String?
+  ip        String?
+  startedAt DateTime @default(now())
+  lastSeen  DateTime @updatedAt
+  endedAt   DateTime?
+
+  @@index([visitorId])
+  @@index([lastSeen])
 }
 
 model PageView {
@@ -531,13 +550,17 @@ model Conversation {
   id          String        @id @default(cuid())
   clientName  String?
   clientEmail String?
+  phone       String?
   status      String        @default("active")
+  unread      Boolean       @default(true)
+  visitorId   String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   messages    ChatMessage[]
 
   @@index([status])
   @@index([updatedAt])
+  @@index([visitorId])
 }
 
 model ChatMessage {

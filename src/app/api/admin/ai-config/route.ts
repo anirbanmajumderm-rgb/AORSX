@@ -32,6 +32,10 @@ export async function PUT(request: NextRequest) {
     if (body.maxResponseLength !== undefined) data.maxResponseLength = body.maxResponseLength;
     if (body.restrictedTopics !== undefined) data.restrictedTopics = Array.isArray(body.restrictedTopics) ? JSON.stringify(body.restrictedTopics) : body.restrictedTopics;
     if (body.greetingMessage !== undefined) data.greetingMessage = body.greetingMessage;
+    if (body.fallbackMessage !== undefined) data.fallbackMessage = body.fallbackMessage;
+    if (body.personality !== undefined) data.personality = body.personality;
+    if (body.aiEnabled !== undefined) data.aiEnabled = body.aiEnabled;
+    if (body.customReplies !== undefined) data.customReplies = typeof body.customReplies === "string" ? body.customReplies : JSON.stringify(body.customReplies);
 
     const config = existing
       ? await prisma.aIConfig.update({ where: { id: existing.id }, data })
