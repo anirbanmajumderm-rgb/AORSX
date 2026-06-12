@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, Search as SearchIcon, Trash2, CheckCircle, Mail, MailOpen } from "lucide-react";
+import { MessageCircle, Search as SearchIcon, Trash2, CheckCircle, Mail, MailOpen, Bot, Save, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/shared/PageHeader";
 import { StatusBadge } from "@/components/admin/shared/StatusBadge";
@@ -31,6 +31,10 @@ export default function AdminMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [showAiSettings, setShowAiSettings] = useState(false);
+  const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
+  const [autoReplyMessage, setAutoReplyMessage] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function loadConversations() {
     try {
@@ -47,14 +51,49 @@ export default function AdminMessagesPage() {
     finally { setLoading(false); }
   }
 
+  async function loadAiSettings() {
+    try {
+      const res = await fetch("/api/settings");
+      const json = await res.json();
+      if (json.success) {
+        setAutoReplyEnabled(json.data.auto_reply_enabled === "true");
+        setAutoReplyMessage(json.data.auto_reply_message || "");
+      }
+    } catch {}
+  }
+
   useEffect(() => {
-    if (sessionStatus === "authenticated") loadConversations();
+    if (sessionStatus === "authenticated") {
+      loadConversations();
+      loadAiSettings();
+    }
   }, [sessionStatus, activeFilter]);
 
   useEffect(() => {
     const timer = setInterval(loadConversations, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  async function handleSaveAiSettings() {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          auto_reply_enabled: autoReplyEnabled ? "true" : "false",
+          auto_reply_message: autoReplyMessage,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        toast.success("AI settings saved");
+      } else {
+        toast.error("Failed to save settings");
+      }
+    } catch { toast.error("Failed to save settings"); }
+    finally { setSaving(false); }
+  }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this conversation?")) return;
@@ -121,8 +160,76 @@ export default function AdminMessagesPage() {
           <span className="text-xs text-white/40">
             {counts.unread || 0} unread
           </span>
+          <button
+            onClick={() => setShowAiSettings(!showAiSettings)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+              showAiSettings
+                ? "bg-neon-cyan/10 text-neon-cyan border-neon-cyan/20"
+                : "text-white/40 hover:text-white border-transparent hover:border-white/10"
+            )}
+          >
+            <Bot className="h-3.5 w-3.5" />
+            AI Settings
+            {showAiSettings ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          </button>
         </div>
       </PageHeader>
+
+      {showAiSettings && (
+        <div className="mb-6 rounded-2xl border border-neon-cyan/10 bg-neon-cyan/[0.02] p-4 md:p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Bot className="h-5 w-5 text-neon-cyan" />
+            <h3 className="text-sm font-semibold text-white">AI Auto-Reply Settings</h3>
+            <span className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
+              autoReplyEnabled
+                ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                : "bg-white/5 text-white/30 border border-white/10"
+            )}>
+              <span className={cn("h-1.5 w-1.5 rounded-full", autoReplyEnabled ? "bg-green-400" : "bg-white/20")} />
+              {autoReplyEnabled ? "Active" : "Disabled"}
+            </span>
+          </div>
+          <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={() => setAutoReplyEnabled(!autoReplyEnabled)}
+              className={cn(
+                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                autoReplyEnabled ? "bg-neon-cyan" : "bg-white/10"
+              )}
+            >
+              <span className={cn(
+                "inline-block h-4 w-4 rounded-full bg-white transition-transform",
+                autoReplyEnabled ? "translate-x-6" : "translate-x-1"
+              )} />
+            </button>
+            <span className="text-xs text-white/50">Enable auto-reply when admin is offline</span>
+          </div>
+          <div className="mb-4">
+            <label className="mb-1.5 block text-xs font-medium text-white/60">
+              Auto-Reply Message
+            </label>
+            <Textarea
+              value={autoReplyMessage}
+              onChange={(e) => setAutoReplyMessage(e.target.value)}
+              placeholder="Thank you for your message! We'll get back to you soon."
+              className="bg-white/5 border-white/10 text-white placeholder-white/30 min-h-[80px]"
+            />
+            <p className="mt-1 text-[10px] text-white/30">
+              This message is sent automatically when a visitor messages and no admin has replied in the last 5 minutes.
+            </p>
+          </div>
+          <Button
+            onClick={handleSaveAiSettings}
+            disabled={saving}
+            className="h-9 bg-gradient-to-r from-neon-orange to-neon-cyan text-black text-xs font-semibold hover:shadow-[0_0_20px_rgba(255,107,0,0.3)]"
+          >
+            <Save className="h-3.5 w-3.5 mr-1.5" />
+            {saving ? "Saving..." : "Save Settings"}
+          </Button>
+        </div>
+      )}
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-1">

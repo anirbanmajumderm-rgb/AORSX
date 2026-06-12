@@ -12,7 +12,7 @@ export async function GET(
       orderBy: { createdAt: "asc" },
     });
     return NextResponse.json({ success: true, data: messages });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
   }
 }
@@ -45,8 +45,39 @@ export async function POST(
       where: { id: conversationId },
       data: { unread: true, updatedAt: new Date() },
     });
-    return NextResponse.json({ success: true, data: message });
-  } catch (err) {
+
+    let autoReply: unknown = null;
+    try {
+      const enabledSetting = await prisma.setting.findUnique({
+        where: { key: "auto_reply_enabled" },
+      });
+      if (enabledSetting?.value === "true") {
+        const autoReplySetting = await prisma.setting.findUnique({
+          where: { key: "auto_reply_message" },
+        });
+        const autoReplyText = autoReplySetting?.value?.trim();
+        if (autoReplyText) {
+          const lastAdminMsg = await prisma.message.findFirst({
+            where: { conversationId, sender: "admin" },
+            orderBy: { createdAt: "desc" },
+          });
+          const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+          const adminOffline = !lastAdminMsg || lastAdminMsg.createdAt < fiveMinAgo;
+          if (adminOffline) {
+            autoReply = await prisma.message.create({
+              data: {
+                conversationId,
+                sender: "admin",
+                content: autoReplyText,
+              },
+            });
+          }
+        }
+      }
+    } catch {}
+
+    return NextResponse.json({ success: true, data: message, autoReply });
+  } catch {
     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
   }
 }

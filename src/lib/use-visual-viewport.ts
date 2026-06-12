@@ -13,15 +13,32 @@ interface VisualViewportState {
 
 const KEYBOARD_THRESHOLD = 150;
 
-export function useVisualViewport(): VisualViewportState {
-  const [state, setState] = useState<VisualViewportState>({
+function getInitialState(): VisualViewportState {
+  if (typeof window !== "undefined" && window.visualViewport) {
+    const vv = window.visualViewport;
+    const layoutHeight = window.innerHeight;
+    const kbHeight = Math.max(0, layoutHeight - vv.height);
+    return {
+      height: vv.height,
+      width: vv.width,
+      offsetTop: vv.offsetTop,
+      offsetLeft: vv.offsetLeft,
+      keyboardHeight: kbHeight,
+      isKeyboardOpen: kbHeight > KEYBOARD_THRESHOLD,
+    };
+  }
+  return {
     height: 0,
     width: 0,
     offsetTop: 0,
     offsetLeft: 0,
     keyboardHeight: 0,
     isKeyboardOpen: false,
-  });
+  };
+}
+
+export function useVisualViewport(): VisualViewportState {
+  const [state, setState] = useState<VisualViewportState>(getInitialState);
 
   const handleViewportChange = useCallback(() => {
     const vv = window.visualViewport;
@@ -40,7 +57,6 @@ export function useVisualViewport(): VisualViewportState {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    handleViewportChange();
     const vv = window.visualViewport;
     if (vv) {
       vv.addEventListener("resize", handleViewportChange);
