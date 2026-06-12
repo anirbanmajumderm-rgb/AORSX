@@ -467,4 +467,31 @@ model FeatureFlag {
   @@index([enabled])
 }
 
+model Conversation {
+  id        String   @id @default(cuid())
+  visitorId String
+  name      String?
+  email     String?
+  status    String   @default("active")
+  unread    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  Message[]
+
+  @@index([visitorId])
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         String       @default("visitor")
+  content        String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
 

@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { ChatButton } from "@/components/ChatButton";
 
 const BackgroundEffects = dynamic(
   () => import("@/components/BackgroundEffects").then((m) => ({ default: m.BackgroundEffects })),
@@ -36,6 +37,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <CinematicSystem>
         {children}
       </CinematicSystem>
+      <ChatButton />
     </CinematicIntro>
   );
 }

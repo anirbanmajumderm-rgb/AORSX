@@ -9,7 +9,7 @@ import {
   LogOut, ChevronLeft, Menu, X, ChevronDown, Briefcase,
   DollarSign, Zap, Star, Image,
   Mail, BarChart3, Globe, Sliders,
-  User, Building2, Activity, MessageCircle
+  User, Building2, Activity, MessageCircle, MessageSquare
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Overview",
     items: [
       { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/messages", label: "Messages", icon: MessageCircle },
       { href: "/admin/site-manager", label: "Site Manager", icon: Globe },
       { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
