@@ -183,13 +183,12 @@ export default function MessagesPage() {
   }
 
   const containerStyle: React.CSSProperties = {
-    maxWidth: "900px",
     height: vv.height > 0 ? `${vv.height}px` : "100dvh",
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center bg-[#050505] w-full mx-auto min-h-dvh" style={containerStyle}>
+      <div className="flex items-center justify-center bg-[#050505] w-[95vw] max-w-[420px] md:max-w-[500px] md:w-[500px] lg:max-w-[450px] lg:w-[450px] mx-auto overflow-x-hidden min-h-dvh" style={containerStyle}>
         <Loader2 className="h-8 w-8 animate-spin text-neon-cyan" />
       </div>
     );
@@ -197,7 +196,7 @@ export default function MessagesPage() {
 
   if (!conversation && !showForm) {
     return (
-      <div className="flex flex-col bg-[#050505] w-full mx-auto" style={containerStyle}>
+      <div className="flex flex-col bg-[#050505] w-[95vw] max-w-[420px] md:max-w-[500px] md:w-[500px] lg:max-w-[450px] lg:w-[450px] mx-auto overflow-x-hidden" style={containerStyle}>
         <header className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-3 shrink-0">
           <button onClick={() => router.back()} className="flex h-9 w-9 items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all">
             <ArrowLeft className="h-5 w-5" />
@@ -226,7 +225,7 @@ export default function MessagesPage() {
 
   if (showForm) {
     return (
-      <div className="flex flex-col bg-[#050505] w-full mx-auto" style={containerStyle}>
+      <div className="flex flex-col bg-[#050505] w-[95vw] max-w-[420px] md:max-w-[500px] md:w-[500px] lg:max-w-[450px] lg:w-[450px] mx-auto overflow-x-hidden" style={containerStyle}>
         <header className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-3 shrink-0">
           <button onClick={() => setShowForm(false)} className="flex h-9 w-9 items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all">
             <ArrowLeft className="h-5 w-5" />
@@ -273,7 +272,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col bg-[#050505] w-full mx-auto" style={containerStyle}>
+    <div ref={containerRef} className="flex flex-col bg-[#050505] w-[95vw] max-w-[420px] md:max-w-[500px] md:w-[500px] lg:max-w-[450px] lg:w-[450px] mx-auto overflow-x-hidden" style={containerStyle}>
       <header className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-3 shrink-0">
         <button onClick={() => router.back()} className="flex h-9 w-9 items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all">
           <ArrowLeft className="h-5 w-5" />
