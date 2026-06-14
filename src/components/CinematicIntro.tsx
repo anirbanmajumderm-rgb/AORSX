@@ -20,8 +20,8 @@ const letterVariants = {
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      duration: 0.8,
-      delay: 0.4 + i * 0.18,
+      duration: 0.5,
+      delay: 0.2 + i * 0.1,
       ease: [0.16, 1, 0.3, 1] as const,
     },
   }),
@@ -33,8 +33,8 @@ const glowVariants = {
     opacity: [0, 0.3, 0.1],
     scale: [0.5, 1.2, 0.9],
     transition: {
-      duration: 1,
-      delay: 0.4 + i * 0.18,
+      duration: 0.6,
+      delay: 0.2 + i * 0.1,
       ease: "easeOut" as const,
     },
   }),
@@ -53,15 +53,15 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const taglineTimer = setTimeout(() => setShowTagline(true), 2400);
+    const taglineTimer = setTimeout(() => setShowTagline(true), 1200);
 
     const flashTimer = setTimeout(() => {
       setPhase("flash");
       setTimeout(() => {
         setPhase("done");
         sessionStorage.setItem("aorsx-intro-played", "true");
-      }, 900);
-    }, 3800);
+      }, 400);
+    }, 1800);
 
     return () => {
       clearTimeout(taglineTimer);
@@ -81,7 +81,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
             style={{ willChange: "opacity", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" } as React.CSSProperties}
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Scanlines */}
             <div
@@ -107,11 +107,11 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
                 className="absolute inset-0 z-10 pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0.6, 0] }}
-                transition={{
-                  duration: 0.9,
-                  times: [0, 0.15, 0.3, 1],
-                  ease: "easeOut",
-                }}
+                  transition={{
+                    duration: 0.4,
+                    times: [0, 0.15, 0.3, 1],
+                    ease: "easeOut",
+                  }}
                 style={{
                   background:
                     "radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, rgba(180,220,255,0.6) 25%, rgba(255,107,0,0.15) 50%, transparent 70%)",
@@ -131,8 +131,8 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
               initial={{ x: "-100%" }}
               animate={{ x: ["-100%", "250%"] }}
               transition={{
-                duration: 3,
-                delay: 0.3,
+                duration: 1.8,
+                delay: 0.2,
                 ease: [0.25, 0.1, 0.25, 1],
               }}
               style={{
@@ -199,7 +199,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
                     className="text-[10px] md:text-sm text-white/25 tracking-[0.35em] uppercase mt-4 md:mt-6 font-light"
                     initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   >
                     AI SaaS Agency
                   </motion.p>
@@ -211,7 +211,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
                 className="mt-6 md:mt-10 h-px w-0"
                 initial={{ width: 0 }}
                 animate={{ width: "4rem" }}
-                transition={{ duration: 1.2, delay: 2.6, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.8, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   background:
                     "linear-gradient(90deg, transparent, rgba(255,107,0,0.3), rgba(0,229,255,0.3), transparent)",
