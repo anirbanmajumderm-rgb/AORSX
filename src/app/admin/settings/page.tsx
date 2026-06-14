@@ -180,9 +180,7 @@ export default function AdminSettings() {
 
   useEffect(() => {
     if (session?.user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProfileName(session.user.name || "");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProfileEmail(session.user.email || "");
     }
   }, [session]);

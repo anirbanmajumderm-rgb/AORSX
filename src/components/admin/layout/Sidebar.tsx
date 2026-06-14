@@ -7,9 +7,9 @@ import {
   LayoutDashboard, FileText, Users, HelpCircle, BrainCircuit,
   UserCog, Shield, Bell, ToggleLeft, Settings, Sparkles,
   LogOut, ChevronLeft, Menu, X, ChevronDown, Briefcase,
-  DollarSign, Zap, Star, Image,
+  Zap, Star, Image,
   Mail, BarChart3, Globe, Sliders,
-  User, Building2, Activity, MessageCircle, MessageSquare
+  User, Building2, Activity, MessageCircle
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";

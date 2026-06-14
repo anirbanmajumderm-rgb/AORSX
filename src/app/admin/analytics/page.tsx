@@ -20,7 +20,6 @@ export default function AdminAnalytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     fetch(`/api/analytics/detailed?period=${period}`)
       .then((r) => r.json())
@@ -35,7 +34,7 @@ export default function AdminAnalytics() {
         showToast("error", "Failed to load analytics data");
       })
       .finally(() => setLoading(false));
-  }, [period]); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [period]);
 
   const periods = [
     { key: "week", label: "Week" },

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       orderBy: { updatedAt: "desc" },
     });
     return NextResponse.json({ success: true, data: conversation });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
   }
 }
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       },
     });
     return NextResponse.json({ success: true, data: conversation });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
   }
 }

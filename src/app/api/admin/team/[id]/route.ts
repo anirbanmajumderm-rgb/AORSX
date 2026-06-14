@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     });
     revalidatePath("/api/site-data");
     revalidatePath("/", "layout");
-    const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET }); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
     await createAuditLog({
       adminId: token?.id ? parseInt(token.id as string) : null,
       action: "team.updated",
@@ -74,7 +74,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     await prisma.teamMember.delete({ where: { id } });
     revalidatePath("/api/site-data");
     revalidatePath("/", "layout");
-    const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET }); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
     await createAuditLog({
       adminId: token?.id ? parseInt(token.id as string) : null,
       action: "team.deleted",

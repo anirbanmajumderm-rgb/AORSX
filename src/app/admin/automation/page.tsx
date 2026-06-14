@@ -71,7 +71,6 @@ export default function AdminAutomation() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadWorkflows();
   }, []);
 

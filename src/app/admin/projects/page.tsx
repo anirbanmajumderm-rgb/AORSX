@@ -62,7 +62,7 @@ export default function AdminProjectsPage() {
     }
   }
 
-  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/set-state-in-effect
+  useEffect(() => { load(); }, []);
 
   function startCreate() {
     setEditingId(-1);
