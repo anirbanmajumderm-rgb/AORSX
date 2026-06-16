@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.amazonaws.com" },
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
     formats: ["image/avif", "image/webp"],
     deviceSizes: [320, 420, 640, 768, 1024, 1280, 1536, 1920],

@@ -47,7 +47,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const headersList = await headers();
   let isAuthenticated = false;
   try {
-    const token = await getToken({ req: { headers: headersList }, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req: { headers: headersList }, secret: process.env.NEXTAUTH_SECRET, secureCookie: process.env.NODE_ENV === "production" });
     isAuthenticated = !!token;
   } catch {}
 

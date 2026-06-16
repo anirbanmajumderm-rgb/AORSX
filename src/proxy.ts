@@ -6,7 +6,7 @@ const FOUNDER_ROLES = ["superadmin", "founder"];
 
 async function getTokenSafe(req: NextRequest) {
   try {
-    return await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    return await getToken({ req, secret: process.env.NEXTAUTH_SECRET, secureCookie: process.env.NODE_ENV === "production" });
   } catch {
     return null;
   }

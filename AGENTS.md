@@ -144,7 +144,16 @@ If auth issues (redirect loops, blank admin):
   - `DATABASE_URL` — Neon connection string
   - `NEXTAUTH_SECRET` — generate a secure random string
   - `NEXTAUTH_URL` — your Vercel deployment URL
+  - `BLOB_READ_WRITE_TOKEN` — required for Vercel Blob storage (file uploads persist across deployments). Generate from Vercel Storage tab.
 - Build command: `npm run build` (plain `next build` — `--webpack` flag not supported on Vercel's Next.js 15.3.0)
+
+# File Uploads (Vercel Blob)
+- Uploaded files (logos, images, team photos) use `src/lib/storage.ts` for cross-environment storage
+- **Local dev**: files saved to `public/uploads/` served as `/uploads/{name}`
+- **Vercel (no Blob token)**: files saved to `/tmp/uploads/` served via `/api/file/{name}` (ephemeral — lost on redeploy)
+- **Vercel (with Blob token)**: files uploaded to Vercel Blob, stored permanently, served via CDN URLs `https://*.public.blob.vercel-storage.com`
+- Add `BLOB_READ_WRITE_TOKEN` env var in Vercel dashboard for persistent storage
+- CSP (`img-src`) and `next.config.ts` `remotePatterns` already include `*.public.blob.vercel-storage.com`
 
 # AI Assistant System (Redesigned Jun 2026)
 - New Prisma models: `Package`, `KnowledgeItem`, `Inquiry`

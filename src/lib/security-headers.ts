@@ -20,7 +20,7 @@ export function getCspPolicy(): string {
       ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' 'unsafe-allow-redirects' https://*.vercel-insights.com"
       : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.vercel-insights.com https://vercel.live",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: blob: https://*.unsplash.com https://images.unsplash.com",
+    "img-src 'self' data: blob: https://*.unsplash.com https://images.unsplash.com https://*.public.blob.vercel-storage.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "connect-src 'self' https://*.vercel-insights.com https://vercel.live wss://*.vercel.live",
     "frame-ancestors 'none'",

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, errorResponse, serverErrorResponse, withRateLimit } from "@/lib/api-utils";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { storeFile } from "@/lib/storage";
 import { randomUUID } from "crypto";
 
 export async function POST(request: NextRequest) {
@@ -25,21 +24,10 @@ export async function POST(request: NextRequest) {
       return errorResponse("File too large. Max 5MB", 400);
     }
 
-    const isVercel = !!process.env.VERCEL_URL;
     const ext = file.name.split(".").pop() || "jpg";
     const filename = `team-${randomUUID()}.${ext}`;
-    const uploadDir = isVercel
-      ? join("/tmp", "uploads")
-      : join(process.cwd(), "public", "uploads");
-
-    await mkdir(uploadDir, { recursive: true });
-
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(join(uploadDir, filename), buffer);
-
-    const fileUrl = isVercel
-      ? `/api/file/${filename}`
-      : `/uploads/${filename}`;
+    const fileUrl = await storeFile(filename, buffer, file.type);
 
     return NextResponse.json({
       success: true,

@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, requireAuth } from "@/lib/api-utils";
+import { storeFile } from "@/lib/storage";
 
 const ALLOWED_MIME_TYPES = [
   "image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml",
@@ -34,21 +33,9 @@ export async function POST(req: NextRequest) {
       return errorResponse(`MIME type ${file.type} is not allowed`, 400);
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const isVercel = !!process.env.VERCEL_URL;
+    const buffer = Buffer.from(await file.arrayBuffer());
     const storedName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const uploadDir = isVercel
-      ? path.join("/tmp", "uploads")
-      : path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, storedName);
-    await writeFile(filePath, buffer);
-
-    const fileUrl = isVercel
-      ? `/api/file/${storedName}`
-      : `/uploads/${storedName}`;
+    const fileUrl = await storeFile(storedName, buffer, file.type || `image/${ext}`);
 
     const record = await prisma.uploadedFile.create({
       data: {
