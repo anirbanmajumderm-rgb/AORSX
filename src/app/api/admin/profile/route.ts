@@ -46,9 +46,14 @@ export async function PUT(req: NextRequest) {
       if (newPassword.length < 8) return errorResponse("New password must be at least 8 characters", 400);
       await prisma.admin.update({
         where: { email: adminEmail },
-        data: { password: hashSync(newPassword, 12) },
+        data: {
+          password: hashSync(newPassword, 12),
+          tokenVersion: { increment: 1 },
+          failedLoginAttempts: 0,
+          lockoutUntil: null,
+        },
       });
-      return successResponse({ message: "Password updated" });
+      return successResponse({ message: "Password updated. Please login again." });
     }
 
     // Profile update flow

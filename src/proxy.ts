@@ -32,6 +32,12 @@ const founderOnlyPaths = [
   "/admin/settings",
 ];
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  ...(process.env.NEXTAUTH_URL ? [process.env.NEXTAUTH_URL] : []),
+  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+].filter(Boolean) as string[];
+
 function addSecurityHeaders(response: NextResponse): void {
   const headers = getSecurityHeaders();
   for (const [key, value] of Object.entries(headers)) {
@@ -41,46 +47,62 @@ function addSecurityHeaders(response: NextResponse): void {
   response.headers.set("Content-Security-Policy", csp);
 }
 
-function validateOriginRequest(req: NextRequest): boolean {
-  const origin = req.headers.get("origin");
-  if (!origin) return true;
-  if (origin === "null") return false;
-  try {
-    const allowedOrigins = [
-      "http://localhost:3000",
-      process.env.NEXTAUTH_URL || "",
-      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
-    ].filter((s) => s.length > 0);
-    const originUrl = new URL(origin);
-    return allowedOrigins.some((o) => {
-      try {
-        const allowedUrl = new URL(o);
-        return allowedUrl.origin === originUrl.origin;
-      } catch {
-        return false;
-      }
-    });
-  } catch {
-    return false;
-  }
-}
-
 function addRequestId(response: NextResponse): void {
   const requestId = crypto.randomUUID().slice(0, 8);
   response.headers.set("x-request-id", requestId);
+}
+
+function validateOriginRequest(req: NextRequest): { valid: boolean; reason?: string } {
+  const origin = req.headers.get("origin");
+  const method = req.method;
+  const isMutation = method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE";
+
+  if (!origin) {
+    if (isMutation && (req.nextUrl.pathname.startsWith("/api/admin/") || req.nextUrl.pathname.startsWith("/admin/"))) {
+      return { valid: false, reason: "Origin header required for mutating requests" };
+    }
+    return { valid: true };
+  }
+
+  if (origin === "null") {
+    return { valid: false, reason: "Null origin not allowed" };
+  }
+
+  try {
+    const originUrl = new URL(origin);
+    return {
+      valid: allowedOrigins.some((o) => {
+        try {
+          const allowedUrl = new URL(o);
+          return allowedUrl.origin === originUrl.origin;
+        } catch {
+          return false;
+        }
+      }),
+      reason: "Origin not allowed",
+    };
+  } catch {
+    return { valid: false, reason: "Invalid origin URL" };
+  }
+}
+
+async function validateCsrfForMutation(req: NextRequest): Promise<NextResponse | null> {
+  if (req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS") return null;
+  if (!req.nextUrl.pathname.startsWith("/api/admin/")) return null;
+
+  const { validateCsrf } = await import("@/lib/csrf-v2");
+  return validateCsrf(req);
 }
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   try {
-    if (!validateOriginRequest(req)) {
+    const originCheck = validateOriginRequest(req);
+    if (!originCheck.valid) {
       return new NextResponse(
-        JSON.stringify({ success: false, error: "Invalid origin" }),
-        {
-          status: 403,
-          headers: { "Content-Type": "application/json" },
-        }
+        JSON.stringify({ success: false, error: originCheck.reason || "Invalid origin" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -104,10 +126,19 @@ export async function proxy(req: NextRequest) {
     const isLoggedIn = !!token;
 
     if (!isLoggedIn) {
+      if (pathname.startsWith("/api/admin/")) {
+        return new NextResponse(
+          JSON.stringify({ success: false, error: "Unauthorized" }),
+          { status: 401, headers: { "Content-Type": "application/json" } }
+        );
+      }
       const loginUrl = new URL("/admin/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
+
+    const csrfError = await validateCsrfForMutation(req);
+    if (csrfError) return csrfError;
 
     const isFounderRoute = founderOnlyPaths.some(
       (p) => pathname === p || pathname.startsWith(p + "/")
@@ -119,6 +150,12 @@ export async function proxy(req: NextRequest) {
           where: { email: token.email as string },
         });
         if (!admin || !FOUNDER_ROLES.includes(admin.role)) {
+          if (pathname.startsWith("/api/admin/")) {
+            return new NextResponse(
+              JSON.stringify({ success: false, error: "Forbidden" }),
+              { status: 403, headers: { "Content-Type": "application/json" } }
+            );
+          }
           return NextResponse.redirect(new URL("/admin/dashboard", req.url));
         }
       } catch {

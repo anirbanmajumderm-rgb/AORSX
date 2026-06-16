@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BRAND = "A-ORSX";
+const BRAND = "AORNX";
 
 const letterVariants = {
   hidden: {
@@ -47,7 +47,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const alreadyPlayed = sessionStorage.getItem("aorsx-intro-played");
+    const alreadyPlayed = sessionStorage.getItem("aornx-intro-played");
     if (alreadyPlayed) {
       setPhase("done");
       return;
@@ -59,7 +59,7 @@ export function CinematicIntro({ children }: { children: React.ReactNode }) {
       setPhase("flash");
       setTimeout(() => {
         setPhase("done");
-        sessionStorage.setItem("aorsx-intro-played", "true");
+        sessionStorage.setItem("aornx-intro-played", "true");
       }, 400);
     }, 1800);
 

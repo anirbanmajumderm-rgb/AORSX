@@ -19,6 +19,7 @@ export const translations: Translations = {
       skills: "Skills",
       faq: "FAQ",
       contact: "Contact",
+      messages: "Messages",
       letsWorkTogether: "Let's Work Together",
     },
     hero: {
@@ -136,6 +137,7 @@ export const translations: Translations = {
       skills: "দক্ষতা",
       faq: "প্রশ্নোত্তর",
       contact: "যোগাযোগ",
+      messages: "বার্তা",
       letsWorkTogether: "আসুন একসাথে কাজ করি",
     },
     hero: {

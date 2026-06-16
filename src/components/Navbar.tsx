@@ -10,7 +10,7 @@ import { useSiteData } from "@/hooks/useSiteData";
 import { CineLetters } from "@/components/CinematicSystem";
 import { usePathname } from "next/navigation";
 
-const navItems = ["home", "about", "services", "projects", "reviews", "skills", "faq", "contact"] as const;
+const navItems = ["home", "about", "services", "projects", "reviews", "skills", "faq", "messages", "contact"] as const;
 
 export const Navbar = memo(function Navbar() {
   const pathname = usePathname();
@@ -128,15 +128,17 @@ export const Navbar = memo(function Navbar() {
             {navItems.map((item) => (
               <a
                 key={item}
-                href={`#${item}`}
+                href={item === "messages" ? "/messages" : `#${item}`}
                 className={cn(
                   "relative px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300",
-                  activeSection === item
+                  item === "messages" && pathname === "/messages"
+                    ? "text-white"
+                    : activeSection === item
                     ? "text-white"
                     : "text-white/70 hover:text-white hover:bg-white/5"
                 )}
               >
-                {activeSection === item && (
+                {((item === "messages" && pathname === "/messages") || (item !== "messages" && activeSection === item)) && (
                   <motion.div
                     layoutId="nav-indicator"
                     className="absolute inset-0 bg-white/5 rounded-xl border border-white/10"
@@ -144,7 +146,7 @@ export const Navbar = memo(function Navbar() {
                   />
                 )}
                 <span className="relative z-10" suppressHydrationWarning>{t(`nav.${item}`)}</span>
-                {activeSection === item && (
+                {item !== "messages" && activeSection === item && (
                   <motion.span
                     layoutId="nav-underline"
                     className="absolute -bottom-[2px] left-4 right-4 h-[2px] bg-gradient-to-r from-[#FF6B00] to-[#00E5FF] rounded-full shadow-[0_0_8px_rgba(255,107,0,0.5)]"
@@ -210,18 +212,20 @@ export const Navbar = memo(function Navbar() {
               {navItems.map((item) => (
                 <a
                   key={item}
-                  href={`#${item}`}
+                  href={item === "messages" ? "/messages" : `#${item}`}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     "block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300",
-                    activeSection === item
+                    item === "messages" && pathname === "/messages"
+                      ? "bg-white/5 text-white border border-white/10"
+                      : activeSection === item
                       ? "bg-white/5 text-white border border-white/10"
                       : "text-white/70 hover:text-white hover:bg-white/5"
                   )}
                 >
                   <span className="flex items-center gap-2" suppressHydrationWarning>
                     {t(`nav.${item}`)}
-                    {activeSection === item && (
+                    {(item === "messages" && pathname === "/messages" || item !== "messages" && activeSection === item) && (
                       <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#FF6B00] to-[#00E5FF]" />
                     )}
                   </span>

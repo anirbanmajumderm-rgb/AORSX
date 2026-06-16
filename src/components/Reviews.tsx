@@ -85,31 +85,10 @@ export const Reviews = memo(function Reviews() {
               {/* Decorative quote */}
               <Quote className="absolute top-4 right-4 w-16 h-16 text-white/5" />
 
-              {/* Stars */}
-              <div className="flex gap-1.5 mb-8">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.1 }}
-                  >
-                    <Star
-                      className={cn(
-                        "w-5 h-5",
-                        i < review.rating
-                          ? "fill-orange text-orange"
-                          : "text-white/20"
-                      )}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Review Text */}
-              <div className="relative min-h-[120px]">
+              {/* Review Content */}
+              <div className="relative min-h-[200px]">
                 <AnimatePresence mode="wait" custom={direction}>
-                  <motion.p
+                  <motion.div
                     key={review.id}
                     custom={direction}
                     variants={slideVariants}
@@ -117,10 +96,26 @@ export const Reviews = memo(function Reviews() {
                     animate="center"
                     exit="exit"
                     transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-lg md:text-xl text-secondary-text leading-relaxed italic mb-8"
                   >
-                    &ldquo;{review.reviewText}&rdquo;
-                  </motion.p>
+                    {/* Stars */}
+                    <div className="flex gap-1.5 mb-8">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={cn(
+                            "w-5 h-5",
+                            i < review.rating
+                              ? "fill-aornx-gold text-aornx-gold"
+                              : "text-aornx-gold/20"
+                          )}
+                        />
+                      ))}
+                    </div>
+                    {/* Review Text */}
+                    <p className="text-lg md:text-xl text-secondary-text leading-relaxed italic mb-8">
+                      &ldquo;{review.reviewText}&rdquo;
+                    </p>
+                  </motion.div>
                 </AnimatePresence>
               </div>
 

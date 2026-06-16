@@ -227,7 +227,7 @@ export async function sendOTPEmail(params: {
         <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #222;border-radius:16px;">
           <tr>
             <td style="padding:40px 32px;text-align:center;">
-              <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;background:linear-gradient(135deg,#f97316,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">A-ORSX Admin</h1>
+              <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;background:linear-gradient(135deg,#f97316,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">AORNX Admin</h1>
               <p style="margin:0 0 32px;color:#666;font-size:14px;">Your verification code</p>
               <div style="background:#000;border:1px solid #222;border-radius:12px;padding:24px;margin-bottom:24px;">
                 <p style="margin:0 0 12px;color:#888;font-size:13px;">Enter this code to complete your login:</p>

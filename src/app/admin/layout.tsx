@@ -5,6 +5,7 @@ import { AdminErrorBoundary } from "./error-boundary";
 import { NotificationProvider } from "@/contexts/notification-context";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Toaster } from "sonner";
+import { CsrfProvider } from "@/lib/csrf-context";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import "./admin.css";
@@ -68,21 +69,23 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <AuthProvider>
-      <AdminErrorBoundary>
-        <NotificationProvider>
-          <ToastProvider>
-            <Toaster position="top-right" richColors closeButton />
-            <div className="min-h-screen bg-[#050505] text-white admin-grid-bg">
-              <Sidebar siteName={siteName} />
-              <div className="relative z-0 lg:pl-[260px] transition-all duration-300">
-                <main className="min-h-screen admin-scrollbar relative z-10">
-                  {children}
-                </main>
+      <CsrfProvider>
+        <AdminErrorBoundary>
+          <NotificationProvider>
+            <ToastProvider>
+              <Toaster position="top-right" richColors closeButton />
+              <div className="min-h-screen bg-[#050505] text-white admin-grid-bg">
+                <Sidebar siteName={siteName} />
+                <div className="relative z-0 lg:pl-[260px] transition-all duration-300">
+                  <main className="min-h-screen admin-scrollbar relative z-10">
+                    {children}
+                  </main>
+                </div>
               </div>
-            </div>
-          </ToastProvider>
-        </NotificationProvider>
-      </AdminErrorBoundary>
+            </ToastProvider>
+          </NotificationProvider>
+        </AdminErrorBoundary>
+      </CsrfProvider>
     </AuthProvider>
   );
 }

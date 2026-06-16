@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { generateAutoReply } from "@/lib/chatbot-ai";
 
 export async function GET(
   _req: NextRequest,
@@ -48,31 +49,15 @@ export async function POST(
 
     let autoReply: unknown = null;
     try {
-      const enabledSetting = await prisma.setting.findUnique({
-        where: { key: "auto_reply_enabled" },
-      });
-      if (enabledSetting?.value === "true") {
-        const autoReplySetting = await prisma.setting.findUnique({
-          where: { key: "auto_reply_message" },
+      const replyText = await generateAutoReply(content.trim(), conversationId);
+      if (replyText) {
+        autoReply = await prisma.message.create({
+          data: {
+            conversationId,
+            sender: "ai",
+            content: replyText,
+          },
         });
-        const autoReplyText = autoReplySetting?.value?.trim();
-        if (autoReplyText) {
-          const lastAdminMsg = await prisma.message.findFirst({
-            where: { conversationId, sender: "admin" },
-            orderBy: { createdAt: "desc" },
-          });
-          const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
-          const adminOffline = !lastAdminMsg || lastAdminMsg.createdAt < fiveMinAgo;
-          if (adminOffline) {
-            autoReply = await prisma.message.create({
-              data: {
-                conversationId,
-                sender: "admin",
-                content: autoReplyText,
-              },
-            });
-          }
-        }
       }
     } catch {}
 

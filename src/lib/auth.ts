@@ -5,6 +5,9 @@ import { prisma } from "./prisma";
 import { logger } from "./app-logger";
 import { createAuditLog, createNotification } from "./audit";
 
+const MAX_FAILED_ATTEMPTS = 10;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -22,26 +25,69 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           const admin = await prisma.admin.findFirst({
             where: { OR: [{ email: login }, { username: login }] },
-            select: { id: true, email: true, username: true, password: true, name: true, image: true },
           });
           if (!admin) return null;
 
+          const now = new Date();
+
+          if (admin.lockoutUntil && admin.lockoutUntil > now) {
+            const remainingMs = admin.lockoutUntil.getTime() - now.getTime();
+            logger.warn("Auth", `Account locked for ${login}`, { remainingMs });
+            createAuditLog({
+              adminId: admin.id,
+              action: "login.locked",
+              resource: "admin",
+              resourceId: admin.id,
+              details: `Login blocked - account locked until ${admin.lockoutUntil.toISOString()}`,
+            });
+            return null;
+          }
+
           const isValid = await compare(password, admin.password);
           if (!isValid) {
-            createNotification({
-              adminId: admin.id,
-              type: "warning",
-              title: "Failed Login Attempt",
-              description: `Failed login attempt for ${login}`,
+            const newAttempts = admin.failedLoginAttempts + 1;
+            const updateData: Record<string, unknown> = {
+              failedLoginAttempts: newAttempts,
+            };
+
+            if (newAttempts >= MAX_FAILED_ATTEMPTS) {
+              updateData.lockoutUntil = new Date(now.getTime() + LOCKOUT_DURATION_MS);
+              logger.warn("Auth", `Account locked due to ${newAttempts} failed attempts`, { login });
+              createNotification({
+                adminId: admin.id,
+                type: "warning",
+                title: "Account Locked",
+                description: `Account locked for 15 minutes due to ${newAttempts} failed login attempts`,
+              });
+            } else {
+              createNotification({
+                adminId: admin.id,
+                type: "warning",
+                title: "Failed Login Attempt",
+                description: `Failed login attempt ${newAttempts}/${MAX_FAILED_ATTEMPTS} for ${login}`,
+              });
+            }
+
+            await prisma.admin.update({
+              where: { id: admin.id },
+              data: updateData,
             });
+
             createAuditLog({
               adminId: admin.id,
               action: "login.failed",
               resource: "admin",
               resourceId: admin.id,
-              details: `Failed login attempt for ${login}`,
+              details: `Failed login attempt ${newAttempts}/${MAX_FAILED_ATTEMPTS} for ${login}`,
             });
             return null;
+          }
+
+          if (admin.failedLoginAttempts > 0) {
+            await prisma.admin.update({
+              where: { id: admin.id },
+              data: { failedLoginAttempts: 0, lockoutUntil: null },
+            });
           }
 
           createAuditLog({
@@ -57,6 +103,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: admin.email,
             name: admin.name,
             image: admin.image,
+            tokenVersion: admin.tokenVersion,
           };
         } catch (err) {
           logger.error("Auth", "authorize error", {
@@ -78,10 +125,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        (token as any).tokenVersion = (user as any).tokenVersion;
       }
       if (account) {
         token.accessToken = account.access_token;
       }
+
+      if (token.email && (token as any).tokenVersion !== undefined) {
+        try {
+          const admin = await prisma.admin.findUnique({
+            where: { email: token.email as string },
+            select: { tokenVersion: true },
+          });
+          if (admin && admin.tokenVersion !== (token as any).tokenVersion) {
+            const invalidated = { ...token };
+            invalidated.name = "";
+            invalidated.email = "";
+            invalidated.id = "";
+            (invalidated as any).tokenVersion = undefined;
+            return invalidated;
+          }
+        } catch {
+          return token;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

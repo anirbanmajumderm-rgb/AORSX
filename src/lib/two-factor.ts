@@ -43,7 +43,7 @@ export function decryptSecret(encryptedText: string): string {
 export function generateTOTPSecret(email: string): { secret: string; otpauthUrl: string } {
   const secret = generateSecret();
   const otpauthUrl = generateURI({
-    issuer: "A-ORSX Admin",
+    issuer: "AORNX Admin",
     label: email,
     secret,
     strategy: "totp",

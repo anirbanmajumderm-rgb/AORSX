@@ -9,7 +9,8 @@ import {
   LogOut, ChevronLeft, Menu, X, ChevronDown, Briefcase,
   Zap, Star, Image,
   Mail, BarChart3, Globe, Sliders,
-  User, Building2, Activity, MessageCircle
+  User, Building2, Activity, Bot, MessageCircle,
+  MessageSquare, BookOpen, Package
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -28,9 +29,20 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Overview",
     items: [
       { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/admin/messages", label: "Messages", icon: MessageCircle },
       { href: "/admin/site-manager", label: "Site Manager", icon: Globe },
       { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "AI Assistant",
+    items: [
+      { href: "/admin/ai", label: "Control Center", icon: Sparkles },
+      { href: "/admin/ai/chatbot", label: "AI Chatbot", icon: Bot },
+      { href: "/admin/ai/inquiries", label: "Inquiries", icon: MessageSquare },
+      { href: "/admin/ai/knowledge", label: "Knowledge Base", icon: BookOpen },
+      { href: "/admin/ai/packages", label: "Packages", icon: Package },
+      { href: "/admin/ai/policies", label: "Policies", icon: Shield },
+      { href: "/admin/ai-training", label: "AI Settings", icon: Settings },
     ],
   },
   {
@@ -44,8 +56,9 @@ const navSections: { label: string; items: NavItem[] }[] = [
       { href: "/admin/why-choose-me", label: "Why Choose Us", icon: Star },
       { href: "/admin/team", label: "Team & Founders", icon: Users },
       { href: "/admin/faq", label: "FAQ & Questions", icon: HelpCircle },
-      { href: "/admin/questions", label: "Inquiries", icon: MessageCircle },
+      { href: "/admin/questions", label: "User Questions", icon: HelpCircle },
       { href: "/admin/contacts", label: "Contacts", icon: Mail },
+      { href: "/admin/messages", label: "Messages", icon: MessageCircle },
       { href: "/admin/media", label: "Media", icon: Image },
       { href: "/admin/company", label: "Company", icon: Building2 },
     ],

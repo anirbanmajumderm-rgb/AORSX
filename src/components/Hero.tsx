@@ -106,7 +106,7 @@ const Hero = memo(function Hero() {
         ))}
       </div>
 
-      {/* ORXS brand watermark */}
+      {/* AORNX brand watermark */}
       <div className="absolute inset-0 z-[3] flex items-center justify-center pointer-events-none overflow-hidden select-none">
         <motion.span
           className="font-bold leading-none tracking-[-0.04em]"
@@ -123,7 +123,7 @@ const Hero = memo(function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
-          ORXS
+          AORNX
         </motion.span>
       </div>
 

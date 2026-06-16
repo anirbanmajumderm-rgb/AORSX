@@ -20,7 +20,7 @@ async function main() {
 
   await prisma.company.create({
     data: {
-      name: "A-ORSX",
+      name: "AORNX",
       tagline: "AI SaaS Agency",
       description: "Professional web developer and AI specialist building modern scalable applications.",
         founderName: "Anirban Majumder",
@@ -152,7 +152,7 @@ async function main() {
   }
 
   const faqItems = [
-    { question: "What services does A-ORSX offer?", answer: "We offer AI development, web development, automation, UI/UX design, SaaS development, backend systems, AI chatbots, API integration, cloud infrastructure, data analytics, mobile apps, cybersecurity, and digital marketing.", order: 1 },
+    { question: "What services does AORNX offer?", answer: "We offer AI development, web development, automation, UI/UX design, SaaS development, backend systems, AI chatbots, API integration, cloud infrastructure, data analytics, mobile apps, cybersecurity, and digital marketing.", order: 1 },
     { question: "How long does a typical project take?", answer: "Project timelines vary based on scope. A simple website typically takes 2-4 weeks, while complex SaaS platforms can take 3-6 months. We'll provide a detailed timeline during consultation.", order: 2 },
     { question: "Do you offer post-launch support?", answer: "Yes, we provide comprehensive maintenance and support packages to ensure your project runs smoothly after launch.", order: 3 },
     { question: "What technologies do you specialize in?", answer: "We specialize in React, Next.js, TypeScript, Node.js, Python, AWS, Docker, PostgreSQL, TensorFlow, and various AI/ML frameworks.", order: 4 },
@@ -179,8 +179,8 @@ async function main() {
 
   // Always upsert settings so new keys are added on re-seed
   const settings = [
-    { key: "site_title", value: "A-ORSX Portfolio", type: "text" },
-    { key: "hero_heading", value: "WELCOME TO A-ORSX", type: "text" },
+    { key: "site_title", value: "AORNX Portfolio", type: "text" },
+    { key: "hero_heading", value: "WELCOME TO AORNX", type: "text" },
     { key: "hero_subtitle", value: "PROFESSIONAL WEB DEVELOPER & AI SPECIALIST", type: "text" },
     { key: "hero_headline", value: "WE BUILD|YOU GROW|", type: "text" },
     { key: "hero_tech_stack", value: "React,Next.js,TypeScript,Node.js,Python,AWS,GraphQL,Docker,PostgreSQL,TensorFlow", type: "text" },
@@ -226,7 +226,7 @@ async function main() {
     { key: "card_policy_title", value: "Our Policy", type: "text" },
     { key: "card_rules_title", value: "Our Rules", type: "text" },
     { key: "card_commitment_title", value: "Our Commitment", type: "text" },
-    { key: "meta_title", value: "A-ORSX | AI SaaS Agency", type: "text" },
+    { key: "meta_title", value: "AORNX | AI SaaS Agency", type: "text" },
     { key: "meta_description", value: "Professional web developer and AI specialist building modern scalable applications.", type: "text" },
     { key: "meta_keywords", value: "web development, AI, SaaS, portfolio, developer, AI specialist", type: "text" },
     { key: "about_us_headline", value: "About Us", type: "text" },
@@ -240,6 +240,19 @@ async function main() {
     { key: "stats_clients", value: "50", type: "text" },
     { key: "stats_years", value: "6", type: "text" },
     { key: "stats_satisfaction", value: "99", type: "text" },
+    { key: "auto_reply_enabled", value: "true", type: "boolean" },
+    { key: "auto_reply_ai_greeting", value: "Hi there! Thanks for reaching out to AORNX. I'm the AI assistant. How can I help you today? You can ask me about our services, projects, or anything related to what we do.", type: "text" },
+    { key: "auto_reply_ai_fallback", value: "Thank you for your message! Our team has been notified and will get back to you shortly. In the meantime, feel free to ask me anything else.", type: "text" },
+    { key: "auto_reply_ai_personality", value: "You are a helpful AI assistant for AORNX, an AI SaaS agency specializing in custom software development, AI solutions, web development, automation, and digital transformation. You are friendly, professional, and knowledgeable about the company's services.", type: "text" },
+    { key: "auto_reply_ai_knowledge", value: JSON.stringify([
+      { keywords: "pricing cost how much price", response: "Our pricing varies depending on the scope and complexity of your project. We offer custom quotes tailored to your specific needs. Could you tell me more about what you're looking for? I'll connect you with our team for a detailed quote." },
+      { keywords: "service services offer what do you do", response: "AORNX offers a wide range of services including AI Development, Web Development, Automation, UI/UX Design, SaaS Development, Backend Systems, AI Chatbots, and API Integration. What specific service are you interested in?" },
+      { keywords: "contact email phone reach get in touch", response: "You can reach us through this chat, or email us at anirbanmajumderm@gmail.com. Our team typically responds within 24 hours." },
+      { keywords: "project portfolio work examples", response: "We have worked on various projects including AI analytics platforms, fintech applications, e-commerce solutions, and healthcare platforms. You can check out our Projects section to see our work!" },
+      { keywords: "timeline how long delivery time", response: "Project timelines depend on the scope and complexity. A typical web application takes 4-8 weeks, while more complex AI solutions may take 8-16 weeks. We'll provide a detailed timeline during our consultation." },
+      { keywords: "technology stack tech react nextjs python", response: "We work with modern technologies including React, Next.js, TypeScript, Node.js, Python, TensorFlow, PostgreSQL, MongoDB, AWS, and more. We choose the best tech stack for each project's specific needs." },
+      { keywords: "founder who created owner company", response: "AORNX was founded by Anirban Majumder, a full-stack developer and AI specialist with expertise in building modern scalable web applications." },
+    ]), type: "text" },
   ];
 
   for (const s of settings) {
@@ -318,6 +331,36 @@ async function main() {
     });
   }
   console.log("Email templates seeded!");
+
+  const packages = [
+    { name: "Starter", description: "Basic package for small businesses", price: "$499", features: "Custom Website\n5 Pages\nMobile Responsive\nBasic SEO\n1 Month Support" },
+    { name: "Professional", description: "Full-featured package for growing companies", price: "$1,499", features: "Custom Website\nUnlimited Pages\nMobile Responsive\nAdvanced SEO\nCMS Integration\n3 Months Support" },
+    { name: "Enterprise", description: "Enterprise-grade solution with AI integration", price: "$3,999", features: "Custom Web App\nAI Integration\nAPI Development\nAdvanced Analytics\nPriority Support\n12 Months Support" },
+  ];
+  for (const pkg of packages) {
+    const existing = await prisma.package.findFirst({ where: { name: pkg.name } });
+    if (!existing) {
+      await prisma.package.create({ data: pkg });
+    }
+  }
+  console.log("Packages seeded!");
+
+  const knowledgeItems = [
+    { question: "What services do you offer?", answer: "We offer custom web development, AI integration, mobile app development, cloud solutions, and digital transformation consulting.", category: "services", keywords: "services, offer, what do you do, products" },
+    { question: "How much does a website cost?", answer: "Our pricing starts at $499 for a basic website and goes up to $3,999+ for enterprise solutions with AI integration. Contact us for a custom quote.", category: "pricing", keywords: "pricing, cost, price, how much, budget, rates" },
+    { question: "What technologies do you use?", answer: "We specialize in Next.js, React, TypeScript, Node.js, PostgreSQL, Python, and various AI/ML frameworks. We choose the best tech stack for each project.", category: "technical", keywords: "technologies, tech stack, tools, programming languages, framework" },
+    { question: "How long does a project take?", answer: "Typical project timelines range from 2-4 weeks for a basic website to 8-12+ weeks for complex AI-powered applications.", category: "services", keywords: "timeline, how long, delivery, deadline, turnaround" },
+    { question: "Do you provide post-launch support?", answer: "Yes, we provide 1 month of free support with all packages and extended support options available for ongoing maintenance.", category: "support", keywords: "support, maintenance, post-launch, after delivery, updates" },
+    { question: "What is your refund policy?", answer: "We offer a satisfaction guarantee. If you're not happy with the initial deliverables, we'll work with you to make it right.", category: "general", keywords: "refund, money back, guarantee, satisfaction, cancel" },
+    { question: "Do you work with international clients?", answer: "Yes! We work with clients worldwide. Our team is fully remote and accustomed to working across different time zones.", category: "general", keywords: "international, remote, location, worldwide, global" },
+  ];
+  for (const item of knowledgeItems) {
+    const existing = await prisma.knowledgeItem.findFirst({ where: { question: item.question } });
+    if (!existing) {
+      await prisma.knowledgeItem.create({ data: item });
+    }
+  }
+  console.log("Knowledge items seeded!");
 
   console.log("Database seeded successfully!");
 }

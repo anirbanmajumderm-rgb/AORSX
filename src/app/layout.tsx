@@ -45,8 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
     ]);
     const meta: Record<string, string> = {};
     for (const s of settings) meta[s.key] = s.value || "";
-    const siteName = meta.site_name || company?.name || "A-ORSX";
-    const description = meta.meta_description || "A-ORSX — AI SaaS Agency.";
+    const siteName = meta.site_name || company?.name || "AORNX";
+    const description = meta.meta_description || "AORNX — AI SaaS Agency.";
     const title = meta.meta_title || siteName;
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
@@ -83,8 +83,8 @@ export async function generateMetadata(): Promise<Metadata> {
     return data;
   } catch {
     return {
-      title: "A-ORSX",
-      description: "A-ORSX — AI SaaS Agency.",
+      title: "AORNX",
+      description: "AORNX — AI SaaS Agency.",
     };
   }
 }

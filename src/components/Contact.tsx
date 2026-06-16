@@ -1,24 +1,18 @@
 "use client";
 
-import { useState, useMemo, memo, useCallback, useRef } from "react";
+import { useMemo, memo } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
   Phone,
   MessageCircle,
   MapPin,
-  Send,
-  Check,
-  Loader2,
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Input, Textarea } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSiteData } from "@/hooks/useSiteData";
-import { useAnalytics } from "@/hooks/useAnalytics";
 
 const iconMap: Record<string, LucideIcon> = {
   Mail, Phone, MessageCircle, MapPin,
@@ -54,43 +48,7 @@ const Contact = memo(function Contact() {
     href: c.type === "email" ? `mailto:${c.value}` : c.type === "phone" ? `tel:${c.value}` : c.type === "whatsapp" ? `https://wa.me/${c.value.replace(/\D/g, "")}` : "#",
   })), [contacts]);
 
-  const { trackInteraction } = useAnalytics();
-  const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
-  const formDataRef = useRef(formData);
-  formDataRef.current = formData;
   if (!isEnabled) return null;
-
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  }, []);
-
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    const currentData = formDataRef.current;
-    setLoading(true);
-    setSubmitError(null);
-    trackInteraction("contact_submission", currentData.subject.slice(0, 100));
-    try {
-      const res = await fetch("/api/contact-submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(currentData),
-      });
-      const json = await res.json();
-      if (json.success) {
-        setSubmitted(true);
-      } else {
-        setSubmitError(json.error || "Failed to send message");
-      }
-    } catch {
-      setSubmitError("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [trackInteraction]);
 
   return (
     <section id="contact" className="relative py-20 md:py-30 overflow-hidden">
@@ -105,14 +63,13 @@ const Contact = memo(function Contact() {
           description={data?.settings?.sec_contact_subtitle || t("contact.subtitle")}
         />
 
-        <div className="grid lg:grid-cols-5 gap-10 lg:gap-16">
-          {/* LEFT COLUMN - Contact Info */}
+        <div className="max-w-3xl mx-auto">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="lg:col-span-2 space-y-8"
+            className="space-y-4"
           >
             {/* Contact Info Cards */}
             <motion.div variants={itemVariants} className="space-y-4">
@@ -174,124 +131,6 @@ const Contact = memo(function Contact() {
               </div>
               <div className="absolute inset-0 border border-soft-border rounded-[var(--radius-card)] group-hover:border-orange/20 transition-all duration-500" />
             </motion.div>
-          </motion.div>
-
-          {/* RIGHT COLUMN - Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3"
-          >
-            {submitted ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center py-16 px-8 rounded-[var(--radius-card)] bg-card-bg border border-soft-border"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 15,
-                  }}
-                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange/20 to-cyan/20 border border-orange/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,107,0,0.15)]"
-                >
-                  <Check className="w-8 h-8 text-orange" />
-                </motion.div>
-                <h3 className="text-2xl font-bold font-heading text-main-text mb-2">
-                  Message Sent!
-                </h3>
-                <p className="text-secondary-text text-center max-w-sm">
-                  {t("contact.successMessage")}
-                </p>
-              </motion.div>
-            ) : (
-              <div className="relative">
-                <div className="absolute -inset-[1px] rounded-[var(--radius-card)] bg-gradient-to-br from-orange/20 via-cyan/20 to-cyan/20 opacity-20 blur-xl" />
-                <form
-                  onSubmit={handleSubmit}
-                  className="relative p-8 md:p-10 rounded-[var(--radius-card)] bg-card-bg border border-soft-border backdrop-blur-xl space-y-5"
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange/20 to-cyan/20 border border-orange/20 flex items-center justify-center">
-                      <Send className="w-5 h-5 text-orange" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold font-heading text-main-text">
-                        {t("contact.sendMessage")}
-                      </h3>
-                      <p className="text-xs text-muted-text">
-                        {t("contact.subtitle")}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <Input
-                      label={t("contact.yourName")}
-                      name="name"
-                      placeholder={t("contact.yourName")}
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                    <Input
-                      label={t("contact.yourEmail")}
-                      name="email"
-                      type="email"
-                      placeholder={t("contact.yourEmail")}
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <Input
-                    label={t("contact.subject")}
-                    name="subject"
-                    placeholder={t("contact.subject")}
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                  />
-                  {submitError && (
-                    <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3">
-                      <p className="text-sm text-red-400">{submitError}</p>
-                    </div>
-                  )}
-                  <Textarea
-                    label={t("contact.message")}
-                    name="message"
-                    placeholder={t("contact.message")}
-                    rows={5}
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                  />
-                  <Button
-                    variant="default"
-                    size="lg"
-                    className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        {t("contact.sendMessage")}
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </div>
-            )}
           </motion.div>
         </div>
       </div>

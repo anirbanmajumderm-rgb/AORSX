@@ -293,16 +293,32 @@ export default function MessagesPage() {
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.sender === "visitor" ? "justify-end" : "justify-start"}`}>
             {msg.sender !== "visitor" && (
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-neon-orange/20 to-neon-cyan/20 mr-2 mt-1">
-                <Bot className="h-3.5 w-3.5 text-neon-cyan" />
+              <div className="flex flex-col items-center mr-2 mt-1 shrink-0">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-neon-orange/20 to-neon-cyan/20">
+                  {msg.sender === "ai" ? (
+                    <span className="text-[8px] font-bold text-neon-cyan">AI</span>
+                  ) : (
+                    <Bot className="h-3.5 w-3.5 text-neon-cyan" />
+                  )}
+                </div>
+                {msg.sender === "ai" && (
+                  <span className="text-[8px] text-neon-cyan/60 mt-0.5 font-medium">AI</span>
+                )}
               </div>
             )}
             <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2.5 ${
               msg.sender === "visitor"
                 ? "bg-gradient-to-r from-neon-orange to-neon-cyan text-black rounded-br-md"
+                : msg.sender === "ai"
+                ? "bg-purple-500/10 text-white border border-purple-500/20 rounded-bl-md"
                 : "bg-white/10 text-white rounded-bl-md"
             }`}>
-              <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="text-sm whitespace-pre-wrap break-words flex-1">{msg.content}</p>
+                {msg.sender === "ai" && (
+                  <span className="text-[9px] font-semibold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded shrink-0">AI</span>
+                )}
+              </div>
               <p className={`text-[10px] mt-1 ${msg.sender === "visitor" ? "text-black/50" : "text-white/30"}`}>
                 {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </p>

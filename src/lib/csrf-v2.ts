@@ -1,6 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { randomBytes } from "crypto";
 
 function getSecret(): string {
   return process.env.NEXTAUTH_SECRET || "";
@@ -8,20 +6,37 @@ function getSecret(): string {
 
 export async function generateCsrfToken(): Promise<string> {
   const secret = getSecret();
-  const random = randomBytes(32).toString("hex");
+  const random = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   const hmac = await createHmac(random, secret);
   return `${random}.${hmac}`;
 }
 
 async function createHmac(data: string, secret: string): Promise<string> {
-  const { createHmac: hmac } = await import("crypto");
-  return hmac("sha256", secret).update(data).digest("hex").slice(0, 16);
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(data)
+  );
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 16);
 }
 
 export async function getCsrfToken(request: NextRequest): Promise<string | null> {
   const header = request.headers.get("x-csrf-token");
   if (header) return header;
-
   const cookie = request.cookies.get("csrf-token")?.value;
   return cookie || null;
 }
@@ -29,32 +44,37 @@ export async function getCsrfToken(request: NextRequest): Promise<string | null>
 export async function validateCsrfToken(token: string): Promise<boolean> {
   const parts = token.split(".");
   if (parts.length !== 2) return false;
-
   const [random, expectedHmac] = parts;
   const secret = getSecret();
   if (!secret) return false;
+  try {
+    const actualHmac = await createHmac(random, secret);
+    if (actualHmac.length !== expectedHmac.length) return false;
+    return timingSafeEqual(actualHmac, expectedHmac);
+  } catch {
+    return false;
+  }
+}
 
-  const actualHmac = await createHmac(random, secret);
-  return actualHmac === expectedHmac;
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 export async function validateCsrf(request: NextRequest): Promise<NextResponse | null> {
   if (request.method === "GET" || request.method === "HEAD" || request.method === "OPTIONS") return null;
 
-  const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
-  if (!token) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-  }
-
   const csrfHeader = await getCsrfToken(request);
   if (!csrfHeader) {
     return NextResponse.json({ success: false, error: "Missing CSRF token" }, { status: 403 });
   }
-
   const isValid = await validateCsrfToken(csrfHeader);
   if (!isValid) {
     return NextResponse.json({ success: false, error: "Invalid CSRF token" }, { status: 403 });
   }
-
   return null;
 }

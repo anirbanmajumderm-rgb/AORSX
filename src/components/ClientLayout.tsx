@@ -27,6 +27,11 @@ const CinematicIntro = dynamic(
   { ssr: false }
 );
 
+const ChatWidget = dynamic(
+  () => import("@/components/ChatWidget").then((m) => ({ default: m.ChatWidget })),
+  { ssr: false }
+);
+
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <CinematicIntro>
@@ -36,6 +41,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <CinematicSystem>
         {children}
       </CinematicSystem>
+      <ChatWidget />
     </CinematicIntro>
   );
 }

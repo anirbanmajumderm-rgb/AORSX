@@ -2,8 +2,9 @@
 
 import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { Users, MessageSquare, HelpCircle, Eye, Activity, Bell, TrendingUp, Building2, Edit3, Check, X } from "lucide-react";
+import { Users, MessageSquare, HelpCircle, Eye, Activity, TrendingUp, Building2, Edit3, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MessengerPanel } from "@/components/admin/dashboard/MessengerPanel";
 
 const Charts = lazy(() => import("@/components/admin/dashboard/Charts").then((m) => ({ default: m.Charts })));
 
@@ -220,88 +221,14 @@ export default function DashboardPage() {
         <Charts dailyViews={dailyViews} interactionChartData={interactionChartData} interactionTypes={interactionTypes} />
       </Suspense>
 
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="rounded-2xl bg-white/[0.02] border border-white/[0.04] p-6"
-        >
-          <h3 className="text-sm font-semibold text-white/70 mb-4">Recent Activity</h3>
-          <div className="space-y-2">
-            {(data?.recentActivity ?? []).slice(0, 8).map((activity) => (
-              <div key={activity.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.02] transition-colors">
-                <div className={cn(
-                  "w-2 h-2 rounded-full shrink-0",
-                  activity.type === "error" ? "bg-red-400" : activity.type === "warning" ? "bg-orange-400" : "bg-neon-cyan"
-                )} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white/70 truncate">{activity.action}</p>
-                  {activity.detail && <p className="text-xs text-white/30 truncate">{activity.detail}</p>}
-                </div>
-                <span className="text-[10px] text-white/20 shrink-0">
-                  {new Date(activity.time).toLocaleDateString()}
-                </span>
-              </div>
-            ))}
-            {(data?.recentActivity ?? []).length === 0 && (
-              <p className="text-sm text-white/30 text-center py-8">No recent activity</p>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Summary Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-4"
-        >
-          <div className="rounded-2xl bg-white/[0.02] border border-white/[0.04] p-6">
-            <h3 className="text-sm font-semibold text-white/70 mb-4">Quick Summary</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl bg-white/[0.03] border border-white/[0.04] p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Bell className="w-3.5 h-3.5 text-neon-cyan" />
-                  <span className="text-xs text-white/40">Unread Notifications</span>
-                </div>
-                <p className="text-xl font-bold font-heading">{data?.unreadNotifications ?? 0}</p>
-              </div>
-              <div className="rounded-xl bg-white/[0.03] border border-white/[0.04] p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Activity className="w-3.5 h-3.5 text-neon-orange" />
-                  <span className="text-xs text-white/40">Active Features</span>
-                </div>
-                <p className="text-xl font-bold font-heading">{data?.activeFeatures ?? 0}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Interaction Types Breakdown */}
-          <div className="rounded-2xl bg-white/[0.02] border border-white/[0.04] p-6">
-            <h3 className="text-sm font-semibold text-white/70 mb-4">Interaction Types</h3>
-            <div className="space-y-3">
-              {interactionTypes.map((type: string, i: number) => {
-                const total = interactions.filter((int: any) => int.type === type).reduce((sum: number, int: any) => sum + int.count, 0);
-  const colors = ["#00E5FF", "#FF6B00", "#A855F7", "#22C55E", "#F59E0B", "#EF4444"];
-
-  return (
-                  <div key={type} className="flex items-center gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
-                    <span className="text-sm text-white/60 capitalize flex-1">{type}</span>
-                    <span className="text-sm font-medium text-white/80">{total}</span>
-                  </div>
-                );
-              })}
-              {interactionTypes.length === 0 && (
-                <p className="text-sm text-white/30 text-center py-4">No interactions recorded yet</p>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      </div>
+      {/* Messenger */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <MessengerPanel />
+      </motion.div>
     </div>
   );
 }
