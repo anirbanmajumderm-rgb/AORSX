@@ -6,7 +6,8 @@ import { NotificationProvider } from "@/contexts/notification-context";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Toaster } from "sonner";
 import { CsrfProvider } from "@/lib/csrf-context";
-import { auth } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import "./admin.css";
 
@@ -43,7 +44,12 @@ export async function generateMetadata() {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
+  const headersList = await headers();
+  let isAuthenticated = false;
+  try {
+    const token = await getToken({ req: { headers: headersList }, secret: process.env.NEXTAUTH_SECRET });
+    isAuthenticated = !!token;
+  } catch {}
 
   let siteName = "Admin";
   try {
@@ -63,7 +69,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     }
   } catch {}
 
-  if (!session?.user) {
+  if (!isAuthenticated) {
     return <>{children}</>;
   }
 
