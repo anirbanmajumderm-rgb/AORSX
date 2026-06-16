@@ -30,12 +30,18 @@ export async function PATCH(request: NextRequest) {
   if (authError) return authError;
   const rateLimitError = await withRateLimit(request, "admin/content/PATCH");
   if (rateLimitError) return rateLimitError;
-  try {
-    const body = await request.json();
-    if (!body || typeof body !== 'object') {
-      return errorResponse("Invalid request body");
-    }
 
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return errorResponse("Invalid request body");
+  }
+  if (!body || typeof body !== 'object') {
+    return errorResponse("Invalid request body");
+  }
+
+  try {
     await prisma.$transaction(async (tx) => {
       if (body.updates && Array.isArray(body.updates)) {
         for (const update of body.updates) {
@@ -91,30 +97,46 @@ export async function PATCH(request: NextRequest) {
           }
         }
       }
+    }, {
+      timeout: 15000,
+      maxWait: 5000,
     });
 
-    revalidatePath("/api/site-data");
-    revalidatePath("/", "layout");
-    revalidatePath("/projects", "page");
-    revalidatePath("/projects/[slug]", "page");
+    const response = successResponse({ success: true });
 
-    const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
-    const sections: string[] = [];
-    if (body.updates) sections.push("settings");
-    if (body.services) sections.push("services");
-    if (body.whyChooseMe) sections.push("whyChooseMe");
-    if (body.company) sections.push("company");
-    await createAuditLog({
-      adminId: token?.id ? parseInt(token.id as string) : null,
-      action: "content.updated",
-      resource: "site_content",
-      details: "Site content settings updated",
-      ip: getClientIp(request),
-    });
-    await notifyAdmins({ title: "Content Updated", description: `Content section(s) updated: ${sections.length > 0 ? sections.join(", ") : "settings"}` });
+    Promise.allSettled([
+      revalidatePath("/api/site-data"),
+      revalidatePath("/", "layout"),
+      revalidatePath("/projects", "page"),
+      revalidatePath("/projects/[slug]", "page"),
+      (async () => {
+        try {
+          const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
+          const sections: string[] = [];
+          if (body.updates) sections.push("settings");
+          if (body.services) sections.push("services");
+          if (body.whyChooseMe) sections.push("whyChooseMe");
+          if (body.company) sections.push("company");
+          await createAuditLog({
+            adminId: token?.id ? parseInt(token.id as string) : null,
+            action: "content.updated",
+            resource: "site_content",
+            details: "Site content settings updated",
+            ip: getClientIp(request),
+          });
+          await notifyAdmins({ title: "Content Updated", description: `Content section(s) updated: ${sections.length > 0 ? sections.join(", ") : "settings"}` });
+        } catch (e) {
+          console.error("[Content] Background ops failed:", e);
+        }
+      })(),
+    ]);
 
-    return successResponse({ success: true });
+    return response;
   } catch (err) {
-    return serverErrorResponse(err, "admin/content");
+    try {
+      return serverErrorResponse(err, "admin/content");
+    } catch {
+      return errorResponse("An internal error occurred", 500);
+    }
   }
 }

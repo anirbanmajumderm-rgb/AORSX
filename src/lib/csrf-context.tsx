@@ -26,8 +26,12 @@ export function CsrfProvider({ children }: { children: ReactNode }) {
         const json = await res.json();
         if (!cancelled && json.success) {
           setToken(json.data.token);
+        } else if (!cancelled) {
+          console.error("[CSRF] Token fetch failed:", json.error || "Unknown error");
         }
-      } catch {} finally {
+      } catch (err) {
+        console.error("[CSRF] Token fetch error:", err);
+      } finally {
         if (!cancelled) setLoading(false);
       }
     }

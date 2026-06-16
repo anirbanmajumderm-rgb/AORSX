@@ -10,7 +10,7 @@ import {
   Zap, Star, Image,
   Mail, BarChart3, Globe, Sliders,
   User, Building2, Activity, Bot, MessageCircle,
-  MessageSquare, BookOpen, Package
+  MessageSquare, BookOpen, Package, Heart
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -49,6 +49,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Content",
     items: [
       { href: "/admin/content", label: "Site Content", icon: FileText },
+      { href: "/admin/about-cards", label: "About Cards", icon: Heart },
       { href: "/admin/projects", label: "Projects", icon: Briefcase },
       { href: "/admin/services", label: "Services", icon: Zap },
       { href: "/admin/skills", label: "Skills", icon: BrainCircuit },

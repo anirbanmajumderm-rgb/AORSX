@@ -69,10 +69,11 @@ export async function GET() {
       }),
       prisma.setting.findMany({
         select: { key: true, value: true },
-        take: 50,
+        orderBy: { key: "asc" },
+        take: 200,
       }),
       prisma.company.findFirst({
-        select: { id: true, name: true, tagline: true, description: true, logo: true, favicon: true, founderName: true, founderRole: true, founderImage: true, email: true, phone: true, address: true, linkedin: true, twitter: true, github: true },
+        select: { id: true, name: true, tagline: true, description: true, aboutText: true, mission: true, vision: true, logo: true, favicon: true, founderName: true, founderRole: true, founderBio: true, founderImage: true, email: true, phone: true, address: true, linkedin: true, twitter: true, github: true },
       }),
       prisma.skill.findMany({
         where: { isActive: true },

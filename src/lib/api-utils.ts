@@ -31,11 +31,9 @@ export function serverErrorResponse(err: unknown, context: string) {
   logError(`API:${context}`, err);
   const message = "An internal error occurred";
   const details =
-    process.env.NODE_ENV === "development"
-      ? err instanceof Error
-        ? err.message
-        : String(err)
-      : undefined;
+    err instanceof Error
+      ? err.message
+      : String(err);
   return errorResponse(message, 500, details);
 }
 

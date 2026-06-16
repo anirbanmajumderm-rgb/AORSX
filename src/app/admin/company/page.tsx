@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Save, RefreshCw, Building2, Link as LinkIcon } from "lucide-react";
+import { Save, RefreshCw, Building2, Link as LinkIcon, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminCompanyPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingFounder, setUploadingFounder] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [form, setForm] = useState({
     name: "", tagline: "", description: "", aboutText: "",
     vision: "", mission: "", founderName: "", founderRole: "",
@@ -39,6 +41,27 @@ export default function AdminCompanyPage() {
       }
     } catch { toast.error("Failed to load company info"); }
     finally { setLoading(false); }
+  }
+
+  async function handlePhotoUpload(field: "founderImage" | "logo", file: File) {
+    const setUploading = field === "founderImage" ? setUploadingFounder : setUploadingLogo;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const json = await res.json();
+      if (json.success) {
+        setForm(prev => ({ ...prev, [field]: json.data.url }));
+        toast.success("Image uploaded");
+      } else {
+        toast.error(json.error || "Upload failed");
+      }
+    } catch {
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function handleSave() {
@@ -135,7 +158,28 @@ export default function AdminCompanyPage() {
             {Field({ label: "Founder Name", key: "founderName", placeholder: "John Doe" })}
             {Field({ label: "Founder Role", key: "founderRole", placeholder: "CEO & Founder" })}
             {Field({ label: "Founder Bio", key: "founderBio", rows: 3, placeholder: "About the founder..." })}
-            {Field({ label: "Founder Image URL", key: "founderImage", placeholder: "https://..." })}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-white/50">Founder Photo</label>
+              <div className="flex items-center gap-3">
+                {form.founderImage && (
+                  <div className="w-14 h-14 rounded-xl overflow-hidden border border-white/[0.06] shrink-0 bg-white/[0.03]">
+                    <Image src={form.founderImage} alt="Founder" width={56} height={56} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/50 hover:text-white/70 hover:border-neon-cyan/30 cursor-pointer transition-all">
+                  <Upload className="w-4 h-4" />
+                  {uploadingFounder ? "Uploading..." : "Upload Photo"}
+                  <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" disabled={uploadingFounder}
+                    onChange={async (e) => { const f = e.target.files?.[0]; if (f) await handlePhotoUpload("founderImage", f); }}
+                  />
+                </label>
+                {form.founderImage && (
+                  <button onClick={() => setForm(p => ({ ...p, founderImage: "" }))} className="p-2 rounded-lg hover:bg-red-500/10 text-white/30 hover:text-red-400 transition-all">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -171,12 +215,26 @@ export default function AdminCompanyPage() {
               <p className="text-xs text-white/30">Direct URL to your brand logo</p>
             </div>
           </div>
-          {Field({ label: "Logo URL", key: "logo", placeholder: "https://..." })}
-          {form.logo && (
-            <div className="mt-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] inline-block">
-              <Image src={form.logo} alt="Logo preview" width={48} height={48} className="h-12 w-auto object-contain" />
-            </div>
-          )}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-white/50">Logo URL</label>
+            <input type="text" value={form.logo} onChange={(e) => setForm({ ...form, logo: e.target.value })}
+              className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30" placeholder="https://..."
+            />
+          </div>
+          <div className="flex items-center gap-3 mt-3">
+            {form.logo && (
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] inline-block">
+                <Image src={form.logo} alt="Logo preview" width={48} height={48} className="h-10 w-auto object-contain" />
+              </div>
+            )}
+            <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/50 hover:text-white/70 hover:border-neon-cyan/30 cursor-pointer transition-all">
+              <Upload className="w-4 h-4" />
+              {uploadingLogo ? "Uploading..." : "Upload Logo"}
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden" disabled={uploadingLogo}
+                onChange={async (e) => { const f = e.target.files?.[0]; if (f) await handlePhotoUpload("logo", f); }}
+              />
+            </label>
+          </div>
         </div>
       </motion.div>
     </div>

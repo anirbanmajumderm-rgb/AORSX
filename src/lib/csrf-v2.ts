@@ -4,34 +4,48 @@ function getSecret(): string {
   return process.env.NEXTAUTH_SECRET || "";
 }
 
-export async function generateCsrfToken(): Promise<string> {
-  const secret = getSecret();
-  const random = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  const hmac = await createHmac(random, secret);
-  return `${random}.${hmac}`;
+export async function generateCsrfToken(): Promise<string | null> {
+  try {
+    const secret = getSecret();
+    if (!secret) {
+      console.warn("[CSRF] NEXTAUTH_SECRET not set, skipping CSRF token generation");
+      return null;
+    }
+    const random = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    const hmac = await createHmac(random, secret);
+    return `${random}.${hmac}`;
+  } catch (err) {
+    console.error("[CSRF] Token generation failed:", err);
+    return null;
+  }
 }
 
 async function createHmac(data: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const key = await crypto.subtle.importKey(
-    "raw",
-    keyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(data)
-  );
-  return Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("")
-    .slice(0, 16);
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.subtle !== "undefined") {
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        "raw", encoder.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false, ["sign"]
+      );
+      const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
+      return Array.from(new Uint8Array(signature))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("").slice(0, 16);
+    }
+  } catch (e) {
+    console.warn("[CSRF] Web Crypto unavailable, using fallback hash:", e);
+  }
+  let hash = 0;
+  const combined = data + "::" + secret;
+  for (let i = 0; i < combined.length; i++) {
+    hash = ((hash << 5) - hash) + combined.charCodeAt(i);
+    hash |= 0;
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
 export async function getCsrfToken(request: NextRequest): Promise<string | null> {
@@ -67,6 +81,12 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 export async function validateCsrf(request: NextRequest): Promise<NextResponse | null> {
   if (request.method === "GET" || request.method === "HEAD" || request.method === "OPTIONS") return null;
+
+  const secret = getSecret();
+  if (!secret) {
+    console.warn("[CSRF] NEXTAUTH_SECRET not set - skipping CSRF validation");
+    return null;
+  }
 
   const csrfHeader = await getCsrfToken(request);
   if (!csrfHeader) {

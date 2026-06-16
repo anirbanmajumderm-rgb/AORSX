@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Save, Plus, Trash2, GripVertical, Eye, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useCsrf } from "@/lib/csrf-context";
 
 interface SiteContent {
   settings: Record<string, string>;
@@ -26,8 +27,17 @@ const defaultSettings: Record<string, string> = {
   hero_support_label: "",
   about_us_headline: "",
   about_us_body: "",
+  sec_about_subtitle: "",
+  card_values_title: "",
   company_values: "",
+  card_why_title: "",
+  why_choose: "",
+  card_policy_title: "",
   company_policy: "",
+  card_rules_title: "",
+  company_rules: "",
+  card_commitment_title: "",
+  company_commitment: "",
   stats_projects: "",
   stats_clients: "",
   stats_years: "",
@@ -44,11 +54,12 @@ export default function ContentPage() {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("hero");
   const [showPreview, setShowPreview] = useState(false);
+  const { fetchWithCsrf } = useCsrf();
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/api/admin/content");
+        const res = await fetchWithCsrf("/api/admin/content");
         const json = await res.json();
         if (json.success) {
           const data = json.data || json;
@@ -75,7 +86,9 @@ export default function ContentPage() {
     setSaving(true);
     try {
       const updates = Object.entries(settings).map(([key, value]) => ({ key, value }));
-      const res = await fetch("/api/admin/content", {
+      console.log("[Content] Sending PATCH with body keys:", Object.keys({ updates, services, whyChooseMe, company }));
+      console.log("[Content] Updates count:", updates.length, "Services:", services.length, "WhyChooseMe:", whyChooseMe.length);
+      const res = await fetchWithCsrf("/api/admin/content", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -85,10 +98,14 @@ export default function ContentPage() {
           company,
         }),
       });
-      const json = await res.json();
+      console.log("[Content] Response status:", res.status, res.statusText);
+      const text = await res.text();
+      console.log("[Content] Raw response body:", text);
+      let json: any;
+      try { json = JSON.parse(text); } catch { json = {}; }
       if (json.success) {
         toast.success("Content saved successfully");
-        const fresh = await fetch(`/api/admin/content?_=${Date.now()}`);
+        const fresh = await fetchWithCsrf(`/api/admin/content?_=${Date.now()}`);
         const freshJson = await fresh.json();
         if (freshJson.success) {
           const d = freshJson.data || freshJson;
@@ -98,9 +115,12 @@ export default function ContentPage() {
           setCompany(d.company || null);
         }
       } else {
-        toast.error(json.error || "Failed to save content");
+        const msg = json.details ? `${json.error}: ${json.details}` : json.error;
+        console.error("[Content] Save failed:", json);
+        toast.error(msg || "Failed to save content");
       }
-    } catch {
+    } catch (err) {
+      console.error("[Content] Save error:", err);
       toast.error("Failed to save content");
     } finally {
       setSaving(false);
@@ -313,22 +333,133 @@ export default function ContentPage() {
                   className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors resize-none"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Company Values (comma separated)</label>
-                <input
-                  value={settings.company_values || ""}
-                  onChange={(e) => updateSetting("company_values", e.target.value)}
-                  className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
-                />
+              <h4 className="text-sm font-semibold text-white/70 mt-4 pt-4 border-t border-white/[0.04]">About Cards</h4>
+              <p className="text-xs text-white/40 -mt-3">Edit both heading and content for each card together</p>
+
+              {/* Values */}
+              <div className="rounded-xl bg-white/[0.01] border border-white/[0.04] p-4 space-y-4">
+                <h5 className="text-sm font-semibold text-cyan">Values Card</h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Heading</label>
+                    <input
+                      value={settings.card_values_title || ""}
+                      onChange={(e) => updateSetting("card_values_title", e.target.value)}
+                      placeholder="Our Values"
+                      className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Values (comma separated)</label>
+                    <input
+                      value={settings.company_values || ""}
+                      onChange={(e) => updateSetting("company_values", e.target.value)}
+                      placeholder="Innovation, Excellence, Integrity, Client-First"
+                      className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-white/50 mb-1.5">Company Policy</label>
-                <textarea
-                  value={settings.company_policy || ""}
-                  onChange={(e) => updateSetting("company_policy", e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors resize-none"
-                />
+
+              {/* Why Choose */}
+              <div className="rounded-xl bg-white/[0.01] border border-white/[0.04] p-4 space-y-4">
+                <h5 className="text-sm font-semibold text-cyan">Why Choose Us Card</h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Heading</label>
+                    <input
+                      value={settings.card_why_title || ""}
+                      onChange={(e) => updateSetting("card_why_title", e.target.value)}
+                      placeholder="Why Choose Us"
+                      className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Why Choose (comma separated checklist)</label>
+                    <textarea
+                      value={settings.why_choose || ""}
+                      onChange={(e) => updateSetting("why_choose", e.target.value)}
+                      rows={3}
+                      placeholder="Cutting-Edge AI Technology, 99.9% Uptime Guarantee, Award-Winning Design, Rapid Development"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Policy */}
+              <div className="rounded-xl bg-white/[0.01] border border-white/[0.04] p-4 space-y-4">
+                <h5 className="text-sm font-semibold text-cyan">Policy Card</h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Heading</label>
+                    <input
+                      value={settings.card_policy_title || ""}
+                      onChange={(e) => updateSetting("card_policy_title", e.target.value)}
+                      placeholder="Our Policy"
+                      className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Policy Content</label>
+                    <textarea
+                      value={settings.company_policy || ""}
+                      onChange={(e) => updateSetting("company_policy", e.target.value)}
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Rules */}
+              <div className="rounded-xl bg-white/[0.01] border border-white/[0.04] p-4 space-y-4">
+                <h5 className="text-sm font-semibold text-cyan">Rules Card</h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Heading</label>
+                    <input
+                      value={settings.card_rules_title || ""}
+                      onChange={(e) => updateSetting("card_rules_title", e.target.value)}
+                      placeholder="Our Rules"
+                      className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Rules Content</label>
+                    <textarea
+                      value={settings.company_rules || ""}
+                      onChange={(e) => updateSetting("company_rules", e.target.value)}
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Commitment */}
+              <div className="rounded-xl bg-white/[0.01] border border-white/[0.04] p-4 space-y-4">
+                <h5 className="text-sm font-semibold text-cyan">Commitment Card</h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Heading</label>
+                    <input
+                      value={settings.card_commitment_title || ""}
+                      onChange={(e) => updateSetting("card_commitment_title", e.target.value)}
+                      placeholder="Our Commitment"
+                      className="w-full h-10 px-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-white/50 mb-1.5">Commitment Content</label>
+                    <textarea
+                      value={settings.company_commitment || ""}
+                      onChange={(e) => updateSetting("company_commitment", e.target.value)}
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white/80 outline-none focus:border-neon-cyan/30 transition-colors resize-none"
+                    />
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
