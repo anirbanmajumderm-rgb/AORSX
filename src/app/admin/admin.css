@@ -1,10 +1,3 @@
-@import "tailwindcss";
-
-@theme inline {
-  --color-neon-orange: #FF6B00;
-  --color-neon-cyan: #00E5FF;
-}
-
 :root {
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.06);
